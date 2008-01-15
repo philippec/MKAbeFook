@@ -73,6 +73,7 @@ Available Delegate Methods
 	NSTimeInterval connectionTimeoutInterval;
 	id _delegate;
 	BOOL _alertMessagesEnabled;
+	BOOL _shouldUseSynchronousLogin;
 }
 
 /*!
@@ -234,7 +235,18 @@ Available Delegate Methods
  */
 -(id)fetchFacebookData:(NSURL *)theURL;
 
+/*!
+ @method setShouldUseSynchronousLogin:
+ @param aBool Send YES if login procedure should use sychronous requests, or no to use asynchronous requests.
+ @discussion If you call showFacebookLoginWindow or showFacebookLoginWindowForSheet while the main run loop is not in NSDefaultMainRunLoop mode you will need to use sychronous login requests.  For example if a modal window is present you will need to sychronous requests.  Use this method when working with iPhoto or Apeture plugins.
+ */
+-(void)setShouldUseSynchronousLogin:(BOOL)aBool;
 
+/*!
+ @method shouldUseSychronousLogin
+ @discussion Default is NO.
+ */
+-(BOOL)shouldUseSychronousLogin;
 
 @end
 

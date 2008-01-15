@@ -50,6 +50,7 @@ NSString *MKFacebookFormat = @"XML";
 -(void)createAuthToken;
 -(NSTimeInterval)timeoutInterval;
 -(void)facebookRequestFailed:(NSError *)error;
+-(void)facebookResponseReceived:(NSXMLDocument *)xml;
 @end
 
 
@@ -92,6 +93,7 @@ NSString *MKFacebookFormat = @"XML";
 		userHasLoggedInMultipleTimes = FALSE;
 		_delegate = aDelegate;
 		_alertMessagesEnabled = YES;
+		_shouldUseSynchronousLogin = NO;
 	}
 	return self;
 }
@@ -132,6 +134,7 @@ NSString *MKFacebookFormat = @"XML";
 		userHasLoggedInMultipleTimes = FALSE;
 		_delegate = aDelegate;
 		_alertMessagesEnabled = YES;
+		_shouldUseSynchronousLogin = NO;
 	}
 	return self;
 }
@@ -241,43 +244,43 @@ NSString *MKFacebookFormat = @"XML";
 	return _alertMessagesEnabled;
 }
 
+-(void)setShouldUseSynchronousLogin:(BOOL)aBool
+{
+	_shouldUseSynchronousLogin = aBool;
+}
+
+-(BOOL)shouldUseSychronousLogin
+{
+	return _shouldUseSynchronousLogin;
+}
+
 #pragma mark -
 
 #pragma mark Workers
 
 -(void)showFacebookLoginWindow
 {
-	[self createAuthToken];
 	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self]; //will be released when closed			
 	[[loginWindow window] center];
 	[loginWindow showWindow:self];
+	[self createAuthToken];
 }
 
 -(NSWindow *)showFacebookLoginWindowForSheet
 {
-	[self createAuthToken];
 	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self]; //will be released when closed 				
+	[self createAuthToken];
 	return [loginWindow window];
 }
 
 //called when login window is created, if an authToken is generated the login window will display
 -(void)createAuthToken
 {
-	MKFacebookRequest *request = [[[MKFacebookRequest alloc] init] autorelease];
-	[request setDelegate:self];
-	[request setFacebookConnection:self];
-	[request setSelector:@selector(facebookResponseReceived:)];
-	
-	NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
-	[parameters setValue:@"facebook.auth.createToken" forKey:@"method"];
-	[request setParameters:parameters];
-	[request sendRequest];
-}
-
-//called when login window is closed, attempts create and save a session
--(void)getAuthSession
-{
-	if(hasAuthToken)
+	if(_shouldUseSynchronousLogin == YES)
+	{
+		NSXMLDocument *xml = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.auth.createToken", @"method", nil]]];
+		[self facebookResponseReceived:xml];
+	}else
 	{
 		MKFacebookRequest *request = [[[MKFacebookRequest alloc] init] autorelease];
 		[request setDelegate:self];
@@ -285,12 +288,36 @@ NSString *MKFacebookFormat = @"XML";
 		[request setSelector:@selector(facebookResponseReceived:)];
 		
 		NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
-		[parameters setValue:@"facebook.auth.getSession" forKey:@"method"];
-		[parameters setValue:[self authToken] forKey:@"auth_token"];
-		
+		[parameters setValue:@"facebook.auth.createToken" forKey:@"method"];
 		[request setParameters:parameters];
 		[request sendRequest];
-		
+	}
+
+}
+
+//called when login window is closed, attempts create and save a session
+-(void)getAuthSession
+{
+	if(hasAuthToken)
+	{
+		if(_shouldUseSynchronousLogin == YES)
+		{
+			NSXMLDocument *xml = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.auth.getSession", @"method", [self authToken], @"auth_token", nil]]];
+			[self facebookResponseReceived:xml];
+		}else
+		{
+			MKFacebookRequest *request = [[[MKFacebookRequest alloc] init] autorelease];
+			[request setDelegate:self];
+			[request setFacebookConnection:self];
+			[request setSelector:@selector(facebookResponseReceived:)];
+			
+			NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
+			[parameters setValue:@"facebook.auth.getSession" forKey:@"method"];
+			[parameters setValue:[self authToken] forKey:@"auth_token"];
+			
+			[request setParameters:parameters];
+			[request sendRequest];
+		}
 	}
 }
 
@@ -457,6 +484,7 @@ NSString *MKFacebookFormat = @"XML";
 												cachePolicy:NSURLRequestReloadIgnoringCacheData
 											timeoutInterval:[self connectionTimeoutInterval]];
 	NSHTTPURLResponse *xmlResponse;  //not used right now
+	NSXMLDocument *returnXML = nil;
 	NSError *fetchError;
 	NSData *responseData = [NSURLConnection sendSynchronousRequest:urlRequest
 												 returningResponse:&xmlResponse
@@ -466,12 +494,14 @@ NSString *MKFacebookFormat = @"XML";
 	{
 		[self facebookRequestFailed:nil];		   
 		return nil;
+	}else
+	{
+		returnXML = [[[NSXMLDocument alloc] initWithData:responseData
+												options:nil
+												  error:nil] autorelease];
 	}
 	
-	NSXMLDocument *returnXML = [[NSXMLDocument alloc] initWithData:responseData
-														   options:nil
-															 error:nil];
-	return [returnXML autorelease];
+	return returnXML;
 
 
 }
@@ -555,8 +585,12 @@ NSString *MKFacebookFormat = @"XML";
 		{
 			if([defaultsName isNotEqualTo:@""] && useInfiniteSessions)
 			{
-				NSDictionary *sessionDefaults = [NSDictionary dictionaryWithObjectsAndKeys:[self sessionKey], @"sessionKey", [self sessionSecret], @"sessionSecret", nil];
-				[[NSUserDefaults standardUserDefaults] setPersistentDomain:sessionDefaults forName:defaultsName];
+				//NSDictionary *sessionDefaults = [NSDictionary dictionaryWithObjectsAndKeys:[self sessionKey], @"sessionKey", [self sessionSecret], @"sessionSecret", nil];
+				//[[NSUserDefaults standardUserDefaults] setPersistentDomain:sessionDefaults forName:defaultsName];
+				
+				//this is safer than setpersistentDomain which can screw up other things.  0.7.4.
+				[[NSUserDefaults standardUserDefaults] setObject:[self sessionKey] forKey:@"sessionKey"];
+				[[NSUserDefaults standardUserDefaults] setObject:[self sessionSecret] forKey:@"sessionSecret"];
 			}
 			
 			if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
