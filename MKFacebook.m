@@ -497,7 +497,7 @@ NSString *MKFacebookFormat = @"XML";
 	}else
 	{
 		returnXML = [[[NSXMLDocument alloc] initWithData:responseData
-												options:nil
+												options:0
 												  error:nil] autorelease];
 	}
 	

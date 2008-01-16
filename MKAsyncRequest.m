@@ -92,7 +92,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
 	NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:responseData
-														   options:nil
+														   options:0
 															 error:nil] autorelease];
 	/*	
 	if(![facebookConnection validXMLResponse:returnXML])

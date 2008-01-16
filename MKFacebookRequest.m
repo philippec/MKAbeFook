@@ -261,7 +261,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
 	NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData
-														   options:nil
+														   options:0
 															 error:nil] autorelease];
 
 	if([returnXML validFacebookResponse] == NO)
