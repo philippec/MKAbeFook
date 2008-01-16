@@ -93,9 +93,9 @@
 	int i;
 	for(i=0; i < [aBunchOfPhotosArray count]; i++)
 	{
-		if(![[aBunchOfPhotosArray objectAtIndex:i] valueForKey:@"aid"] == nil &&
-		   ![[aBunchOfPhotosArray objectAtIndex:i] valueForKey:@"caption"] == nil && 
-		   ![[aBunchOfPhotosArray objectAtIndex:i] valueForKey:@"pathToImage"] == nil)
+		if([[aBunchOfPhotosArray objectAtIndex:i] valueForKey:@"aid"] != nil &&
+		   [[aBunchOfPhotosArray objectAtIndex:i] valueForKey:@"caption"] != nil && 
+		   [[aBunchOfPhotosArray objectAtIndex:i] valueForKey:@"pathToImage"] != nil)
 			validArray = YES;
 			
 	}
@@ -278,7 +278,7 @@
 {
 	
 	NSXMLDocument *xmlDocument = [[[NSXMLDocument alloc] initWithData:responseData
-															  options:nil
+															  options:0
 																error:nil] autorelease];
 	
 	if([_delegate respondsToSelector:@selector(photoDidFinishUploading:)])
