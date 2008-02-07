@@ -34,11 +34,12 @@
 	IBOutlet WebView *loginWebView;
 	IBOutlet NSButton *closeSheetButton; 
 	id _delegate;
+	SEL _selector;
 }
 
--(id)initWithDelegate:(id)aDelegate;
--(id)initForSheetWithDelegate:aDelegate;
+-(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
+-(id)initForSheetWithDelegate:aDelegate withSelector:(SEL)aSelector;
 -(void)loadURL:(NSURL *)loginURL;
 -(IBAction)closeSheet:(id)sender;
-
+-(void)setWindowSize:(NSSize)windowSize;
 @end

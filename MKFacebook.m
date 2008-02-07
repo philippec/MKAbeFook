@@ -260,7 +260,7 @@ NSString *MKFacebookFormat = @"XML";
 
 -(void)showFacebookLoginWindow
 {
-	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self]; //will be released when closed			
+	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession:)]; //will be released when closed			
 	[[loginWindow window] center];
 	[loginWindow showWindow:self];
 	[self createAuthToken];
@@ -268,7 +268,7 @@ NSString *MKFacebookFormat = @"XML";
 
 -(NSWindow *)showFacebookLoginWindowForSheet
 {
-	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self]; //will be released when closed 				
+	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession:)]; //will be released when closed 				
 	[self createAuthToken];
 	return [loginWindow window];
 }
@@ -662,6 +662,30 @@ NSString *MKFacebookFormat = @"XML";
 }
 #pragma mark -
 
+-(void)grantExtendedPermission:(NSString *)aString
+{
+	if([self userLoggedIn] == NO)
+	{
+		if([self alertsEnabled] == YES)
+		{
+			NSAlert *uhOh = [NSAlert alertWithMessageText:@"No user logged in!"
+											defaultButton:@"OK Fine!" 
+										  alternateButton:nil 
+											  otherButton:nil 
+								informativeTextWithFormat:@"Permissions cannnot be extended if no one is logged in."];
+			[uhOh runModal];
+		}
+		return;
+	}
+	
+	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:nil]; //will be released when closed			
+	[loginWindow showWindow:self];
+	[loginWindow setWindowSize:NSMakeSize(800, 600)];
+	
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@", [self apiKey], MKFacebookAPIVersion, aString]];
+	[loginWindow loadURL:url];
+	
+}
 
 @end
 
