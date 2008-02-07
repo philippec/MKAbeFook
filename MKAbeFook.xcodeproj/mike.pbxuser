@@ -2,7 +2,7 @@
 {
 	0867D690FE84028FC02AAC07 /* Project object */ = {
 		activeArchitecture = i386;
-		activeBuildConfigurationName = Release;
+		activeBuildConfigurationName = Debug;
 		activeTarget = 8DC2EF4F0486A6940098B216 /* MKAbeFook */;
 		addToTargets = (
 			8DC2EF4F0486A6940098B216 /* MKAbeFook */,
@@ -95,8 +95,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 219905409;
-			PBXWorkspaceStateSaveDate = 219905409;
+			PBXPerProjectTemplateStateSaveDate = 224107260;
+			PBXWorkspaceStateSaveDate = 224107260;
 		};
 		sourceControlManager = 27D8B08A0AE6FF50007941CF /* Source Control */;
 		userBuildSettings = {
@@ -127,18 +127,18 @@
 	};
 	277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {963, 4298}}";
-			sepNavSelRange = "{6696, 0}";
-			sepNavVisRange = "{5924, 3289}";
-			sepNavWindowFrame = "{{-1040, 98}, {1022, 939}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1346, 3668}}";
+			sepNavSelRange = "{9749, 41}";
+			sepNavVisRange = "{8861, 1625}";
+			sepNavWindowFrame = "{{10, 75}, {1022, 803}}";
 		};
 	};
 	277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1269, 2002}}";
+			sepNavIntBoundsRect = "{{0, 0}, {3974, 1792}}";
 			sepNavSelRange = "{2974, 0}";
-			sepNavVisRange = "{56, 3349}";
-			sepNavWindowFrame = "{{-1383, 58}, {1328, 957}}";
+			sepNavVisRange = "{2266, 3196}";
+			sepNavWindowFrame = "{{50, 94}, {1054, 784}}";
 		};
 	};
 	277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */ = {
@@ -200,9 +200,9 @@
 	};
 	27B41A250B9B4C150040374E /* MKPhotoUploader.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {997, 4214}}";
-			sepNavSelRange = "{13608, 0}";
-			sepNavVisRange = "{11534, 2105}";
+			sepNavIntBoundsRect = "{{0, 0}, {1379, 4746}}";
+			sepNavSelRange = "{12828, 41}";
+			sepNavVisRange = "{12251, 983}";
 			sepNavVisRect = "{{0, 3592}, {1356, 860}}";
 			sepNavWindowFrame = "{{620, 102}, {1056, 926}}";
 		};
@@ -221,39 +221,38 @@
 	};
 	27D8B0A40AE6FFA7007941CF /* MKLoginWindow.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1141, 898}}";
-			sepNavSelRange = "{1815, 0}";
-			sepNavVisRange = "{0, 1856}";
+			sepNavIntBoundsRect = "{{0, 0}, {1141, 731}}";
+			sepNavSelRange = "{1962, 0}";
+			sepNavVisRange = "{0, 1968}";
 			sepNavVisRect = "{{0, 0}, {1362, 848}}";
-			sepNavWindowFrame = "{{15, 73}, {1200, 955}}";
+			sepNavWindowFrame = "{{15, 75}, {1200, 803}}";
 		};
 	};
 	27D8B0A50AE6FFA7007941CF /* MKLoginWindow.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1141, 1484}}";
-			sepNavSelRange = "{2872, 0}";
-			sepNavVisRange = "{1859, 1388}";
+			sepNavIntBoundsRect = "{{0, 0}, {956, 1680}}";
+			sepNavSelRange = "{3443, 0}";
+			sepNavVisRange = "{2638, 1226}";
 			sepNavVisRect = "{{0, 3}, {1362, 848}}";
-			sepNavWindowFrame = "{{345, 73}, {1200, 955}}";
+			sepNavWindowFrame = "{{37, 75}, {1015, 803}}";
 		};
 	};
 	27D8B0A80AE6FFB2007941CF /* MKFacebook.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1012, 3738}}";
-			sepNavSelRange = "{0, 1320}";
-			sepNavVisRange = "{0, 2667}";
+			sepNavIntBoundsRect = "{{0, 0}, {3572, 3948}}";
+			sepNavSelRange = "{13287, 23}";
+			sepNavVisRange = "{11636, 1949}";
 			sepNavVisRect = "{{0, 554}, {1356, 860}}";
-			sepNavWindowFrame = "{{23, 73}, {1071, 955}}";
+			sepNavWindowFrame = "{{-3, 87}, {1117, 791}}";
 		};
 	};
 	27D8B0A90AE6FFB2007941CF /* MKFacebook.m */ = {
 		uiCtxt = {
-			sepNavFolds = "{\n    c =     (\n                {\n            r = \"{2442, 113}\";\n        },\n                {\n            r = \"{3010, 503}\";\n        },\n                {\n            r = \"{3686, 144}\";\n        },\n                {\n            r = \"{3987, 804}\";\n        }\n    );\n    r = \"{0, 21854}\";\n}";
-			sepNavIntBoundsRect = "{{0, 0}, {1141, 7924}}";
-			sepNavSelRange = "{14755, 0}";
-			sepNavVisRange = "{13831, 2360}";
+			sepNavIntBoundsRect = "{{0, 0}, {2012, 10262}}";
+			sepNavSelRange = "{22914, 0}";
+			sepNavVisRange = "{22021, 1923}";
 			sepNavVisRect = "{{0, 6188}, {1356, 860}}";
-			sepNavWindowFrame = "{{219, 73}, {1200, 955}}";
+			sepNavWindowFrame = "{{114, 82}, {1305, 796}}";
 		};
 	};
 	27D8B0AE0AE7000C007941CF /* MKAbeFook.h */ = {
@@ -276,9 +275,9 @@
 	};
 	27E653700BA0F592000AF21D /* MKAsyncRequest.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1151, 1974}}";
-			sepNavSelRange = "{1995, 0}";
-			sepNavVisRange = "{3, 2283}";
+			sepNavIntBoundsRect = "{{0, 0}, {1040, 1932}}";
+			sepNavSelRange = "{3586, 0}";
+			sepNavVisRange = "{3300, 625}";
 			sepNavVisRect = "{{0, 635}, {1356, 860}}";
 			sepNavWindowFrame = "{{107, 127}, {1210, 901}}";
 		};
@@ -312,9 +311,9 @@
 	};
 	8DC2EF5A0486A6940098B216 /* Info.plist */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {914, 516}}";
-			sepNavSelRange = "{710, 0}";
-			sepNavVisRange = "{0, 785}";
+			sepNavIntBoundsRect = "{{0, 0}, {914, 501}}";
+			sepNavSelRange = "{715, 0}";
+			sepNavVisRange = "{0, 790}";
 			sepNavVisRect = "{{0, 0}, {0, 0}}";
 			sepNavWindowFrame = "{{38, 147}, {973, 573}}";
 		};

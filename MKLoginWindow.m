@@ -30,10 +30,12 @@
 
 
 @implementation MKLoginWindow
--(id)initWithDelegate:(id)aDelegate
+-(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector
 {
 	self = [super init];
 	_delegate = aDelegate;
+	_selector = aSelector;
+	
 	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
 	[super initWithWindowNibPath:path owner:self];
 	NSRect visibleArea =  NSMakeRect(0, 0, 626, 426);
@@ -41,9 +43,10 @@
 	return self;
 }
 
--(id)initForSheetWithDelegate:(id)aDelegate
+-(id)initForSheetWithDelegate:(id)aDelegate withSelector:(SEL)aSelector
 {
 	_delegate = aDelegate;
+	_selector = aSelector;
 	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
 	[super initWithWindowNibPath:path owner:self];
 	NSRect frame = [[self window] frame];
@@ -86,11 +89,22 @@
 	[self windowWillClose:nil];
 }
 
+-(void)setWindowSize:(NSSize)windowSize
+{
+
+	NSRect screenRect = [[NSScreen mainScreen] frame];
+	NSRect rect = NSMakeRect(screenRect.size.width * .25, screenRect.size.height * .25, windowSize.width, windowSize.height);
+	//[[[loginWebView mainFrame] webView] setFrame:rect];
+	//[[[loginWebView mainFrame] webView] setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+	[[self window] center];
+	[[self window] setFrame:rect display:YES animate:YES];
+}
 
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-	[_delegate performSelector:@selector(getAuthSession)];
+	if(_selector != nil && [_delegate respondsToSelector:_selector])
+		[_delegate performSelector:_selector];
 
 	[self autorelease];
 }
