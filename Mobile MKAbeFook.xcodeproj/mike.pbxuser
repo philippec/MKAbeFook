@@ -1,0 +1,63 @@
+// !$*UTF8*$!
+{
+	1D6058900D05DD3D006BFB54 /* Mobile MKAbeFook */ = {
+		activeExec = 0;
+		executables = (
+			27603D540D9D7E520014BB6B /* Mobile MKAbeFook */,
+		);
+	};
+	27603D540D9D7E520014BB6B /* Mobile MKAbeFook */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = "Mobile MKAbeFook";
+		sourceDirectories = (
+		);
+	};
+	27603D5C0D9D7E570014BB6B /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	27603D5D0D9D7E570014BB6B /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeArchitecture = i386;
+		activeBuildConfigurationName = Debug;
+		activeExecutable = 27603D540D9D7E520014BB6B /* Mobile MKAbeFook */;
+		activeTarget = 1D6058900D05DD3D006BFB54 /* Mobile MKAbeFook */;
+		addToTargets = (
+			1D6058900D05DD3D006BFB54 /* Mobile MKAbeFook */,
+		);
+		codeSenseManager = 27603D5D0D9D7E570014BB6B /* Code sense */;
+		executables = (
+			27603D540D9D7E520014BB6B /* Mobile MKAbeFook */,
+		);
+		perUserDictionary = {
+			PBXPerProjectTemplateStateSaveDate = 228425298;
+			PBXWorkspaceStateSaveDate = 228425298;
+		};
+		sourceControlManager = 27603D5C0D9D7E570014BB6B /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+}
