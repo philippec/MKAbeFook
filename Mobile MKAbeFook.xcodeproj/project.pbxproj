@@ -12,12 +12,12 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		27603D6B0D9D7EF60014BB6B /* CXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 27603D620D9D7EF60014BB6B /* CXMLDocument.m */; };
-		27603D6C0D9D7EF60014BB6B /* CXMLDocument_PrivateExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27603D640D9D7EF60014BB6B /* CXMLDocument_PrivateExtensions.m */; };
-		27603D6D0D9D7EF60014BB6B /* CXMLElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 27603D660D9D7EF60014BB6B /* CXMLElement.m */; };
-		27603D6E0D9D7EF60014BB6B /* CXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 27603D680D9D7EF60014BB6B /* CXMLNode.m */; };
-		27603D6F0D9D7EF60014BB6B /* CXMLNode_PrivateExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27603D6A0D9D7EF60014BB6B /* CXMLNode_PrivateExtensions.m */; };
-		289E37760D53116900ACCF19 /* MyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 289E37750D53116900ACCF19 /* MyView.m */; };
+		27C4831E0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C4831A0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m */; };
+		27C4831F0D9E3A1D00E802DE /* NSXMLElementAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C4831B0D9E3A1D00E802DE /* NSXMLElementAdditions.m */; };
+		27F420CF0D9DD055000520D3 /* MMKFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F420CD0D9DD055000520D3 /* MMKFacebook.m */; };
+		27F420FF0D9DD2DE000520D3 /* MMKLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F420FD0D9DD2DE000520D3 /* MMKLoginViewController.m */; };
+		27F4214A0D9DDD6B000520D3 /* MMKFacebookRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F421490D9DDD6B000520D3 /* MMKFacebookRequest.m */; };
+		27F421540D9DDEBE000520D3 /* CocoaCryptoHashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F421530D9DDEBE000520D3 /* CocoaCryptoHashing.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,18 +27,18 @@
 		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* Mobile MKAbeFook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mobile MKAbeFook.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		27603D610D9D7EF60014BB6B /* CXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXMLDocument.h; sourceTree = "<group>"; };
-		27603D620D9D7EF60014BB6B /* CXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXMLDocument.m; sourceTree = "<group>"; };
-		27603D630D9D7EF60014BB6B /* CXMLDocument_PrivateExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXMLDocument_PrivateExtensions.h; sourceTree = "<group>"; };
-		27603D640D9D7EF60014BB6B /* CXMLDocument_PrivateExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXMLDocument_PrivateExtensions.m; sourceTree = "<group>"; };
-		27603D650D9D7EF60014BB6B /* CXMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXMLElement.h; sourceTree = "<group>"; };
-		27603D660D9D7EF60014BB6B /* CXMLElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXMLElement.m; sourceTree = "<group>"; };
-		27603D670D9D7EF60014BB6B /* CXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXMLNode.h; sourceTree = "<group>"; };
-		27603D680D9D7EF60014BB6B /* CXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXMLNode.m; sourceTree = "<group>"; };
-		27603D690D9D7EF60014BB6B /* CXMLNode_PrivateExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CXMLNode_PrivateExtensions.h; sourceTree = "<group>"; };
-		27603D6A0D9D7EF60014BB6B /* CXMLNode_PrivateExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CXMLNode_PrivateExtensions.m; sourceTree = "<group>"; };
-		289E37740D53116900ACCF19 /* MyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyView.h; sourceTree = "<group>"; };
-		289E37750D53116900ACCF19 /* MyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyView.m; sourceTree = "<group>"; };
+		27C4831A0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLDocumentAdditions.m; sourceTree = "<group>"; };
+		27C4831B0D9E3A1D00E802DE /* NSXMLElementAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLElementAdditions.m; sourceTree = "<group>"; };
+		27C4831C0D9E3A1D00E802DE /* NSXMLDocumentAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSXMLDocumentAdditions.h; sourceTree = "<group>"; };
+		27C4831D0D9E3A1D00E802DE /* NSXMLElementAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSXMLElementAdditions.h; sourceTree = "<group>"; };
+		27F420CD0D9DD055000520D3 /* MMKFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMKFacebook.m; sourceTree = "<group>"; };
+		27F420CE0D9DD055000520D3 /* MMKFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMKFacebook.h; sourceTree = "<group>"; };
+		27F420FD0D9DD2DE000520D3 /* MMKLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMKLoginViewController.m; sourceTree = "<group>"; };
+		27F420FE0D9DD2DE000520D3 /* MMKLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMKLoginViewController.h; sourceTree = "<group>"; };
+		27F421480D9DDD6B000520D3 /* MMKFacebookRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMKFacebookRequest.h; sourceTree = "<group>"; };
+		27F421490D9DDD6B000520D3 /* MMKFacebookRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMKFacebookRequest.m; sourceTree = "<group>"; };
+		27F421520D9DDEBE000520D3 /* CocoaCryptoHashing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaCryptoHashing.h; sourceTree = "<group>"; };
+		27F421530D9DDEBE000520D3 /* CocoaCryptoHashing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CocoaCryptoHashing.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* Mobile MKAbeFook_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Mobile MKAbeFook_Prefix.pch"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -61,8 +61,14 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				289E37740D53116900ACCF19 /* MyView.h */,
-				289E37750D53116900ACCF19 /* MyView.m */,
+				27F421520D9DDEBE000520D3 /* CocoaCryptoHashing.h */,
+				27F421530D9DDEBE000520D3 /* CocoaCryptoHashing.m */,
+				27F421480D9DDD6B000520D3 /* MMKFacebookRequest.h */,
+				27F421490D9DDD6B000520D3 /* MMKFacebookRequest.m */,
+				27F420FE0D9DD2DE000520D3 /* MMKLoginViewController.h */,
+				27F420FD0D9DD2DE000520D3 /* MMKLoginViewController.m */,
+				27F420CE0D9DD055000520D3 /* MMKFacebook.h */,
+				27F420CD0D9DD055000520D3 /* MMKFacebook.m */,
 				1D3623240D0F684500981E51 /* Mobile_MKAbeFookAppDelegate.h */,
 				1D3623250D0F684500981E51 /* Mobile_MKAbeFookAppDelegate.m */,
 			);
@@ -94,27 +100,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		27603D600D9D7EF60014BB6B /* CXML */ = {
+		27603D600D9D7EF60014BB6B /* XML */ = {
 			isa = PBXGroup;
 			children = (
-				27603D610D9D7EF60014BB6B /* CXMLDocument.h */,
-				27603D620D9D7EF60014BB6B /* CXMLDocument.m */,
-				27603D630D9D7EF60014BB6B /* CXMLDocument_PrivateExtensions.h */,
-				27603D640D9D7EF60014BB6B /* CXMLDocument_PrivateExtensions.m */,
-				27603D650D9D7EF60014BB6B /* CXMLElement.h */,
-				27603D660D9D7EF60014BB6B /* CXMLElement.m */,
-				27603D670D9D7EF60014BB6B /* CXMLNode.h */,
-				27603D680D9D7EF60014BB6B /* CXMLNode.m */,
-				27603D690D9D7EF60014BB6B /* CXMLNode_PrivateExtensions.h */,
-				27603D6A0D9D7EF60014BB6B /* CXMLNode_PrivateExtensions.m */,
+				27C4831A0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m */,
+				27C4831B0D9E3A1D00E802DE /* NSXMLElementAdditions.m */,
+				27C4831C0D9E3A1D00E802DE /* NSXMLDocumentAdditions.h */,
+				27C4831D0D9E3A1D00E802DE /* NSXMLElementAdditions.h */,
 			);
-			path = CXML;
+			path = XML;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				27603D600D9D7EF60014BB6B /* CXML */,
+				27603D600D9D7EF60014BB6B /* XML */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -204,12 +204,12 @@
 			files = (
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* Mobile_MKAbeFookAppDelegate.m in Sources */,
-				289E37760D53116900ACCF19 /* MyView.m in Sources */,
-				27603D6B0D9D7EF60014BB6B /* CXMLDocument.m in Sources */,
-				27603D6C0D9D7EF60014BB6B /* CXMLDocument_PrivateExtensions.m in Sources */,
-				27603D6D0D9D7EF60014BB6B /* CXMLElement.m in Sources */,
-				27603D6E0D9D7EF60014BB6B /* CXMLNode.m in Sources */,
-				27603D6F0D9D7EF60014BB6B /* CXMLNode_PrivateExtensions.m in Sources */,
+				27F420CF0D9DD055000520D3 /* MMKFacebook.m in Sources */,
+				27F420FF0D9DD2DE000520D3 /* MMKLoginViewController.m in Sources */,
+				27F4214A0D9DDD6B000520D3 /* MMKFacebookRequest.m in Sources */,
+				27F421540D9DDEBE000520D3 /* CocoaCryptoHashing.m in Sources */,
+				27C4831E0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m in Sources */,
+				27C4831F0D9E3A1D00E802DE /* NSXMLElementAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,6 +221,10 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -228,9 +232,13 @@
 				GCC_PREFIX_HEADER = "Mobile MKAbeFook_Prefix.pch";
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = Info.plist;
-				OTHER_LDFLAGS = "-lxml2";
+				OTHER_LDFLAGS = (
+					"-lcrypto",
+					"-lxml2",
+				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Mobile MKAbeFook";
+				SDKROOT = "simulator-aspen1.2";
 			};
 			name = Debug;
 		};
@@ -239,14 +247,22 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
+				);
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Mobile MKAbeFook_Prefix.pch";
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = Info.plist;
-				OTHER_LDFLAGS = "-lxml2";
+				OTHER_LDFLAGS = (
+					"-lcrypto",
+					"-lxml2",
+				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Mobile MKAbeFook";
+				SDKROOT = "simulator-aspen1.2";
 			};
 			name = Release;
 		};

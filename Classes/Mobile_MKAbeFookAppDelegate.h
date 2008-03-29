@@ -9,13 +9,20 @@
 #import <UIKit/UIKit.h>
 
 @class MyView;
+#import "MMKFacebook.h"
 
-@interface Mobile_MKAbeFookAppDelegate : NSObject {
+@interface Mobile_MKAbeFookAppDelegate : NSObject <MMKFacebook, UIModalViewDelegate> {
     UIWindow *window;
-    MyView *contentView;
+	UIView *_frontView;
+	UILabel *_text;
+	UIButton *_loginButton;
+	MMKFacebook *_facebookConnection;
 }
 
+-(UIView *)frontView;
+
+
 @property (nonatomic, retain) UIWindow *window;
-@property (nonatomic, retain) MyView *contentView;
+
 
 @end
