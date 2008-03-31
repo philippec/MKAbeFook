@@ -29,8 +29,11 @@
 #import "MMKFacebook.h"
 #import "MMKFacebookRequest.h"
 #import "CocoaCryptoHashing.h"
-#import "NSXMLDocumentAdditions.h"
-#import "NSXMLElementAdditions.h"
+//#import "NSXMLElementAdditions.h"
+
+#include "CXMLDocument.h"
+#include "CXMLDocumentAdditions.h"
+#include "CXMLElementAdditions.h"
 
 NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
@@ -53,7 +56,7 @@ NSString *MMKFacebookFormat = @"XML";
 -(void)createAuthToken;
 -(NSTimeInterval)timeoutInterval;
 -(void)facebookRequestFailed:(NSError *)error;
--(void)facebookResponseReceived:(NSXMLDocument *)xml;
+-(void)facebookResponseReceived:(CXMLDocument *)xml;
 -(void)displayGeneralAPIError;
 -(void)returnUserToApplication;
 @end
@@ -249,7 +252,7 @@ NSString *MMKFacebookFormat = @"XML";
 {
 	if(_shouldUseSynchronousLogin == YES)
 	{
-		NSXMLDocument *xml = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.auth.createToken", @"method", nil]]];
+		CXMLDocument *xml = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.auth.createToken", @"method", nil]]];
 		[self facebookResponseReceived:xml];
 	}else
 	{
@@ -258,10 +261,11 @@ NSString *MMKFacebookFormat = @"XML";
 		[request setFacebookConnection:self];
 		[request setSelector:@selector(facebookResponseReceived:)];
 		
-		NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
+		NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 		[parameters setValue:@"facebook.auth.createToken" forKey:@"method"];
 		[request setParameters:parameters];
 		[request sendRequest];
+		[parameters release];
 	}
 
 }
@@ -273,7 +277,7 @@ NSString *MMKFacebookFormat = @"XML";
 	{
 		if(_shouldUseSynchronousLogin == YES)
 		{
-			NSXMLDocument *xml = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.auth.getSession", @"method", [self authToken], @"auth_token", nil]]];
+			CXMLDocument *xml = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.auth.getSession", @"method", [self authToken], @"auth_token", nil]]];
 			[self facebookResponseReceived:xml];
 		}else
 		{
@@ -322,7 +326,7 @@ NSString *MMKFacebookFormat = @"XML";
 	//[request sendRequest];
 	
 	//0.7 we're leaving loading infinite sessions as a synchronous request for now... 
-	NSXMLDocument *user = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
+	CXMLDocument *user = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
 	//NSLog([user description]);
 	//0.6 this method shouldn't return true if there was a problem loading the infinite session.  now it won't.  Thanks Adam.
 	if([user validFacebookResponse] == NO)
@@ -459,7 +463,7 @@ NSString *MMKFacebookFormat = @"XML";
 												cachePolicy:NSURLRequestReloadIgnoringCacheData
 											timeoutInterval:[self connectionTimeoutInterval]];
 	NSHTTPURLResponse *xmlResponse;  //not used right now
-	NSXMLDocument *returnXML = nil;
+	CXMLDocument *returnXML = nil;
 	NSError *fetchError;
 	NSData *responseData = [NSURLConnection sendSynchronousRequest:urlRequest
 												 returningResponse:&xmlResponse
@@ -471,7 +475,7 @@ NSString *MMKFacebookFormat = @"XML";
 		return nil;
 	}else
 	{
-		returnXML = [[[NSXMLDocument alloc] initWithData:responseData options:0 error:nil] autorelease];
+		returnXML = [[[CXMLDocument alloc] initWithData:responseData options:0 error:nil] autorelease];
 	}
 	
 	return returnXML;
@@ -504,11 +508,12 @@ NSString *MMKFacebookFormat = @"XML";
 	[UIView commitAnimations];
 }
 
--(void)facebookResponseReceived:(NSXMLDocument *)xml
+-(void)facebookResponseReceived:(CXMLDocument *)xml
 {
 	//NSLog([xml description]);
 	//NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
 	
+	NSLog(@"incoming xml retainCount : %i", [xml retainCount]);
 	
 	if([xml validFacebookResponse] == NO)
 	{

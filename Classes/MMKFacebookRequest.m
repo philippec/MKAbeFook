@@ -28,7 +28,10 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "MMKFacebookRequest.h"
 #import "MMKFacebook.h"
-#import "NSXMLDocumentAdditions.h"
+
+#import "CXMLDocument.h"
+#import "CXMLDocumentAdditions.h"
+#import "CXMLElementAdditions.h"
 
 @implementation MMKFacebookRequest
 
@@ -131,7 +134,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)setParameters:(NSDictionary *)parameters
 {
-	_parameters = [[NSMutableDictionary dictionaryWithDictionary:parameters] retain];
+	[_parameters addEntriesFromDictionary:parameters];
+	//_parameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
 }
 
 -(void)dealloc
@@ -261,10 +265,26 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-	//NSString *temp = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-	NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData options:0 error:nil] autorelease];
-	//[temp release];
+	NSString *temp = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
+	CXMLDocument *returnXML = [[CXMLDocument alloc] initWithXMLString:temp options:0 error:nil];
+	[temp release];
+	
+	NSLog(@"returnXML mem: %@", [returnXML description]);
 
+	NSLog(@"returnXML retain count: %i", [returnXML retainCount]);
+	
+	/*
+	id returnObject;
+	
+	if([[returnXML rootElement] childCount] == 1)
+		returnObject = [NSDictionary dictionaryWithObjectsAndKeys:[[returnXML rootElement] stringValue], [[returnXML rootElement] name], nil];
+	else
+		returnObject = [[returnXML rootElement] dictionaryFromXMLElement];
+	
+	NSLog([returnObject description]);
+	return;
+	*/
+	 
 	if([returnXML validFacebookResponse] == NO)
 	{
 		if([_delegate respondsToSelector:@selector(receivedFacebookXMLErrorResponse:)])
@@ -273,7 +293,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	
 	if([_delegate respondsToSelector:_selector])
 		[_delegate performSelector:_selector withObject:returnXML];
-	 
+	
 	[_responseData setData:[NSData data]];
 	_requestIsDone = YES;
 }
