@@ -131,7 +131,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)setParameters:(NSDictionary *)parameters
 {
-	_parameters = [[NSMutableDictionary dictionaryWithDictionary:parameters] retain];
+	[_parameters addEntriesFromDictionary:parameters]; //fixes memory leak 0.7.4 - mike
 }
 
 -(void)dealloc
