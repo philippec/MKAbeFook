@@ -17,9 +17,14 @@
 	self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     
 	_frontView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	[_frontView setBackgroundColor:[UIColor whiteColor]];
 	
-	_text = [[UILabel alloc] initWithFrame:CGRectMake(50, 50, 300, 20)];
-	_text.text = @"Hello MMKAbeFook";
+	CGRect bounds = [[UIScreen mainScreen] bounds];
+	CGRect rect = CGRectMake(0, bounds.size.height / 5, bounds.size.width, 20);
+	
+	_text = [[UILabel alloc] initWithFrame:rect];
+	[_text setTextAlignment:UITextAlignmentCenter];
+	_text.text = @"Hello Mobile MKAbeFook.";
 	[_frontView addSubview:_text];
 
 	
@@ -30,7 +35,7 @@
 	[_loginButton addTarget:self action:@selector(showLogin) forControlEvents:UIControlEventTouchUpInside];
 	_loginButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
 	_loginButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-	_loginButton.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height /2 - 100);
+	_loginButton.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height /2);
 	[_frontView addSubview:_loginButton];
 
 	[self.window addSubview:_frontView];
