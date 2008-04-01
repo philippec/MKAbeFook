@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2007, Mike Kinney
+ Copyright (c) 2008, Mike Kinney
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
@@ -23,7 +23,7 @@
 //  Mobile MKAbeFook
 //
 //  Created by Mike on 3/28/2008.
-//  Copyright 2006 Mike Kinney. All rights reserved.
+//  Copyright 2008 Mike Kinney. All rights reserved.
 //
 
 #import "MMKFacebook.h"
@@ -89,10 +89,10 @@ NSString *MMKFacebookFormat = @"XML";
 		defaultsName = [[NSBundle mainBundle] bundleIdentifier];
 		[self setApiKey:anAPIKey];
 		[self setSecretKey:aSecret];
-		[self setAuthToken:nil];
-		[self setSessionKey:nil];
-		[self setSessionSecret:nil];
-		[self setUid:nil];
+		[self setAuthToken:@"test"];
+		[self setSessionKey:@"test"];
+		[self setSessionSecret:@"test"];
+		[self setUid:@"test"];
 		[self setConnectionTimeoutInterval:5.0];
 		hasAuthToken = FALSE;
 		hasSessionKey = FALSE;
@@ -192,6 +192,11 @@ NSString *MMKFacebookFormat = @"XML";
 -(NSString *)authToken
 {
 	return authToken;
+}
+
+-(id)delegate
+{
+	return _delegate;
 }
 
 -(void)setConnectionTimeoutInterval:(double)aConnectionTimeoutInterval

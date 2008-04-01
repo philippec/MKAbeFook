@@ -6,7 +6,12 @@
 //  Copyright Mike Kinney 2008. All rights reserved.
 //
 
+
+#import <QuartzCore/QuartzCore.h>
 #import "Mobile_MKAbeFookAppDelegate.h"
+#import "MMKFacebookRequest.h"
+
+
 @implementation Mobile_MKAbeFookAppDelegate
 
 @synthesize window;
@@ -47,7 +52,14 @@
 												withSecret:@"c656ff9157b2d9d93c2c72cf9607044b" 
 												  delegate:self] retain];
 	//_facebookConnection = [[MMKFacebook facebookWithAPIKey:@"2c1db9a" withSecret:@"1" delegate:self] retain];
-	
+
+	UIButton *loadUserInfo = [UIButton buttonWithType:UIButtonTypeNavigation];
+	[loadUserInfo setTitle:@"Get User Info" forStates:UIControlStateNormal];
+	[loadUserInfo addTarget:self action:@selector(getUserInfo) forControlEvents:UIControlEventTouchUpInside];
+	loadUserInfo.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+	loadUserInfo.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+	loadUserInfo.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height /3);
+	[_frontView addSubview:loadUserInfo];	
 	
 }
 
@@ -60,6 +72,32 @@
 {
 	[_loginButton removeFromSuperview];
 	_text.text = @"Mobile MKAbeFook is ready for use. :)";
+	
+
+	
+}
+
+-(void)getUserInfo
+{
+	MMKFacebookRequest *request = [[[MMKFacebookRequest alloc] init] autorelease];
+	[request setDelegate:self];
+	[request setFacebookConnection:_facebookConnection];
+	//[request setDisplayLoadingSheet:YES];
+	
+	UIView *blue = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	[blue setBackgroundColor:[UIColor blueColor]];
+	[request setDisplayLoadingView: blue 
+					transitionType:kCATransitionReveal
+				 transitionSubtype:kCATransitionFromBottom
+						  duration:1.0];
+	
+	[request setSelector:@selector(facebookResponseReceived:)];
+	
+	NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+	[parameters setValue:@"facebook.users.getInfo" forKey:@"method"];
+	[request setParameters:parameters];
+	[request sendRequest];
+	[parameters release];
 }
 
 -(UIView *)frontView

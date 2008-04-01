@@ -130,6 +130,7 @@ Available Delegate Methods
 -(NSString *)sessionKey;
 -(NSString *)generateSigForParameters:(NSDictionary *)parameters;
 -(NSString *)generateTimeStamp;
+-(id)delegate;
 
 /*!
  @method setConnectionTimeoutInterval:

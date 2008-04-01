@@ -29,6 +29,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import <UIKit/UIKit.h>
 #import "MMKFacebook.h"
 
+
+
 enum
 {
 	MMKPostRequest = 0,
@@ -66,6 +68,18 @@ typedef int MMKFacebookRequestType;
 	MMKFacebookRequestType _urlRequestType;
 	NSMutableDictionary *_parameters;
 	NSURL *_requestURL;
+	
+	/* either displayLoadingSheet or displayLoadingView can be used to show progress while data is loading, they can not both be used at the same time. */
+	/* displays sheet from top of screen while loading */
+	BOOL _displayLoadingSheet;
+	UIView *_loadingSheet;
+	
+	/* displays entire new view while loading */
+	BOOL _displayLoadingView;
+	NSString *_loadingViewTransitionType;
+	NSString *_loadingViewTransitionSubtype;
+	CFTimeInterval _loadingViewTransitionDuration;
+	UIView *_loadingView;
 }
 
 -(MMKFacebookRequest *)init;
@@ -139,5 +153,25 @@ typedef int MMKFacebookRequestType;
   @version 0.7 and later
  */
 -(void)cancelRequest;
- 
+
+/*!
+ @method setDisplayLoadingSheet:
+ @param shouldDisplayLoadingSheet BOOL value, YES if you want to display the loading sheet.  NO if you don't.  Default is NO.
+ @discussion Displays a 100 px sheet from top of screen with indeterminate progress indicator and cancel button while request is loading.  Automatically removed from screen when request completes.
+ */
+-(void)setDisplayLoadingSheet:(BOOL)shouldDisplayLoadingSheet;
+
+
+/* TODO: should view be a subclass or conform to a protocol? */
+/*!
+ @method setDisplayLoadingView:transition:duration:
+ @param view The view to display instead of the current application front view.  Use nil to use default loading screen, see MMKLoadingView.m
+ @param transitionType Transition type to perform while swapping the loading view and application view.
+ @param transitionSubtype Transition subtype to perform while swapping the loading view and application view.
+ @param duratiton Duration of transition.
+ @Discussion Replaces entire application front view with custom UIView loading screen.  Automatically applies transitions between loading view and application front view.
+ */
+-(void)setDisplayLoadingView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration;
+
+-(void)returnToApplicationView;
 @end

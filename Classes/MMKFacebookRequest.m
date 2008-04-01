@@ -26,12 +26,16 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  Copyright 2007 Mike Kinney. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "MMKFacebookRequest.h"
 #import "MMKFacebook.h"
 
 #import "CXMLDocument.h"
 #import "CXMLDocumentAdditions.h"
 #import "CXMLElementAdditions.h"
+
+#define kProgressIndicatorView 999
+#define LOADING_SCREEN_ANIMATION_DURATION 0.5
 
 @implementation MMKFacebookRequest
 
@@ -51,6 +55,12 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
+		_displayLoadingSheet = NO;
+		_displayLoadingView = NO;
+		
+		_loadingViewTransitionType = [[NSString alloc] init];
+		_loadingViewTransitionSubtype = [[NSString alloc] init];
+		_loadingViewTransitionDuration = 0.5;
 		
 	}
 	return self;
@@ -77,6 +87,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
+		_displayLoadingSheet = NO;
+		
 	}
 	return self;
 }
@@ -138,8 +150,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	//_parameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
 }
 
+-(void)setDisplayLoadingSheet:(BOOL)shouldDisplayLoadingSheet
+{
+	_displayLoadingSheet = shouldDisplayLoadingSheet;
+}
+
 -(void)dealloc
 {
+	[_loadingSheet release];
 	[_requestURL release];
 	[_parameters release];
 	[_responseData release];
@@ -148,7 +166,6 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)sendRequest
 {
-	
 	if([_parameters count] == 0)
 	{
 		if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
@@ -156,10 +173,42 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			NSError *error = [NSError errorWithDomain:@"MKAbeFook" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No Parameters Specified", @"Error", nil]];
 			[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
 		}
-		
 		return;
 	}
-		
+	
+	//to display some type of loading information we need to have access to the facebookconnection delegate and it must respond to the frontView method defined in the mmkfacebook protocol
+	if([[facebookConnection delegate] respondsToSelector:@selector(frontView)])
+	{
+		if(_displayLoadingSheet == YES)
+		{
+			_loadingSheet = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
+			[_loadingSheet setBackgroundColor:[UIColor blueColor]];
+			[_loadingSheet setTag: kProgressIndicatorView];
+			[[[facebookConnection delegate] frontView] addSubview:_loadingSheet];
+			
+			[UIView beginAnimations:nil context:NULL];
+			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
+			[_loadingSheet setBounds:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 200)];
+			[UIView commitAnimations];
+
+		}else if(_displayLoadingView == YES)
+		{
+			if(_loadingView == nil)
+			{
+				_loadingView = @"DEFAULT LOADING VIEW CLASS";
+			}
+			[[[facebookConnection delegate] frontView] addSubview:_loadingView];
+			CATransition *animation = [CATransition animation];
+			[animation setDelegate:self];
+			[animation setType:_loadingViewTransitionType];
+			[animation setSubtype:_loadingViewTransitionSubtype];
+			[animation setDuration: _loadingViewTransitionDuration];
+			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+			[[[[facebookConnection delegate] frontView] layer] addAnimation: animation forKey:nil];
+		}
+	}
+	
+	
 	NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
 	NSString *applicationVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
 	NSString *userAgent;
@@ -269,10 +318,6 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	CXMLDocument *returnXML = [[CXMLDocument alloc] initWithXMLString:temp options:0 error:nil];
 	[temp release];
 	
-	NSLog(@"returnXML mem: %@", [returnXML description]);
-
-	NSLog(@"returnXML retain count: %i", [returnXML retainCount]);
-	
 	/*
 	id returnObject;
 	
@@ -296,7 +341,38 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	
 	[_responseData setData:[NSData data]];
 	_requestIsDone = YES;
+	
+	[self returnToApplicationView];
+	
 }
+
+-(void)returnToApplicationView
+{
+	if([[facebookConnection delegate] respondsToSelector:@selector(frontView)])
+	{
+		if(_displayLoadingSheet == YES)
+		{
+			[UIView beginAnimations:nil context:NULL];
+			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
+			[_loadingSheet setBounds:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
+			[UIView commitAnimations];
+			/* we don't remove from super view because it's released in the dealloc method, we can remove it from super view there if we need to */
+			//[_loadingSheet removeFromSuperview];
+			
+		}else if(_displayLoadingView == YES)
+		{
+			CATransition *animation = [CATransition animation];
+			[animation setDelegate:self];
+			[animation setType:_loadingViewTransitionType];
+			[animation setSubtype:_loadingViewTransitionSubtype];
+			[animation setDuration: _loadingViewTransitionDuration];
+			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
+			[[[[facebookConnection delegate] frontView] layer] addAnimation: animation forKey:nil];
+			[_loadingView removeFromSuperview];
+		}
+	}
+}
+
 
 -(void)cancelRequest
 {
@@ -306,6 +382,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		[dasConnection cancel];
 		_requestIsDone = YES;
 	}
+	[self returnToApplicationView];
 }
 
 //0.6 suggestion to pass connection error.  Thanks Adam.
@@ -313,6 +390,26 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 {	
 	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
 		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
+}
+
+-(void)setDisplayLoadingView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration
+{
+	_displayLoadingSheet = NO;
+	
+	_displayLoadingView = YES;
+	
+	_loadingView = view;
+
+	transitionType = [transitionType copy];
+	[_loadingViewTransitionType release];
+	_loadingViewTransitionType = transitionType;
+	
+	transitionSubtype = [transitionSubtype copy];
+	[_loadingViewTransitionSubtype release];
+	_loadingViewTransitionSubtype = transitionSubtype;
+	
+	_loadingViewTransitionDuration = duration;
+	
 }
 
 
