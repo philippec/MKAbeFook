@@ -81,12 +81,12 @@
 
 -(void)webViewDidStartLoad:(UIWebView *)webView
 {
-	[_progressIndicator setAnimating:YES];
+	[_progressIndicator startAnimating];
 }
 
 -(void)webViewDidFinishLoad:(UIWebView *)webView
 {
-	[_progressIndicator setAnimating:NO];
+	[_progressIndicator stopAnimating];
 }
 
 

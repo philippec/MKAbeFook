@@ -10,7 +10,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import "Mobile_MKAbeFookAppDelegate.h"
 #import "MMKFacebookRequest.h"
-
+#import "CXMLDocument.h"
+#import "CXMLDocumentAdditions.h"
+#import "CXMLElementAdditions.h"
 
 @implementation Mobile_MKAbeFookAppDelegate
 
@@ -82,14 +84,15 @@
 	MMKFacebookRequest *request = [[[MMKFacebookRequest alloc] init] autorelease];
 	[request setDelegate:self];
 	[request setFacebookConnection:_facebookConnection];
-	//[request setDisplayLoadingSheet:YES];
+	[request displayLoadingSheet:YES];
+
 	
 	UIView *blue = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[blue setBackgroundColor:[UIColor blueColor]];
-	[request setDisplayLoadingView: blue 
-					transitionType:kCATransitionReveal
-				 transitionSubtype:kCATransitionFromBottom
-						  duration:1.0];
+	[request displayLoadingWithView: nil 
+					 transitionType:kCATransitionFade
+				  transitionSubtype:kCATransitionFromLeft
+						   duration:0.5];
 	
 	[request setSelector:@selector(facebookResponseReceived:)];
 	
@@ -106,7 +109,11 @@
 }
 
 
-
+-(void)facebookResponseReceived:(CXMLDocument *)xml
+{
+	NSLog([[[xml rootElement] arrayFromXMLElement] description]);
+	NSLog([[_frontView subviews] description]);
+}
 
 
 - (void)dealloc {

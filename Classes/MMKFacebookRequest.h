@@ -159,7 +159,7 @@ typedef int MMKFacebookRequestType;
  @param shouldDisplayLoadingSheet BOOL value, YES if you want to display the loading sheet.  NO if you don't.  Default is NO.
  @discussion Displays a 100 px sheet from top of screen with indeterminate progress indicator and cancel button while request is loading.  Automatically removed from screen when request completes.
  */
--(void)setDisplayLoadingSheet:(BOOL)shouldDisplayLoadingSheet;
+-(void)displayLoadingSheet:(BOOL)shouldDisplayLoadingSheet;
 
 
 /* TODO: should view be a subclass or conform to a protocol? */
@@ -171,7 +171,7 @@ typedef int MMKFacebookRequestType;
  @param duratiton Duration of transition.
  @Discussion Replaces entire application front view with custom UIView loading screen.  Automatically applies transitions between loading view and application front view.
  */
--(void)setDisplayLoadingView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration;
+-(void)displayLoadingWithView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration;
 
 -(void)returnToApplicationView;
 @end

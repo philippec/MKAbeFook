@@ -34,7 +34,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #import "CXMLDocumentAdditions.h"
 #import "CXMLElementAdditions.h"
 
-#define kProgressIndicatorView 999
+
 #define LOADING_SCREEN_ANIMATION_DURATION 0.5
 
 @implementation MMKFacebookRequest
@@ -150,13 +150,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	//_parameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
 }
 
--(void)setDisplayLoadingSheet:(BOOL)shouldDisplayLoadingSheet
+-(void)displayLoadingSheet:(BOOL)shouldDisplayLoadingSheet
 {
 	_displayLoadingSheet = shouldDisplayLoadingSheet;
 }
 
 -(void)dealloc
 {
+	[_loadingSheet removeFromSuperview];
 	[_loadingSheet release];
 	[_requestURL release];
 	[_parameters release];
@@ -182,21 +183,88 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		if(_displayLoadingSheet == YES)
 		{
 			_loadingSheet = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
-			[_loadingSheet setBackgroundColor:[UIColor blueColor]];
-			[_loadingSheet setTag: kProgressIndicatorView];
+			[_loadingSheet setBackgroundColor:[UIColor magentaColor]];						
+			
+			UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
+			[cancelButton setFrame:CGRectMake(10, 0, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
+			[cancelButton setTitle:@"Cancel" forStates:UIControlStateNormal];
+			[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
+			[_loadingSheet addSubview:cancelButton];
+			
+			UILabel *loadingText = [[UILabel alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2 - 40, 0, 80, 20)];
+			[loadingText setBackgroundColor:[UIColor clearColor]];
+			[loadingText setTextAlignment:UITextAlignmentCenter];
+			loadingText.text = @"Loading";
+			loadingText.font = [UIFont boldSystemFontOfSize:19.0];
+			loadingText.textColor = [UIColor whiteColor];
+			[_loadingSheet addSubview:loadingText];
+			
+			
+			UIProgressIndicator *progressIndicator = [[UIProgressIndicator alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width - 40, 0, 30, 30)];
+			[progressIndicator setProgressIndicatorStyle:UIProgressIndicatorStyleWhiteLarge];
+			[progressIndicator startAnimating];
+			[_loadingSheet addSubview:progressIndicator];
+			
+			
 			[[[facebookConnection delegate] frontView] addSubview:_loadingSheet];
 			
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
-			[_loadingSheet setBounds:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 200)];
+			[_loadingSheet setFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 70)];
+			[cancelButton setFrame:CGRectMake(10, 30, [cancelButton bounds].size.width,[cancelButton bounds].size.height)]; 
+			[loadingText setFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2 - 40, 33, 80, 20)];
+			[progressIndicator setFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width -40, 30 , 30, 30)];
 			[UIView commitAnimations];
 
+			[progressIndicator release];
+			[loadingText release];
+
+
+			
 		}else if(_displayLoadingView == YES)
 		{
 			if(_loadingView == nil)
 			{
-				_loadingView = @"DEFAULT LOADING VIEW CLASS";
+				_loadingView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
+				[_loadingView setBackgroundColor:[UIColor magentaColor]];
+
+				UILabel *loadingText = [[UILabel alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2 - 40, [[UIScreen mainScreen] bounds].size.height / 2 - 50, 100, 20)];
+				//loadingText.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2, [[UIScreen mainScreen] applicationFrame].size.height / 2 - 50);
+				[loadingText setBackgroundColor:[UIColor clearColor]];
+				[loadingText setTextAlignment:UITextAlignmentCenter];
+				loadingText.text = @"Loading...";
+				loadingText.font = [UIFont boldSystemFontOfSize:19.0];
+				loadingText.textColor = [UIColor whiteColor];
+				[_loadingView addSubview:loadingText];
+				[loadingText release];
+				
+				UIProgressIndicator *progressIndicator = [[UIProgressIndicator alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height / 2, 30, 30)];
+				progressIndicator.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 5);
+				[progressIndicator setProgressIndicatorStyle:UIProgressIndicatorStyleWhiteLarge];
+				[progressIndicator startAnimating];
+				[_loadingView addSubview:progressIndicator];
+				[progressIndicator release];
+				
+				//add default cancel button to upper left of view
+				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
+				//[cancelButton setFrame:CGRectMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - [cancelButton bounds].size.width /2, [[UIScreen mainScreen] bounds].size.height / 2 + 50, [cancelButton bounds].size.width, [cancelButton bounds].size.height)];
+				cancelButton.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - 5, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 50);
+				[cancelButton setTitle:@"Cancel" forStates:UIControlStateNormal];
+				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
+				[_loadingView addSubview:cancelButton];
+				
+			}else
+			{
+				//add default cancel button to upper left of view
+				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
+				[cancelButton setFrame:CGRectMake(10, 40, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
+				[cancelButton setTitle:@"Cancel" forStates:UIControlStateNormal];
+				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
+				[_loadingView addSubview:cancelButton];				
 			}
+			
+			
+			
 			[[[facebookConnection delegate] frontView] addSubview:_loadingView];
 			CATransition *animation = [CATransition animation];
 			[animation setDelegate:self];
@@ -312,23 +380,17 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	[_responseData appendData:data];
 }
 
+-(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+	NSLog(@"response content length :%lld", [response expectedContentLength]);
+}
+
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
 	NSString *temp = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
 	CXMLDocument *returnXML = [[CXMLDocument alloc] initWithXMLString:temp options:0 error:nil];
 	[temp release];
 	
-	/*
-	id returnObject;
-	
-	if([[returnXML rootElement] childCount] == 1)
-		returnObject = [NSDictionary dictionaryWithObjectsAndKeys:[[returnXML rootElement] stringValue], [[returnXML rootElement] name], nil];
-	else
-		returnObject = [[returnXML rootElement] dictionaryFromXMLElement];
-	
-	NSLog([returnObject description]);
-	return;
-	*/
 	 
 	if([returnXML validFacebookResponse] == NO)
 	{
@@ -352,12 +414,13 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	{
 		if(_displayLoadingSheet == YES)
 		{
+			/* this doesn't matter right now, for now just remove the _loadingSheet view
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
-			[_loadingSheet setBounds:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
+			[_loadingSheet setFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
 			[UIView commitAnimations];
-			/* we don't remove from super view because it's released in the dealloc method, we can remove it from super view there if we need to */
-			//[_loadingSheet removeFromSuperview];
+			*/
+			[_loadingSheet removeFromSuperview];
 			
 		}else if(_displayLoadingView == YES)
 		{
@@ -392,7 +455,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
 }
 
--(void)setDisplayLoadingView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration
+-(void)displayLoadingWithView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration
 {
 	_displayLoadingSheet = NO;
 	

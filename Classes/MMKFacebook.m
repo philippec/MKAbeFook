@@ -36,6 +36,7 @@
 #include "CXMLElementAdditions.h"
 
 NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
+//NSString *MKAPIServerURL = @"http://red-dwarf.no-ip.info/~osticket/api/restAPI.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
 NSString *MMKFacebookAPIVersion = @"1.0";
 NSString *MMKFacebookFormat = @"XML";
@@ -89,9 +90,9 @@ NSString *MMKFacebookFormat = @"XML";
 		defaultsName = [[NSBundle mainBundle] bundleIdentifier];
 		[self setApiKey:anAPIKey];
 		[self setSecretKey:aSecret];
-		[self setAuthToken:@"test"];
-		[self setSessionKey:@"test"];
-		[self setSessionSecret:@"test"];
+		[self setAuthToken:nil];
+		[self setSessionKey:nil];
+		[self setSessionSecret:nil];
 		[self setUid:@"test"];
 		[self setConnectionTimeoutInterval:5.0];
 		hasAuthToken = FALSE;
@@ -516,7 +517,9 @@ NSString *MMKFacebookFormat = @"XML";
 -(void)facebookResponseReceived:(CXMLDocument *)xml
 {
 	//NSLog([xml description]);
-	//NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
+	NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
+	
+	NSLog([xmlResponse description]);
 	
 	NSLog(@"incoming xml retainCount : %i", [xml retainCount]);
 	
