@@ -3,7 +3,7 @@
 //  MKAbeFook
 //
 //  Created by Mike Kinney on 12/12/07.
-//  Copyright 2007 Mike Kinney. All rights reserved.
+//  Copyright 2008 Mike Kinney. All rights reserved.
 //
 
 #import "MKFacebookRequestQueue.h"

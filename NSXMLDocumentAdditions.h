@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2007, Mike Kinney
+ Copyright (c) 2008, Mike Kinney
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
@@ -24,7 +24,7 @@
 //  MKAbeFook
 //
 //  Created by Mike Kinney on 12/15/07.
-//  Copyright 2007 Mike Kinney. All rights reserved.
+//  Copyright 2008 Mike Kinney. All rights reserved.
 //
 
 //Parsing methods originally written by Josh Wiseman (Facebook, Inc.) and distributed with the iPhoto plugin. modifications made by Mike Kinney 
@@ -32,17 +32,14 @@
 #import <Cocoa/Cocoa.h>
 
 /*!
-@category NSXMLDocumentAdditions(NSXMLDocument)
- @discussion Extends NSXMLDocument
+@category NSXMLDocumentAdditions (NSXMLDocument)
+ @brief Adds validFacebookResponse method to NSXMLDocument class.
+ 
+ This category adds the -(BOOL)validFacebookResponse method to the NSXMLDocument class.  If the XML returned by Facebook.com contains an error validFacebookResponse returns NO.
   @version 0.7 and later
 */
 
 @interface NSXMLDocument (NSXMLDocumentAdditions)
-/*!
-@method validFacebookResponse
- @result Returns true if XML does not contain any errors from Facebook.
-  @version 0.7 and later
-*/
--(BOOL)validFacebookResponse;
 
+-(BOOL)validFacebookResponse;
 @end

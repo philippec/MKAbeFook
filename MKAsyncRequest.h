@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2007, Mike Kinney
+Copyright (c) 2008, Mike Kinney
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
@@ -23,15 +23,18 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  MKAbeFook
 //
 //  Created by Mike on 3/8/07.
-//  Copyright 2007 Mike Kinney. All rights reserved.
+//  Copyright 2008 Mike Kinney. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
 #import "MKFacebook.h"
 
 /*!
+ @brief Asynchronous Facebook requests (Deprecated in 0.7)
+ 
  @class MKAsyncRequest
- @discussion Initiates asynchronous requests to Facebook.  As of 0.7 this class is deprecated.  Use MKFacebookRequest instead.
+  Initiates asynchronous requests to Facebook.  As of 0.7 this class is deprecated.  Use MKFacebookRequest instead.
+ @deprecated Deprecated as of version 0.7
  */
 
 @interface MKAsyncRequest : NSObject {
@@ -45,37 +48,37 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 /*!
- @method initWithFacebookConnection:delegate:selector:
  @param aFacebookConnection MKFacebook object that has been used to log in a user.
  @param aDelegate Object to receive returned XML from Facebook.
  @param aSelector Method to have returned XML passed to.  Should accept (id) as parameter.
+@deprecated Deprecated as of version 0.7
  */
 -(MKAsyncRequest *)initWithFacebookConnection:(MKFacebook *)aFacebookConnection 
 									 delegate:(id)aDelegate 
 									 selector:(SEL)aSelector;
 
 /*!
- @method fetchFacebookData:parameters:facebookConnection:delegate:selector:
  @param aMethodName Facebook method to be called, i.e. "facebook.users.getInfo".
  @param parameters NSDictionary containing parameters to be passed to Facebook method.
  @param aFacebookConnection MKFacebook object that has been used to log in a user.
  @param aDelegate Object to receive returned XML from Facebook.
  @param aSelector Method to have returned XML passed to.  Should accept (id) as parameter.
- @discussion Creates new MKAsyncRequest object and requests Facebook method with specified parameters.  Releases itself when it's done.
+  Creates new MKAsyncRequest object and requests Facebook method with specified parameters.  Releases itself when it's done.
+  @deprecated Deprecated as of version 0.7
  */
 +(void)fetchFacebookData:(NSString *)aMethodName parameters:(NSDictionary *)parameters facebookConnection:aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
 
 /*!
-@method fetchFacebookData:parameters:
  @param aMethodName Facebook method to be called, i.e. "facebook.users.getInfo".
  @param parameters NSDictionary containing parameters to be passed to Facebook method.
- @discussion Requests specified method with parameters.  Response is passed to delegate / selector.
+  Requests specified method with parameters.  Response is passed to delegate / selector.
+  @deprecated Deprecated as of version 0.7
  */
 -(void)fetchFacebookData:(NSString *)aMethodName parameters:(NSDictionary *)parameters;
 
 /*!
- @method cancel
- @discussion Cancels request.
+  Cancels request.
+  @deprecated Deprecated as of version 0.7
  */
 -(void)cancel;
 @end

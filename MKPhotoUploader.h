@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2007, Mike Kinney
+ Copyright (c) 2008, Mike Kinney
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
@@ -23,7 +23,7 @@
 //  MKAbeFook
 //
 //  Created by Mike on 3/4/07.
-//  Copyright 2007 Mike Kinney. All rights reserved.
+//  Copyright 2008 Mike Kinney. All rights reserved.
 //
 
 
@@ -31,8 +31,10 @@
 #import "MKFacebook.h"
 
 /*!
+ @brief Uploads images to Facebook (Deprecated in 0.7)
+ 
  @class MKPhotoUploader
- @discussion This class is considered deprecated as of version 0.7.  Use MKFacebookRequest instead.
+  This class is considered deprecated as of version 0.7.  Use MKFacebookRequest instead.
  
  Available Delegate Methods
 
@@ -44,6 +46,7 @@
  
 -(void)invalidImage:(NSDictionary *)aDictionary;
  &nbsp;&nbsp;  Called if item in bunchOfPhotosArray could not create a valid NSImage.  Passes information about the failed item.
+  @deprecated Deprecated as of version 0.7
  */
 
 @interface MKPhotoUploader : NSObject {
@@ -57,49 +60,49 @@
 }
 
 /*!
- @method usingFacebookConnection:delegate:
  @param aFacebookConnection MKFacebook object a user has successfully logged into.
  @param aDelegate Object to receive delegate notifications.
- @discussion Deprecated as of 0.7.
+  Deprecated as of 0.7.
  @result Creates newly allocated MKPhotoUploader object ready to upload photos to Facebook.com.
+  @deprecated Deprecated as of version 0.7
  */
 +(MKPhotoUploader *)usingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate;
 
 /*!
- @method initUsingFacebookConnection:delegate:
  @param aFacebookConnection MKFacebook object a user has successfully logged into.
  @param aDelegate Object to receive delegate notifications.
- @discussion Deprecated as of 0.7.
+  Deprecated as of 0.7.
  @result Creates new MKPhotoUploader object ready to upload photos to Facebook.com.
+  @deprecated Deprecated as of version 0.7
  */
 -(MKPhotoUploader *)initUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate;
 -(id)delegate;
 -(void)setDelegate:(id)aDelegate;
 
 /*!
- @method uploadABunchOfPhotos:
  @param aBunchOfPhotosArray Array of NSDictionary objects containing keys "aid", "caption", and "pathToImage".  "pathToImage" value should be a valid path to a image file that can be used to create a NSImage object.
- @discussion Deprecated as of 0.7.
+  Deprecated as of 0.7.
+  @deprecated Deprecated as of version 0.7
  */
 -(void)uploadABunchOfPhotos:(NSArray *)aBunchOfPhotosArray;
 //this should be private
 -(void)uploadNextPhoto;
 
 /*!
- @method facebookPhotoUpload:caption:image:
  @param anAid Album id to upload photo to.
  @param aCaption Caption for photo.
  @param anImage NSImage to upload.
- @discussion Deprecated as of 0.7.
+  Deprecated as of 0.7.
+  @deprecated Deprecated as of version 0.7
  */
 -(void)facebookPhotoUpload:(NSString *)anAid caption:(NSString *)aCaption image:(NSImage *)anImage;
 
 /*!
- @method facebookPhotoUpload:caption:pathToImage:
  @param anAid Album id to upload photo to.
  @param aCaption Caption for photo.
- @param pathToImage Path to image file that can be used to create a NSImage object.
- @discussion Deprecated as of 0.7.
+ @param aPathToImage Path to image file that can be used to create a NSImage object.
+  Deprecated as of 0.7.
+  @deprecated Deprecated as of version 0.7
  */
 -(void)facebookPhotoUpload:(NSString *)anAid caption:(NSString *)aCaption pathToImage:(NSString *)aPathToImage;
 -(void)cancelUpload;

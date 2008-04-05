@@ -3,7 +3,7 @@
 //  MKAbeFook
 //
 //  Created by Mike Kinney on 12/12/07.
-//  Copyright 2007 Mike Kinney. All rights reserved.
+//  Copyright 2008 Mike Kinney. All rights reserved.
 //
 
 //IMPORTANT NOTE: As of this writing this object will release itself when it's done with the queue.  Do not try to autorelease or release this object manually.
@@ -11,8 +11,10 @@
 #import <Cocoa/Cocoa.h>
 #import "MKFacebookRequest.h"
 /*!
+ @brief Sends series of requests to Facebook
+ 
  @class MKFacebookRequestQueue
- @discussion This class is used to send a series of requests to the Facebook API.  Requests are sent incrementally and do not begin until the previous request has been completed.  This class is useful for sending multiple photo uploads or when you need to ensure you have information from one request before processing another.
+  This class is used to send a series of requests to the Facebook API.  Requests are sent incrementally and do not begin until the previous request has been completed.  This class is useful for sending multiple photo uploads or when you need to ensure you have information from one request before processing another.
  
  Optional selectors can be specified to receive information regarding the progress of the uploads in the queue.  The currentlySendingSelector will pass a NSDictionary object containing a "current" key and a "total" key indicating the current index of the request being sent out of the total number of requests.  The lastRequestResponseSelector passes the last NSXMLDocument response from Facebook.  Finally the allRequestsFinishedSelector is called when all the requests in the queue have been sent and their responses have been received.
  
@@ -37,70 +39,61 @@
 
 
 /*!
- @method init
- @discussion Creates a new MKFacebookRequestQueue object.  You will also need to set the set the delegate and selectors.
+  Creates a new MKFacebookRequestQueue object.  You will also need to set the set the delegate and selectors.
   @version 0.7 and later
  */
 -(id)init;
 
 /*!
- @method initWithRequests:delegate:currentlySendingSelector:lastRequestResponseSelector:allRequestsFinishedSelector:
  @param requests NSArray of MKFacebookRequest objects ready to be requested.
  @param aDelegate Delegate object that implements selectors.
  @param currentlySendingSelector Method to be called and passed information about request currently being sent.
  @param lastRequestResponseSelector Method to be called and passed last response received. Should accept (id) as argument.
  @param allRequestsFinishedSelector Method to be called when all requests have been completed.
- @discussion Creates a new MKFacebookRequestQueue object that is ready to start requesting items in the queue.
+  Creates a new MKFacebookRequestQueue object that is ready to start requesting items in the queue.
   @version 0.7 and later
  */
 -(id)initWithRequests:(NSArray *)requests delegate:(id)aDelegate currentlySendingSelector:(SEL)currentlySendingSelector lastRequestResponseSelector:(SEL)lastRequestResponseSelector allRequestsFinishedSelector:(SEL)allRequestsFinishedSelector;
 
 /*!
-@method setDelegate:
  @param delegate
- @discussion Set delegate object.
+  Set delegate object.
   @version 0.7 and later
  */
 -(void)setDelegate:(id)delegate;
 
 /*!
- @method setCurrentlySendingSelector:
  @param selector Method to be called and passed information about request currently being sent. 
   @version 0.7 and later
  */
 -(void)setCurrentlySendingSelector:(SEL)selector;
 
 /*!
- @method setLastRequestResponseSelector:
  @param selector Method to be called and passed last response received. Should accept (NSDictionary *) as argument.  NSDictionary will contain two keys, "current" and "total".
   @version 0.7 and later
  */
 -(void)setLastRequestResponseSelector:(SEL)selector;
 
 /*!
- @method setAllRequestsFinishedSelector:
  @param selector Method to be called when all requests have been completed.  Should accept (NSXMLDocument *) as argument.  NSXMLDocument will be the response from Facebook.
   @version 0.7 and later
  */
 -(void)setAllRequestsFinishedSelector:(SEL)selector;
 
 /*!
- @method addRequest:
  @param request MKFacebookRequest object that is ready to be sent.
   @version 0.7 and later
  */
 -(void)addRequest:(MKFacebookRequest *)request;
 
 /*!
-@method startRequestQueue
- @discussion Starts processing the request queue.
+  Starts processing the request queue.
   @version 0.7 and later
  */
 -(void)startRequestQueue;
 
 /*!
- @method cancelRequestQueue
- @discussion Attempts to stop the current request being processed and prevents any further requests from starting.
+  Attempts to stop the current request being processed and prevents any further requests from starting.
   @version 0.7 and later
  */
 -(void)cancelRequestQueue;
