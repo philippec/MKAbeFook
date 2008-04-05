@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2007, Mike Kinney
+ Copyright (c) 2008, Mike Kinney
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the 
@@ -24,13 +24,16 @@
 //  MKAbeFook
 //
 //  Created by Mike Kinney on 12/15/07.
-//  Copyright 2007 Mike Kinney. All rights reserved.
+//  Copyright 2008 Mike Kinney. All rights reserved.
 //
 
 #import "NSXMLDocumentAdditions.h"
 
 //Parsing methods originally written by Josh Wiseman (Facebook, Inc.) and distributed with the iPhoto plugin. modifications made by Mike Kinney 
+
+
 @implementation NSXMLDocument (NSXMLDocumentAdditions)
+
 
 -(BOOL)validFacebookResponse
 {
