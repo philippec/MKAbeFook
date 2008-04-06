@@ -260,7 +260,7 @@ NSString *MKFacebookFormat = @"XML";
 
 -(void)showFacebookLoginWindow
 {
-	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession:)]; //will be released when closed			
+	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed			
 	[[loginWindow window] center];
 	[loginWindow showWindow:self];
 	[self createAuthToken];
@@ -268,7 +268,7 @@ NSString *MKFacebookFormat = @"XML";
 
 -(NSWindow *)showFacebookLoginWindowForSheet
 {
-	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession:)]; //will be released when closed 				
+	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 				
 	[self createAuthToken];
 	return [loginWindow window];
 }
