@@ -19,7 +19,7 @@
 	MMKFacebook *_facebookConnection;
 }
 
--(UIView *)frontView;
+-(UIView *)applicationView;
 
 
 @property (nonatomic, retain) UIWindow *window;

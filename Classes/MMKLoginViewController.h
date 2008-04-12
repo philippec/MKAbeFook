@@ -36,7 +36,6 @@
 }
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
 -(void)loadURL:(NSURL *)loginURL;
--(void)closeLogin;
 -(id)webView;
 -(void)loadView;
 @end

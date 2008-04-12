@@ -63,10 +63,6 @@
 	[_loginWebView loadRequest:[NSURLRequest requestWithURL:loginURL]];
 }
 
--(void)closeLogin
-{
-	[_delegate performSelector:@selector(loginWindowClosed:)];
-}
 
 -(id)webView
 {

@@ -178,12 +178,13 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	}
 	
 	//to display some type of loading information we need to have access to the facebookconnection delegate and it must respond to the frontView method defined in the mmkfacebook protocol
-	if([[facebookConnection delegate] respondsToSelector:@selector(frontView)])
+	//this area needs a lot of clean up
+	if([[facebookConnection delegate] respondsToSelector:@selector(applicationView)])
 	{
 		if(_displayLoadingSheet == YES)
 		{
 			_loadingSheet = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
-			[_loadingSheet setBackgroundColor:[UIColor magentaColor]];						
+			[_loadingSheet setBackgroundColor:[UIColor grayColor]];						
 			
 			UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
 			[cancelButton setFrame:CGRectMake(10, 0, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
@@ -206,14 +207,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			[_loadingSheet addSubview:progressIndicator];
 			
 			
-			[[[facebookConnection delegate] frontView] addSubview:_loadingSheet];
+			[[[facebookConnection delegate] applicationView] addSubview:_loadingSheet];
 			
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
-			[_loadingSheet setFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 70)];
 			[cancelButton setFrame:CGRectMake(10, 30, [cancelButton bounds].size.width,[cancelButton bounds].size.height)]; 
 			[loadingText setFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2 - 40, 33, 80, 20)];
 			[progressIndicator setFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width -40, 30 , 30, 30)];
+			[_loadingSheet setFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 70)];
 			[UIView commitAnimations];
 
 			[progressIndicator release];
@@ -265,14 +266,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			
 			
 			
-			[[[facebookConnection delegate] frontView] addSubview:_loadingView];
+			[[[facebookConnection delegate] applicationView] addSubview:_loadingView];
 			CATransition *animation = [CATransition animation];
 			[animation setDelegate:self];
 			[animation setType:_loadingViewTransitionType];
 			[animation setSubtype:_loadingViewTransitionSubtype];
 			[animation setDuration: _loadingViewTransitionDuration];
 			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-			[[[[facebookConnection delegate] frontView] layer] addAnimation: animation forKey:nil];
+			[[[[facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
 		}
 	}
 	
@@ -382,7 +383,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-	NSLog(@"response content length :%lld", [response expectedContentLength]);
+	//NSLog(@"response content length :%lld", [response expectedContentLength]);
 }
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -410,7 +411,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)returnToApplicationView
 {
-	if([[facebookConnection delegate] respondsToSelector:@selector(frontView)])
+	if([[facebookConnection delegate] respondsToSelector:@selector(applicationView)])
 	{
 		if(_displayLoadingSheet == YES)
 		{
@@ -430,7 +431,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			[animation setSubtype:_loadingViewTransitionSubtype];
 			[animation setDuration: _loadingViewTransitionDuration];
 			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-			[[[[facebookConnection delegate] frontView] layer] addAnimation: animation forKey:nil];
+			[[[[facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
 			[_loadingView removeFromSuperview];
 		}
 	}

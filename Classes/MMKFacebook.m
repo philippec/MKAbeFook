@@ -237,15 +237,25 @@ NSString *MMKFacebookFormat = @"XML";
 //this doesn't actually show the login window.  it just starts the process.  see facebookResponseReceived to see the window being displayed.
 -(void)showFacebookLoginWindow
 {
+	if(![_delegate respondsToSelector:@selector(applicationView)])
+	{
+		NSException *exception = [NSException exceptionWithName:@"InvalidDelegate"
+														 reason:@"Delegate requires -(UIView *)applicationView method" 
+													   userInfo:nil];
+		
+		[exception raise];
+		return;
+	}
+	
 	_loginViewController = [[MMKLoginViewController alloc] initWithDelegate:self withSelector:@selector(getAuthSession:)];	
 	_navigationController = [[UINavigationController alloc] initWithRootViewController:_loginViewController];
 	[self createAuthToken];
 		
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.0];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[_delegate frontView] cache:NO];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[_delegate applicationView] cache:NO];
 	
-	[[_delegate frontView] addSubview:[_navigationController view]];
+	[[_delegate applicationView] addSubview:[_navigationController view]];
 	
 	[UIView commitAnimations];
 	
@@ -504,7 +514,7 @@ NSString *MMKFacebookFormat = @"XML";
 	//return user to application
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.0];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:[_delegate frontView] cache:NO];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:[_delegate applicationView] cache:NO];
 	
 	
 	[[_navigationController view] removeFromSuperview];
@@ -517,11 +527,11 @@ NSString *MMKFacebookFormat = @"XML";
 -(void)facebookResponseReceived:(CXMLDocument *)xml
 {
 	//NSLog([xml description]);
-	NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
+	//NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
 	
-	NSLog([xmlResponse description]);
+	//NSLog([xmlResponse description]);
 	
-	NSLog(@"incoming xml retainCount : %i", [xml retainCount]);
+	//NSLog(@"incoming xml retainCount : %i", [xml retainCount]);
 	
 	if([xml validFacebookResponse] == NO)
 	{
@@ -562,9 +572,9 @@ NSString *MMKFacebookFormat = @"XML";
 	
 	if([[[xml rootElement] name] isEqualTo:@"auth_getSession_response"])
 	{
-		NSLog(@"got here");
+		//NSLog(@"got here");
 		NSDictionary *response = [[xml rootElement] dictionaryFromXMLElement];
-		NSLog([response description]);
+		//NSLog([response description]);
 		BOOL useInfiniteSessions = NO;
 		//NSLog([response description]);
 		if([response valueForKey:@"session_key"] != @"")

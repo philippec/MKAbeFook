@@ -20,7 +20,7 @@
 
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {	
-	// Create window
+	
 	self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     
 	_frontView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -28,13 +28,12 @@
 	
 	CGRect bounds = [[UIScreen mainScreen] bounds];
 	CGRect rect = CGRectMake(0, bounds.size.height / 5, bounds.size.width, 20);
-	
 	_text = [[UILabel alloc] initWithFrame:rect];
 	[_text setTextAlignment:UITextAlignmentCenter];
 	_text.text = @"Hello Mobile MKAbeFook.";
 	[_frontView addSubview:_text];
 
-	
+
 	
 	
 	_loginButton = [UIButton buttonWithType:UIButtonTypeNavigation];
@@ -53,15 +52,10 @@
 	_facebookConnection = [[MMKFacebook facebookWithAPIKey:@"2c05304285010949050742956e95db9a" 
 												withSecret:@"c656ff9157b2d9d93c2c72cf9607044b" 
 												  delegate:self] retain];
-	//_facebookConnection = [[MMKFacebook facebookWithAPIKey:@"2c1db9a" withSecret:@"1" delegate:self] retain];
+	
 
-	UIButton *loadUserInfo = [UIButton buttonWithType:UIButtonTypeNavigation];
-	[loadUserInfo setTitle:@"Get User Info" forStates:UIControlStateNormal];
-	[loadUserInfo addTarget:self action:@selector(getUserInfo) forControlEvents:UIControlEventTouchUpInside];
-	loadUserInfo.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
-	loadUserInfo.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-	loadUserInfo.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height /3);
-	[_frontView addSubview:loadUserInfo];	
+	
+	
 	
 }
 
@@ -75,35 +69,51 @@
 	[_loginButton removeFromSuperview];
 	_text.text = @"Mobile MKAbeFook is ready for use. :)";
 	
-
+	UIButton *loadUserInfo = [UIButton buttonWithType:UIButtonTypeNavigation];
+	[loadUserInfo setTitle:@"Get User Info" forStates:UIControlStateNormal];
+	[loadUserInfo addTarget:self action:@selector(getUserInfo) forControlEvents:UIControlEventTouchUpInside];
+	loadUserInfo.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+	loadUserInfo.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+	loadUserInfo.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height /3);
+	[_frontView addSubview:loadUserInfo];
+	
+	
 	
 }
+
 
 -(void)getUserInfo
 {
 	MMKFacebookRequest *request = [[[MMKFacebookRequest alloc] init] autorelease];
 	[request setDelegate:self];
 	[request setFacebookConnection:_facebookConnection];
+	
+	//display loading sheet
 	[request displayLoadingSheet:YES];
 
-	
+	//or
+
+	//display entire new view with transitions
+	/*
 	UIView *blue = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[blue setBackgroundColor:[UIColor blueColor]];
-	[request displayLoadingWithView: nil 
-					 transitionType:kCATransitionFade
+	[request displayLoadingWithView: blue 
+					 transitionType:kCATransitionReveal
 				  transitionSubtype:kCATransitionFromLeft
 						   duration:0.5];
-	
-	[request setSelector:@selector(facebookResponseReceived:)];
+	*/
+	[request setSelector:@selector(gotUserInfo:)];
 	
 	NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 	[parameters setValue:@"facebook.users.getInfo" forKey:@"method"];
+	[parameters setValue:[_facebookConnection uid] forKey:@"uids"];
+	[parameters setValue:@"name" forKey:@"fields"];
 	[request setParameters:parameters];
 	[request sendRequest];
 	[parameters release];
 }
 
--(UIView *)frontView
+-(UIView *)applicationView
 {
 	return _frontView;
 }
@@ -112,9 +122,14 @@
 -(void)facebookResponseReceived:(CXMLDocument *)xml
 {
 	NSLog([[[xml rootElement] arrayFromXMLElement] description]);
-	NSLog([[_frontView subviews] description]);
+
 }
 
+-(void)gotUserInfo:(CXMLDocument *)xml
+{
+	//NSLog([[[xml rootElement] arrayFromXMLElement] description]);
+	_text.text = [NSString stringWithFormat:@"Hello %@", [[[xml rootElement] dictionaryFromXMLElement] valueForKey:@"name"]];
+}
 
 - (void)dealloc {
 

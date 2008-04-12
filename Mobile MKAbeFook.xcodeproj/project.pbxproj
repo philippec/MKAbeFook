@@ -12,8 +12,14 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		27C4831E0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C4831A0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m */; };
-		27C4831F0D9E3A1D00E802DE /* NSXMLElementAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C4831B0D9E3A1D00E802DE /* NSXMLElementAdditions.m */; };
+		27B1144C0DAD9E15004F0E9B /* CXMLElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1143E0DAD9E15004F0E9B /* CXMLElement.m */; };
+		27B1144D0DAD9E15004F0E9B /* CXMLDocumentAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B114410DAD9E15004F0E9B /* CXMLDocumentAdditions.m */; };
+		27B1144E0DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B114430DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.m */; };
+		27B1144F0DAD9E15004F0E9B /* CXMLDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B114450DAD9E15004F0E9B /* CXMLDocument.m */; };
+		27B114500DAD9E15004F0E9B /* CXMLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B114460DAD9E15004F0E9B /* CXMLNode.m */; };
+		27B114510DAD9E15004F0E9B /* CXMLElementAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B114480DAD9E15004F0E9B /* CXMLElementAdditions.m */; };
+		27B114520DAD9E15004F0E9B /* CXMLNode_PrivateExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1144A0DAD9E15004F0E9B /* CXMLNode_PrivateExtensions.m */; };
+		27B1145E0DAD9EB6004F0E9B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B1145D0DAD9EB6004F0E9B /* QuartzCore.framework */; };
 		27F420CF0D9DD055000520D3 /* MMKFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F420CD0D9DD055000520D3 /* MMKFacebook.m */; };
 		27F420FF0D9DD2DE000520D3 /* MMKLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F420FD0D9DD2DE000520D3 /* MMKLoginViewController.m */; };
 		27F4214A0D9DDD6B000520D3 /* MMKFacebookRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F421490D9DDD6B000520D3 /* MMKFacebookRequest.m */; };
@@ -27,10 +33,21 @@
 		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* Mobile MKAbeFook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mobile MKAbeFook.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		27C4831A0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLDocumentAdditions.m; sourceTree = "<group>"; };
-		27C4831B0D9E3A1D00E802DE /* NSXMLElementAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLElementAdditions.m; sourceTree = "<group>"; };
-		27C4831C0D9E3A1D00E802DE /* NSXMLDocumentAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSXMLDocumentAdditions.h; sourceTree = "<group>"; };
-		27C4831D0D9E3A1D00E802DE /* NSXMLElementAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSXMLElementAdditions.h; sourceTree = "<group>"; };
+		27B1143E0DAD9E15004F0E9B /* CXMLElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXMLElement.m; path = CXML/CXMLElement.m; sourceTree = "<group>"; };
+		27B1143F0DAD9E15004F0E9B /* CXMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLElement.h; path = CXML/CXMLElement.h; sourceTree = "<group>"; };
+		27B114400DAD9E15004F0E9B /* CXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLDocument.h; path = CXML/CXMLDocument.h; sourceTree = "<group>"; };
+		27B114410DAD9E15004F0E9B /* CXMLDocumentAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXMLDocumentAdditions.m; path = CXML/CXMLDocumentAdditions.m; sourceTree = "<group>"; };
+		27B114420DAD9E15004F0E9B /* CXMLDocumentAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLDocumentAdditions.h; path = CXML/CXMLDocumentAdditions.h; sourceTree = "<group>"; };
+		27B114430DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXMLDocument_PrivateExtensions.m; path = CXML/CXMLDocument_PrivateExtensions.m; sourceTree = "<group>"; };
+		27B114440DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLDocument_PrivateExtensions.h; path = CXML/CXMLDocument_PrivateExtensions.h; sourceTree = "<group>"; };
+		27B114450DAD9E15004F0E9B /* CXMLDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXMLDocument.m; path = CXML/CXMLDocument.m; sourceTree = "<group>"; };
+		27B114460DAD9E15004F0E9B /* CXMLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXMLNode.m; path = CXML/CXMLNode.m; sourceTree = "<group>"; };
+		27B114470DAD9E15004F0E9B /* CXMLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLNode.h; path = CXML/CXMLNode.h; sourceTree = "<group>"; };
+		27B114480DAD9E15004F0E9B /* CXMLElementAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXMLElementAdditions.m; path = CXML/CXMLElementAdditions.m; sourceTree = "<group>"; };
+		27B114490DAD9E15004F0E9B /* CXMLElementAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLElementAdditions.h; path = CXML/CXMLElementAdditions.h; sourceTree = "<group>"; };
+		27B1144A0DAD9E15004F0E9B /* CXMLNode_PrivateExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXMLNode_PrivateExtensions.m; path = CXML/CXMLNode_PrivateExtensions.m; sourceTree = "<group>"; };
+		27B1144B0DAD9E15004F0E9B /* CXMLNode_PrivateExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLNode_PrivateExtensions.h; path = CXML/CXMLNode_PrivateExtensions.h; sourceTree = "<group>"; };
+		27B1145D0DAD9EB6004F0E9B /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		27F420CD0D9DD055000520D3 /* MMKFacebook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMKFacebook.m; sourceTree = "<group>"; };
 		27F420CE0D9DD055000520D3 /* MMKFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMKFacebook.h; sourceTree = "<group>"; };
 		27F420FD0D9DD2DE000520D3 /* MMKLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMKLoginViewController.m; sourceTree = "<group>"; };
@@ -52,6 +69,7 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */,
+				27B1145E0DAD9EB6004F0E9B /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +96,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				27B1145D0DAD9EB6004F0E9B /* QuartzCore.framework */,
 				1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -100,21 +119,31 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		27603D600D9D7EF60014BB6B /* XML */ = {
+		27B114390DAD9E09004F0E9B /* CXML */ = {
 			isa = PBXGroup;
 			children = (
-				27C4831A0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m */,
-				27C4831B0D9E3A1D00E802DE /* NSXMLElementAdditions.m */,
-				27C4831C0D9E3A1D00E802DE /* NSXMLDocumentAdditions.h */,
-				27C4831D0D9E3A1D00E802DE /* NSXMLElementAdditions.h */,
+				27B1143E0DAD9E15004F0E9B /* CXMLElement.m */,
+				27B1143F0DAD9E15004F0E9B /* CXMLElement.h */,
+				27B114400DAD9E15004F0E9B /* CXMLDocument.h */,
+				27B114410DAD9E15004F0E9B /* CXMLDocumentAdditions.m */,
+				27B114420DAD9E15004F0E9B /* CXMLDocumentAdditions.h */,
+				27B114430DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.m */,
+				27B114440DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.h */,
+				27B114450DAD9E15004F0E9B /* CXMLDocument.m */,
+				27B114460DAD9E15004F0E9B /* CXMLNode.m */,
+				27B114470DAD9E15004F0E9B /* CXMLNode.h */,
+				27B114480DAD9E15004F0E9B /* CXMLElementAdditions.m */,
+				27B114490DAD9E15004F0E9B /* CXMLElementAdditions.h */,
+				27B1144A0DAD9E15004F0E9B /* CXMLNode_PrivateExtensions.m */,
+				27B1144B0DAD9E15004F0E9B /* CXMLNode_PrivateExtensions.h */,
 			);
-			path = XML;
+			name = CXML;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				27603D600D9D7EF60014BB6B /* XML */,
+				27B114390DAD9E09004F0E9B /* CXML */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -208,8 +237,13 @@
 				27F420FF0D9DD2DE000520D3 /* MMKLoginViewController.m in Sources */,
 				27F4214A0D9DDD6B000520D3 /* MMKFacebookRequest.m in Sources */,
 				27F421540D9DDEBE000520D3 /* CocoaCryptoHashing.m in Sources */,
-				27C4831E0D9E3A1D00E802DE /* NSXMLDocumentAdditions.m in Sources */,
-				27C4831F0D9E3A1D00E802DE /* NSXMLElementAdditions.m in Sources */,
+				27B1144C0DAD9E15004F0E9B /* CXMLElement.m in Sources */,
+				27B1144D0DAD9E15004F0E9B /* CXMLDocumentAdditions.m in Sources */,
+				27B1144E0DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.m in Sources */,
+				27B1144F0DAD9E15004F0E9B /* CXMLDocument.m in Sources */,
+				27B114500DAD9E15004F0E9B /* CXMLNode.m in Sources */,
+				27B114510DAD9E15004F0E9B /* CXMLElementAdditions.m in Sources */,
+				27B114520DAD9E15004F0E9B /* CXMLNode_PrivateExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,7 +272,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Mobile MKAbeFook";
-				SDKROOT = "simulator-aspen1.2";
+				SDKROOT = iphonesimulator2.0;
 			};
 			name = Debug;
 		};
@@ -262,7 +296,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "Mobile MKAbeFook";
-				SDKROOT = "simulator-aspen1.2";
+				SDKROOT = iphonesimulator2.0;
 			};
 			name = Release;
 		};
