@@ -40,6 +40,7 @@
 	[super initWithWindowNibPath:path owner:self];
 	NSRect visibleArea =  NSMakeRect(0, 0, 626, 426);
 	[[[loginWebView mainFrame] webView] setFrame:visibleArea];
+	
 	return self;
 }
 
@@ -61,7 +62,7 @@
 -(void)loadURL:(NSURL *)loginURL
 {
 	[loginWebView setMaintainsBackForwardList:NO];
-	
+	[loginWebView setFrameLoadDelegate:self];
 	/*
 	NSRect visibleArea;
 	//make the view smaller so the close sheet button fits better
@@ -76,7 +77,15 @@
 	[[[loginWebView mainFrame] webView] setFrame:visibleArea];
 	*/
 	
+	NSLog(@"loading url: %@", [loginURL description]);
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:loginURL];
+	[request setMainDocumentURL:[NSURL URLWithString:@"http://www.facebook.com"]];
+
+	NSHTTPCookieStorage *cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	NSLog(@"cookies: %@", [[cookies cookiesForURL:loginURL] description]);
+	
 	[[[loginWebView mainFrame] frameView] setAllowsScrolling:NO];	
+	[[loginWebView mainFrame] loadRequest:request];
 	[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:loginURL]];
 }
 
@@ -115,5 +124,10 @@
 }
 
 
+-(void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+{
+	NSLog([[[loginWebView mainFrame] DOMDocument] description]);
+	NSLog(@"source: %@", [[[[loginWebView mainFrame] dataSource] representation] documentSource]);
+}
 
 @end

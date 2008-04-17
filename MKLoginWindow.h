@@ -42,4 +42,5 @@
 -(void)loadURL:(NSURL *)loginURL;
 -(IBAction)closeSheet:(id)sender;
 -(void)setWindowSize:(NSSize)windowSize;
+
 @end
