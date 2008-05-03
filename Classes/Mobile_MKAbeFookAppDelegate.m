@@ -37,7 +37,7 @@
 	
 	
 	_loginButton = [UIButton buttonWithType:UIButtonTypeNavigation];
-	[_loginButton setTitle:@"Login" forStates:UIControlStateNormal];
+	[_loginButton setTitle:@"Login" forState:UIControlStateNormal];
 	[_loginButton addTarget:self action:@selector(showLogin) forControlEvents:UIControlEventTouchUpInside];
 	_loginButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
 	_loginButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
@@ -70,7 +70,7 @@
 	_text.text = @"Mobile MKAbeFook is ready for use. :)";
 	
 	UIButton *loadUserInfo = [UIButton buttonWithType:UIButtonTypeNavigation];
-	[loadUserInfo setTitle:@"Get User Info" forStates:UIControlStateNormal];
+	[loadUserInfo setTitle:@"Get User Info" forState:UIControlStateNormal];
 	[loadUserInfo addTarget:self action:@selector(getUserInfo) forControlEvents:UIControlEventTouchUpInside];
 	loadUserInfo.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
 	loadUserInfo.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;

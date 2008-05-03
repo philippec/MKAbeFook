@@ -188,7 +188,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			
 			UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
 			[cancelButton setFrame:CGRectMake(10, 0, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
-			[cancelButton setTitle:@"Cancel" forStates:UIControlStateNormal];
+			[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
 			[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
 			[_loadingSheet addSubview:cancelButton];
 			
@@ -250,7 +250,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
 				//[cancelButton setFrame:CGRectMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - [cancelButton bounds].size.width /2, [[UIScreen mainScreen] bounds].size.height / 2 + 50, [cancelButton bounds].size.width, [cancelButton bounds].size.height)];
 				cancelButton.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - 5, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 50);
-				[cancelButton setTitle:@"Cancel" forStates:UIControlStateNormal];
+				[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
 				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
 				[_loadingView addSubview:cancelButton];
 				
@@ -259,7 +259,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				//add default cancel button to upper left of view
 				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
 				[cancelButton setFrame:CGRectMake(10, 40, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
-				[cancelButton setTitle:@"Cancel" forStates:UIControlStateNormal];
+				[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
 				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
 				[_loadingView addSubview:cancelButton];				
 			}

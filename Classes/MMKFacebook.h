@@ -60,7 +60,7 @@ Available Delegate Methods
  
  
  */
-@interface MMKFacebook : NSObject <UIModalViewDelegate> {
+@interface MMKFacebook : NSObject {
 	
 	NSString *apiKey;
 	NSString *secretKey;

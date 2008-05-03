@@ -11,7 +11,7 @@
 @class MyView;
 #import "MMKFacebook.h"
 
-@interface Mobile_MKAbeFookAppDelegate : NSObject <MMKFacebook, UIModalViewDelegate> {
+@interface Mobile_MKAbeFookAppDelegate : NSObject <MMKFacebook> {
     UIWindow *window;
 	UIView *_frontView;
 	UILabel *_text;

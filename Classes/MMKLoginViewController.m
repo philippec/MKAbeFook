@@ -43,7 +43,7 @@
 -(void)loadView
 {
 	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeNavigationDone];
-	[leftButton setTitle:@"Back To App" forStates:UIControlStateNormal];
+	[leftButton setTitle:@"Back To App" forState:UIControlStateNormal];
 	[leftButton addTarget:_delegate action:@selector(getAuthSession) forControlEvents:UIControlEventTouchUpInside];
 	self.navigationItem.customLeftView = leftButton;
 	
