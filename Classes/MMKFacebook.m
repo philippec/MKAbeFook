@@ -28,8 +28,11 @@
 
 #import "MMKFacebook.h"
 #import "MMKFacebookRequest.h"
-#import "CocoaCryptoHashing.h"
+//#import "CocoaCryptoHashing.h"
 //#import "NSXMLElementAdditions.h"
+
+//we're using this instead of the CocoaCryptoHashing categories
+#include <CommonCrypto/CommonHMAC.h>
 
 #include "CXMLDocument.h"
 #include "CXMLDocumentAdditions.h"
@@ -469,7 +472,9 @@ NSString *MMKFacebookFormat = @"XML";
 	{
 		[tempString appendString:[self sessionSecret]];
 	}
-	return [tempString md5HexHash];
+	
+	
+	return [tempString md5Hash];
 }
 
 
@@ -732,6 +737,22 @@ It basicaly re-encodes the string, but ignores escape characters + and %, and al
 																			CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
 	return result;
 }
+
+//borrowed from CocoaCryptoHashing categories
+-(NSString *)md5Hash
+{
+	NSData *tempData = [self dataUsingEncoding:NSUTF8StringEncoding];
+	
+	unsigned char digest[16];
+	char finaldigest[32];
+	int i;
+	
+	CC_MD5([tempData bytes],[tempData length],digest);
+	for(i=0;i<16;i++) sprintf(finaldigest+i*2,"%02x",digest[i]);
+	
+	return [NSString stringWithCString:finaldigest length:32];
+}
+
 @end
 
 

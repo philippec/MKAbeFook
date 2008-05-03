@@ -237,6 +237,7 @@ Available Delegate Methods
 
 @interface NSString (StringExtras)
 - (NSString *) encodeURLLegally;
+- (NSString *) md5Hash;
 @end
 
 
