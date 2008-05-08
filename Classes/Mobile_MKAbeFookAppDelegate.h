@@ -17,6 +17,9 @@
 	UILabel *_text;
 	UIButton *_loginButton;
 	MMKFacebook *_facebookConnection;
+	
+	//UITabBar *_tabBar;
+	//UITabBarController *_tabBarController;
 }
 
 -(UIView *)applicationView;

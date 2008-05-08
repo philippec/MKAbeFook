@@ -47,7 +47,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	{
 		//NSLog(@"initiated1");
 		
-		facebookConnection = nil;
+		_facebookConnection = nil;
 		_delegate = nil;
 		_selector = nil;
 		
@@ -79,7 +79,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	if(self != nil)
 	{
 		//NSLog(@"initiated2");
-		facebookConnection = [aFacebookConnection retain];
+		_facebookConnection = [aFacebookConnection retain];
 		_delegate = aDelegate;
 		_selector = aSelector;
 		
@@ -107,7 +107,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	self = [super init];
 	if(self != nil)
 	{
-		facebookConnection = [aFacebookConnection retain];
+		_facebookConnection = [aFacebookConnection retain];
 		_delegate = aDelegate;
 		_selector = aSelector;
 		
@@ -121,7 +121,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)setFacebookConnection:(MMKFacebook *)aFacebookConnection
 {
-	facebookConnection = aFacebookConnection;
+	_facebookConnection = aFacebookConnection;
 }
 
 -(void)setDelegate:(id)delegate
@@ -179,7 +179,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	
 	//to display some type of loading information we need to have access to the facebookconnection delegate and it must respond to the frontView method defined in the mmkfacebook protocol
 	//this area needs a lot of clean up
-	if([[facebookConnection delegate] respondsToSelector:@selector(applicationView)])
+	if([[_facebookConnection delegate] respondsToSelector:@selector(applicationView)])
 	{
 		if(_displayLoadingSheet == YES)
 		{
@@ -207,7 +207,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			[_loadingSheet addSubview:progressIndicator];
 			
 			
-			[[[facebookConnection delegate] applicationView] addSubview:_loadingSheet];
+			[[[_facebookConnection delegate] applicationView] addSubview:_loadingSheet];
 			
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
@@ -266,14 +266,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			
 			
 			
-			[[[facebookConnection delegate] applicationView] addSubview:_loadingView];
+			[[[_facebookConnection delegate] applicationView] addSubview:_loadingView];
 			CATransition *animation = [CATransition animation];
 			[animation setDelegate:self];
 			[animation setType:_loadingViewTransitionType];
 			[animation setSubtype:_loadingViewTransitionSubtype];
 			[animation setDuration: _loadingViewTransitionDuration];
 			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-			[[[[facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
+			[[[[_facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
 		}
 	}
 	
@@ -290,10 +290,10 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	_requestIsDone = NO;
 	if(_urlRequestType == MMKPostRequest)
 	{
-		//NSLog([facebookConnection description]);
+		//NSLog([_facebookConnection description]);
 		NSMutableURLRequest *postRequest = [NSMutableURLRequest requestWithURL:_requestURL 
 																	 cachePolicy:NSURLRequestReloadIgnoringCacheData 
-																 timeoutInterval:[facebookConnection connectionTimeoutInterval]];
+																 timeoutInterval:[_facebookConnection connectionTimeoutInterval]];
 		
 		[postRequest setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 		
@@ -307,14 +307,14 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		
 		//add items that are required by all requests to _parameters dictionary so they are added to the postRequest and we can easily make a sig from them
 		[_parameters setValue:MMKFacebookAPIVersion forKey:@"v"];
-		[_parameters setValue:[facebookConnection apiKey] forKey:@"api_key"];
+		[_parameters setValue:[_facebookConnection apiKey] forKey:@"api_key"];
 		[_parameters setValue:MMKFacebookFormat forKey:@"format"];
 		
 		//all other methods require call_id and session_key
 		if(![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
 		{
-			[_parameters setValue:[facebookConnection sessionKey] forKey:@"session_key"];
-			[_parameters setValue:[facebookConnection generateTimeStamp] forKey:@"call_id"];
+			[_parameters setValue:[_facebookConnection sessionKey] forKey:@"session_key"];
+			[_parameters setValue:[_facebookConnection generateTimeStamp] forKey:@"call_id"];
 		}
 		
 		NSEnumerator *e = [_parameters keyEnumerator];
@@ -354,23 +354,23 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			[_parameters removeObjectForKey:imageKey];
 		
 		[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"sig\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-		[postBody appendData:[[facebookConnection generateSigForParameters:_parameters] dataUsingEncoding:NSUTF8StringEncoding]];
+		[postBody appendData:[[_facebookConnection generateSigForParameters:_parameters] dataUsingEncoding:NSUTF8StringEncoding]];
 		[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
 		
 		[postRequest setHTTPBody:postBody];
-		dasConnection = [NSURLConnection connectionWithRequest:postRequest delegate:self];
+		_dasConnection = [NSURLConnection connectionWithRequest:postRequest delegate:self];
 	}
 	
 	if(_urlRequestType == MMKGetRequest)
 	{
-		NSURL *theURL = [facebookConnection generateFacebookURL:_parameters];
+		NSURL *theURL = [_facebookConnection generateFacebookURL:_parameters];
 		
 		NSMutableURLRequest *getRequest = [NSMutableURLRequest requestWithURL:theURL 
 																  cachePolicy:NSURLRequestReloadIgnoringCacheData 
-															  timeoutInterval:[facebookConnection connectionTimeoutInterval]];
+															  timeoutInterval:[_facebookConnection connectionTimeoutInterval]];
 		[getRequest setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 		
-		dasConnection = [NSURLConnection connectionWithRequest:getRequest delegate:self];
+		_dasConnection = [NSURLConnection connectionWithRequest:getRequest delegate:self];
 	}
 	 
 }
@@ -411,7 +411,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -(void)returnToApplicationView
 {
-	if([[facebookConnection delegate] respondsToSelector:@selector(applicationView)])
+	if([[_facebookConnection delegate] respondsToSelector:@selector(applicationView)])
 	{
 		if(_displayLoadingSheet == YES)
 		{
@@ -431,7 +431,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			[animation setSubtype:_loadingViewTransitionSubtype];
 			[animation setDuration: _loadingViewTransitionDuration];
 			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-			[[[[facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
+			[[[[_facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
 			[_loadingView removeFromSuperview];
 		}
 	}
@@ -443,7 +443,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	if(_requestIsDone == NO)
 	{
 		//NSLog(@"cancelling request...");
-		[dasConnection cancel];
+		[_dasConnection cancel];
 		_requestIsDone = YES;
 	}
 	[self returnToApplicationView];

@@ -46,22 +46,30 @@
 
 	[self.window addSubview:_frontView];
 	
-	// Show window
-	[window makeKeyAndVisible];
 	
 	_facebookConnection = [[MMKFacebook facebookWithAPIKey:@"2c05304285010949050742956e95db9a" 
 												withSecret:@"c656ff9157b2d9d93c2c72cf9607044b" 
 												  delegate:self] retain];
 	
+	/*
+	_tabBar = [[UITabBar alloc] initWithFrame:CGRectMake(0, bounds.size.height - 50, bounds.size.width, 50)];
+	
+	UITabBarItem *itemOne = [[UITabBarItem alloc] initWithTitle:@"Login" image:nil target:self action:@selector(showLogin)];
+	[_tabBar setItems:[NSArray arrayWithObject:itemOne]];
+	[itemOne release];
+	
+	[self.window addSubview:_tabBar];
+	*/
+	 // Show window
+	 [window makeKeyAndVisible];
 
-	
-	
-	
+	 
 }
 
 -(void)showLogin
 {
-	[_facebookConnection showFacebookLoginWindow];
+	if([_facebookConnection loadPersistentSession] == NO)
+		[_facebookConnection showFacebookLoginWindow];
 }
 
 -(void)userLoginSuccessful

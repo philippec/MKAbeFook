@@ -59,8 +59,8 @@ enum
   @version 0.1 and later
  */
 @interface MMKFacebookRequest : NSObject {
-	NSURLConnection *dasConnection; //internal connection used if object is used multiple times.  blame the beer.
-	MMKFacebook *facebookConnection;
+	NSURLConnection *_dasConnection; //internal connection used if object is used multiple times.  blame the beer.
+	MMKFacebook *_facebookConnection;
 	id _delegate;
 	SEL _selector;
 	NSMutableData *_responseData;

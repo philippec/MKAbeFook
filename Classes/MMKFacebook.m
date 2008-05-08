@@ -28,23 +28,17 @@
 
 #import "MMKFacebook.h"
 #import "MMKFacebookRequest.h"
-//#import "CocoaCryptoHashing.h"
-//#import "NSXMLElementAdditions.h"
-
-//we're using this instead of the CocoaCryptoHashing categories
 #include <CommonCrypto/CommonHMAC.h>
-
 #include "CXMLDocument.h"
 #include "CXMLDocumentAdditions.h"
 #include "CXMLElementAdditions.h"
 
+
 NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
-//NSString *MKAPIServerURL = @"http://red-dwarf.no-ip.info/~osticket/api/restAPI.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
 NSString *MMKFacebookAPIVersion = @"1.0";
 NSString *MMKFacebookFormat = @"XML";
 
-#define kLoginWindowTag 309
 
 
 @interface MMKFacebook (Private)
@@ -67,7 +61,9 @@ NSString *MMKFacebookFormat = @"XML";
 
 
 @implementation MMKFacebook
+
 #pragma mark Intialization
+
 +(MMKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey withSecret:(NSString *)aSecret delegate:(id)aDelegate
 {
 	return [[[MMKFacebook alloc] initUsingAPIKey:anAPIKey usingSecret:aSecret delegate:(id)aDelegate] autorelease];
@@ -89,20 +85,19 @@ NSString *MMKFacebookFormat = @"XML";
 	self = [super init];
 	if(self != nil)
 	{
-		//defaultsName = [aDefaultsName copy];
-		defaultsName = [[NSBundle mainBundle] bundleIdentifier];
+		_defaultsName = [[NSBundle mainBundle] bundleIdentifier];
 		[self setApiKey:anAPIKey];
 		[self setSecretKey:aSecret];
 		[self setAuthToken:nil];
 		[self setSessionKey:nil];
 		[self setSessionSecret:nil];
-		[self setUid:@"test"];
+		[self setUid:nil];
 		[self setConnectionTimeoutInterval:5.0];
-		hasAuthToken = FALSE;
-		hasSessionKey = FALSE;
-		hasSessionSecret = FALSE;
-		hasUid = FALSE;
-		userHasLoggedInMultipleTimes = FALSE;
+		_hasAuthToken = NO;
+		_hasSessionKey = NO;
+		_hasSessionSecret = NO;
+		_hasUid = NO;
+		_userHasLoggedInMultipleTimes = NO;
 		_delegate = aDelegate;
 		_alertMessagesEnabled = YES;
 		_shouldUseSynchronousLogin = NO;
@@ -114,88 +109,87 @@ NSString *MMKFacebookFormat = @"XML";
 
 -(void)dealloc
 {
-	[apiKey release];
-	[secretKey release];
-	[authToken release];
-	[sessionKey release];
-	[sessionSecret release];
-	[uid release];
+	[_apiKey release];
+	[_secretKey release];
+	[_authToken release];
+	[_sessionKey release];
+	[_sessionSecret release];
+	[_uid release];
 	[super dealloc];
 }
 #pragma mark -
 
-#pragma mark Accessors and Mutators
 -(void)setSecretKey:(NSString *)aSecretKey
 {
 	aSecretKey = [aSecretKey copy];
-	[secretKey release];
-	secretKey = aSecretKey;
+	[_secretKey release];
+	_secretKey = aSecretKey;
 }
 
 -(NSString *)secretKey
 {
-	return secretKey;
+	return _secretKey;
 }
 
 -(void)setApiKey:(NSString *)anApiKey
 {
 	anApiKey = [anApiKey copy];
-	[apiKey release];
-	apiKey = anApiKey;
+	[_apiKey release];
+	_apiKey = anApiKey;
 }
 
 -(NSString *)apiKey
 {
-	return apiKey;
+	return _apiKey;
 }
 
 -(void)setSessionKey:(NSString *)aSessionKey
 {
 	aSessionKey = [aSessionKey copy];
-	[sessionKey release];
-	sessionKey = aSessionKey;
+	[_sessionKey release];
+	_sessionKey = aSessionKey;
 }
 
 -(NSString *)sessionKey
 {
-	return sessionKey;
+	return _sessionKey;
 }
 
 -(void)setSessionSecret:(NSString *)aSessionSecret
 {
 	aSessionSecret = [aSessionSecret copy];
-	[sessionSecret release];
-	sessionSecret = aSessionSecret;
+	[_sessionSecret release];
+	_sessionSecret = aSessionSecret;
 }
 
 -(NSString *)sessionSecret
 {
-	return sessionSecret;
+	return _sessionSecret;
 }
 
 -(void)setUid:(NSString *)aUid
 {
 	aUid = [aUid copy];
-	[uid release];
-	uid = aUid;
+	[_uid release];
+	_uid = aUid;
 }
 
 -(NSString *)uid
 {
-	return uid;
+	return _uid;
 }
 
 -(void)setAuthToken:(NSString *)aToken
 {
 	aToken = [aToken copy];
-	[authToken release];
-	authToken = aToken;
-	hasAuthToken = TRUE;
+	[_authToken release];
+	_authToken = aToken;
+	_hasAuthToken = TRUE;
 	
 }
 -(NSString *)authToken
 {
-	return authToken;
+	return _authToken;
 }
 
 -(id)delegate
@@ -205,11 +199,12 @@ NSString *MMKFacebookFormat = @"XML";
 
 -(void)setConnectionTimeoutInterval:(double)aConnectionTimeoutInterval
 {
-	connectionTimeoutInterval = aConnectionTimeoutInterval;
+	_connectionTimeoutInterval = aConnectionTimeoutInterval;
 }
+
 -(NSTimeInterval)connectionTimeoutInterval
 {
-	return connectionTimeoutInterval;
+	return _connectionTimeoutInterval;
 }
 
 -(void)setAlertsEnabled:(BOOL)aBool
@@ -234,8 +229,6 @@ NSString *MMKFacebookFormat = @"XML";
 
 #pragma mark -
 
-
-#pragma mark Workers
 
 //this doesn't actually show the login window.  it just starts the process.  see facebookResponseReceived to see the window being displayed.
 -(void)showFacebookLoginWindow
@@ -264,8 +257,6 @@ NSString *MMKFacebookFormat = @"XML";
 	
 }
 
-
-
 //called when login window is created, if an authToken is generated the login window will display
 -(void)createAuthToken
 {
@@ -292,7 +283,7 @@ NSString *MMKFacebookFormat = @"XML";
 //called when login window is closed, attempts create and save a session
 -(void)getAuthSession
 {
-	if(hasAuthToken)
+	if(_hasAuthToken)
 	{
 		if(_shouldUseSynchronousLogin == YES)
 		{
@@ -322,12 +313,12 @@ NSString *MMKFacebookFormat = @"XML";
 //originally written by Josh Wiseman (Facebook, Inc.) and distributed with the iPhoto plugin. modifications made by Mike Kinney 
 -(BOOL)loadPersistentSession
 {
-	//userHasLoggedInMultipleTimes, it's set to TRUE in resetFacebookConnection used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
-	if (userHasLoggedInMultipleTimes) {
+	//_userHasLoggedInMultipleTimes, it's set to TRUE in resetFacebookConnection used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
+	if (_userHasLoggedInMultipleTimes) {
 		return NO;
 	}
 	
-	NSDictionary *domain = [[NSUserDefaults standardUserDefaults] persistentDomainForName:defaultsName];
+	NSDictionary *domain = [[NSUserDefaults standardUserDefaults] persistentDomainForName:_defaultsName];
 	NSString *key = (NSString *)[domain objectForKey:@"sessionKey"];
 	NSString *secret = (NSString *)[domain objectForKey:@"sessionSecret"];
 	
@@ -354,12 +345,12 @@ NSString *MMKFacebookFormat = @"XML";
 		return NO;
 	}
 	[self setUid:[[user rootElement] stringValue]];
-	hasUid = YES;
-	hasSessionKey = YES;
-	hasSessionSecret = YES;
+	_hasUid = YES;
+	_hasSessionKey = YES;
+	_hasSessionSecret = YES;
 	
 	// we don't really have a token, but it doesn't matter since we have a session
-	hasAuthToken = YES;
+	_hasAuthToken = YES;
 	
 	if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
 		[_delegate performSelector:@selector(userLoginSuccessful)];
@@ -374,7 +365,6 @@ NSString *MMKFacebookFormat = @"XML";
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	[self resetFacebookConnection];
 }
-
 
 //generateFacebookURL, generateTimeStamp, and generateSigForParameters used in MMKFacebook.m, MKAsyncRequest.m and MKPhotoUploader.m to prepare urls that are sent to facebook.com
 -(NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters
@@ -404,8 +394,6 @@ NSString *MMKFacebookFormat = @"XML";
 	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
 	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
 }
-
-
 
 -(NSURL *)generateFacebookURL:(NSDictionary *)parameters
 {
@@ -439,12 +427,10 @@ NSString *MMKFacebookFormat = @"XML";
 	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
 }
 
-
 -(NSString *)generateTimeStamp
 {
 	return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
 }
-
 
 - (NSString *)generateSigForParameters:(NSDictionary *)parameters
 {
@@ -476,7 +462,6 @@ NSString *MMKFacebookFormat = @"XML";
 	
 	return [tempString md5Hash];
 }
-
 
 -(id)fetchFacebookData:(NSURL *)theURL
 {
@@ -560,7 +545,7 @@ NSString *MMKFacebookFormat = @"XML";
 	if([[[xml rootElement] name] isEqualTo:@"auth_createToken_response"])
 	{
 		[self setAuthToken:[[xml rootElement] stringValue]];
-		hasAuthToken = TRUE;
+		_hasAuthToken = TRUE;
 		NSMutableString *loginString = [[NSMutableString alloc] initWithString:MKLoginUrl];
 		[loginString appendString:@"?api_key="];
 		[loginString appendString:[self apiKey]];
@@ -585,19 +570,19 @@ NSString *MMKFacebookFormat = @"XML";
 		if([response valueForKey:@"session_key"] != @"")
 		{
 			[self setSessionKey:[response valueForKey:@"session_key"]];
-			hasSessionKey = YES;			
+			_hasSessionKey = YES;			
 		}
 		
 		if([response valueForKey:@"secret"] != @"")
 		{
 			[self setSessionSecret:[response valueForKey:@"secret"]];
-			hasSessionSecret = YES;			
+			_hasSessionSecret = YES;			
 		}
 		
 		if([response valueForKey:@"uid"] != @"")
 		{
 			[self setUid:[response valueForKey:@"uid"]];
-			hasUid = YES;						
+			_hasUid = YES;						
 		}
 		
 		//this seems to return zero sparatically, did facebook change something or is something broken?
@@ -606,10 +591,10 @@ NSString *MMKFacebookFormat = @"XML";
 		
 		if([self userLoggedIn])
 		{
-			if([defaultsName isNotEqualTo:@""] && useInfiniteSessions)
+			if([_defaultsName isNotEqualTo:@""] && useInfiniteSessions)
 			{
 				//NSDictionary *sessionDefaults = [NSDictionary dictionaryWithObjectsAndKeys:[self sessionKey], @"sessionKey", [self sessionSecret], @"sessionSecret", nil];
-				//[[NSUserDefaults standardUserDefaults] setPersistentDomain:sessionDefaults forName:defaultsName];
+				//[[NSUserDefaults standardUserDefaults] setPersistentDomain:sessionDefaults forName:_defaultsName];
 				
 				//this is safer than setpersistentDomain which can screw up other things.  0.7.4.
 				[[NSUserDefaults standardUserDefaults] setObject:[self sessionKey] forKey:@"sessionKey"];
@@ -662,10 +647,9 @@ NSString *MMKFacebookFormat = @"XML";
 	}
 }
 
-#pragma mark Misc
 -(BOOL)userLoggedIn
 {
-	if(hasAuthToken && hasSessionKey && hasSessionSecret && hasUid) //then it's kinda safe to assume we're logged in.....
+	if(_hasAuthToken && _hasSessionKey && _hasSessionSecret && _hasUid) //then it's kinda safe to assume we're logged in.....
 	{
 		return TRUE;
 	}else
@@ -681,14 +665,15 @@ NSString *MMKFacebookFormat = @"XML";
 	[self setSessionKey:nil];
 	[self setSessionSecret:nil];
 	[self setUid:nil];
-	hasAuthToken = FALSE;
-	hasSessionKey = FALSE;
-	hasSessionSecret = FALSE;
-	hasUid = FALSE;
-	userHasLoggedInMultipleTimes = TRUE; //used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet.  this doesn't make sense, we can write the NSUserDefaults to disk anytime we wish, what's the logic behind this?  TODO: review logic behind the purpose of this.
+	_hasAuthToken = NO;
+	_hasSessionKey = NO;
+	_hasSessionSecret = NO;
+	_hasUid = NO;
+	_userHasLoggedInMultipleTimes = TRUE; //used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet.  this doesn't make sense, we can write the NSUserDefaults to disk anytime we wish, what's the logic behind this? Do we really need this?
 }
-#pragma mark -
 
+
+//TODO: flip application view and display browser that loads appropriate url to modify extended permissions
 /*
 -(void)grantExtendedPermission:(NSString *)aString
 {

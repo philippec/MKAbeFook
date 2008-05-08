@@ -39,7 +39,6 @@ extern NSString *MMKFacebookFormat;
 @protocol MMKFacebook
 -(UIView *)applicationView;
 -(void)userLoginSuccessful;
-
 @end
 
 /*!
@@ -62,29 +61,28 @@ Available Delegate Methods
  */
 @interface MMKFacebook : NSObject {
 	
-	NSString *apiKey;
-	NSString *secretKey;
-	NSString *authToken;
-	NSString *sessionKey;
-	NSString *sessionSecret;
-	NSString *uid;
-	NSString *defaultsName;
-	BOOL hasAuthToken;
-	BOOL hasSessionKey;
-	BOOL hasSessionSecret;
-	BOOL hasUid;
-	BOOL userHasLoggedInMultipleTimes; //used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
-	NSTimeInterval connectionTimeoutInterval;
+	NSString *_apiKey;
+	NSString *_secretKey;
+	NSString *_authToken;
+	NSString *_sessionKey;
+	NSString *_sessionSecret;
+	NSString *_uid;
+	NSString *_defaultsName;
+	BOOL _hasAuthToken;
+	BOOL _hasSessionKey;
+	BOOL _hasSessionSecret;
+	BOOL _hasUid;
+	BOOL _userHasLoggedInMultipleTimes; //used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
+	NSTimeInterval _connectionTimeoutInterval;
 	id _delegate;
 	BOOL _alertMessagesEnabled;
 	BOOL _shouldUseSynchronousLogin;
 	
 	UINavigationController *_navigationController;
 	MMKLoginViewController *_loginViewController;
-
-
 	
 }
+
 
 /*!
  @param anAPIKey Your API key issued by Facebook.
@@ -96,6 +94,8 @@ Available Delegate Methods
 @version 0.1 and later
  */
 +(MMKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey withSecret:(NSString *)aSecret delegate:(id)aDelegate;
+
+
 
 /*!
  @param anAPIKey Your API key issued by Facebook.
@@ -118,6 +118,8 @@ Available Delegate Methods
  */
 -(void)setAlertsEnabled:(BOOL)aBool;
 
+
+
 /*!
  @result Returns YES if alert messages are enabled, NO if they are disabled.
 @version 0.1 and later
@@ -125,11 +127,14 @@ Available Delegate Methods
 -(BOOL)alertsEnabled;
 
 
+//the user shouldn't really have to use these, but they're public because we use them in the request class
 -(NSString *)apiKey;
 -(NSString *)sessionKey;
 -(NSString *)generateSigForParameters:(NSDictionary *)parameters;
 -(NSString *)generateTimeStamp;
 -(id)delegate;
+
+
 
 /*!
  @param aConnectionTimeoutInterval
@@ -138,25 +143,35 @@ Available Delegate Methods
  */
 -(void)setConnectionTimeoutInterval:(double)aConnectionTimeoutInterval;
 
+
+
 /*!
  @result Retuns current connection timeout interval.
  */
 -(NSTimeInterval)connectionTimeoutInterval;
+
+
 
 /*!
  @result Returns uid of user currently logged in.
  */
 -(NSString *)uid;
 
+
+
 /*!
  @result Checks to see if auth token, session key, session secret and uid are set.  Returns true if everything is set and it's safe to assume a user has logged in.  
  */
 -(BOOL)userLoggedIn;
 
+
+
 /*!
  Sets auth token, session key, session secret and uid to nil.  Use clearInfiniteSession to also remove any stored infinite sessions.
  */
 -(void)resetFacebookConnection;
+
+
 
 /*!
  Attempts to load a stored infinte session for the application.  This method checks NSUserDefaults for a stored sessionKey and sessionSecret.  It uses a synchronous request to try to authenticate the stored session.  Note: The MMKFacebook class only allows a persistent session to be loaded once per instance.  For example, if a persistent session is successfully loaded then the resetFacebookConnection method is called that instance of MMKFacebook will return false for every call to loadPersistentSession for the remainder of its existence.  This behavior may change in the future.
@@ -164,14 +179,20 @@ Available Delegate Methods
  */
 -(BOOL)loadPersistentSession;
 
+
+
 /*!
  Removes sessionKey and sessionSecret keys from application NSUserDefaults.  This method also calls resetFacebookConnection.
  @version 0.1 and later
  */
 -(void)clearInfiniteSession;
 
-//Login Window
+
+
+
 -(void)getAuthSession;
+
+
 
 /*!
  While the login window is loading a MMKFacebookRequest sends an asynchronous request to Facebook to obtain an auth token.  The auth token is used to create the URL that is loaded in the login window.  After a user logs in and closes the window another MMKFacebookRequest is sent to obtain an auth session.  If a successful auth session is obtained the userLoggedIn: delegate method will be called.  If no auth session is received the userLoginFailed delegate method is called.
@@ -180,7 +201,6 @@ Available Delegate Methods
 
 
 
-//prepare url
 /*!
  @param aMethodName Full Facebook method name to be called.  Example: facebook.users.getInfo
  @param parameters NSDictionary containing parameters and values for the method being called.  They keys are the parameter names and the values are the arguments.
@@ -190,6 +210,8 @@ Available Delegate Methods
  */
 -(NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters;
 
+
+
 /*!
  @param parameters NSDictionary containing parameters and values for a desired method.  The dictionary must include a key "method" that has the value of the desired method to be called, i.e. "facebook.users.getInfo".  They keys are the parameter names and the values are the arguments.
  
@@ -198,7 +220,10 @@ Available Delegate Methods
  */
 -(NSURL *)generateFacebookURL:(NSDictionary *)parameters;
 
+
+
 -(NSString *)generateTimeStamp;
+
 
 
 /*!
@@ -210,24 +235,30 @@ Available Delegate Methods
  */
 -(id)fetchFacebookData:(NSURL *)theURL;
 
+
+
 /*!
  @param aBool Send YES if login procedure should use sychronous requests, or no to use asynchronous requests.
  
- If you call showFacebookLoginWindow or showFacebookLoginWindowForSheet while the main run loop is not in NSDefaultMainRunLoop mode you will need to use sychronous login requests.  For example if a modal window is present you will need to sychronous requests.  Use this method when working with iPhoto or Apeture plugins.
+ If you call showFacebookLoginWindow or showFacebookLoginWindowForSheet while the main run loop is not in NSDefaultMainRunLoop mode you will need to use sychronous login requests.  For example if a modal window is present you will need to sychronous requests.  Use this method when working with iPhoto or Apeture plugins.  I don't think there is any need for this on the iPhone, this will probably be removed.
  */
 -(void)setShouldUseSynchronousLogin:(BOOL)aBool;
+
+
 
 /*!
  Default is NO.
  */
 -(BOOL)shouldUseSychronousLogin;
 
+
+
 /*!
  @param aString Name of extended permission to grant. (As of this writing Facebook allows status_update, photo_upload, and create_listing)
  
  This method will display a new window and load the Facebook URL  http://www.facebook.com/authorize.php?api_key=YOUR_API_KEY&v=1.0&ext_perm=PERMISSION_NAME
  authentication information is filled in automatically.  If no user is logged in an alert message will be displayed unless they have been turned off.
- @versioni 0.1.4 and later
+ @version 0.1 and later
 */
 //-(void)grantExtendedPermission:(NSString *)aString;
 
