@@ -186,7 +186,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			_loadingSheet = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
 			[_loadingSheet setBackgroundColor:[UIColor grayColor]];						
 			
-			UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
+			UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
 			[cancelButton setFrame:CGRectMake(10, 0, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
 			[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
 			[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
@@ -201,8 +201,8 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			[_loadingSheet addSubview:loadingText];
 			
 			
-			UIProgressIndicator *progressIndicator = [[UIProgressIndicator alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width - 40, 0, 30, 30)];
-			[progressIndicator setProgressIndicatorStyle:UIProgressIndicatorStyleWhiteLarge];
+			UIActivityIndicatorView *progressIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width - 40, 0, 30, 30)];
+			[progressIndicator setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
 			[progressIndicator startAnimating];
 			[_loadingSheet addSubview:progressIndicator];
 			
@@ -239,15 +239,15 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 				[_loadingView addSubview:loadingText];
 				[loadingText release];
 				
-				UIProgressIndicator *progressIndicator = [[UIProgressIndicator alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height / 2, 30, 30)];
+				UIActivityIndicatorView *progressIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height / 2, 30, 30)];
 				progressIndicator.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 5);
-				[progressIndicator setProgressIndicatorStyle:UIProgressIndicatorStyleWhiteLarge];
+				[progressIndicator setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
 				[progressIndicator startAnimating];
 				[_loadingView addSubview:progressIndicator];
 				[progressIndicator release];
 				
 				//add default cancel button to upper left of view
-				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
+				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
 				//[cancelButton setFrame:CGRectMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - [cancelButton bounds].size.width /2, [[UIScreen mainScreen] bounds].size.height / 2 + 50, [cancelButton bounds].size.width, [cancelButton bounds].size.height)];
 				cancelButton.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - 5, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 50);
 				[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
@@ -257,7 +257,7 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			}else
 			{
 				//add default cancel button to upper left of view
-				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeNavigation];
+				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
 				[cancelButton setFrame:CGRectMake(10, 40, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
 				[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
 				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];

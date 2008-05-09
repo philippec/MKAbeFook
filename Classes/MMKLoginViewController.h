@@ -32,7 +32,7 @@
 	UIWebView *_loginWebView;
 	id _delegate;
 	SEL _selector;
-	UIProgressIndicator *_progressIndicator;
+	UIActivityIndicatorView *_activityIndicator;
 }
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
 -(void)loadURL:(NSURL *)loginURL;

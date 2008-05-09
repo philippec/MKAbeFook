@@ -36,7 +36,9 @@
 
 	
 	
-	_loginButton = [UIButton buttonWithType:UIButtonTypeNavigation];
+	_loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+	_loginButton.frame = CGRectMake(0.0, 0.0, kStdButtonWidth, kStdButtonHeight); //kStdButtonWidth and kStdButtonHeight are copied from the apple UIShowcase application, they are defined in MMKFacebook.h
+	_loginButton.backgroundColor = [UIColor clearColor];
 	[_loginButton setTitle:@"Login" forState:UIControlStateNormal];
 	[_loginButton addTarget:self action:@selector(showLogin) forControlEvents:UIControlEventTouchUpInside];
 	_loginButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
@@ -77,7 +79,8 @@
 	[_loginButton removeFromSuperview];
 	_text.text = @"Mobile MKAbeFook is ready for use. :)";
 	
-	UIButton *loadUserInfo = [UIButton buttonWithType:UIButtonTypeNavigation];
+	UIButton *loadUserInfo = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+	loadUserInfo.frame = CGRectMake(0.0, 0.0, kStdButtonWidth, kStdButtonHeight);
 	[loadUserInfo setTitle:@"Get User Info" forState:UIControlStateNormal];
 	[loadUserInfo addTarget:self action:@selector(getUserInfo) forControlEvents:UIControlEventTouchUpInside];
 	loadUserInfo.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;

@@ -42,14 +42,20 @@
 
 -(void)loadView
 {
-	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeNavigationDone];
+	/*
+	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
 	[leftButton setTitle:@"Back To App" forState:UIControlStateNormal];
 	[leftButton addTarget:_delegate action:@selector(getAuthSession) forControlEvents:UIControlEventTouchUpInside];
-	self.navigationItem.customLeftView = leftButton;
+	 */
+	UIBarButtonItem *leftBarButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:_delegate action:@selector(getAuthSession)] autorelease];
 	
-	_progressIndicator = [[UIProgressIndicator alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+	self.navigationItem.leftBarButtonItem = leftBarButton;
+	//[leftButton release];
+	
+	_activityIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
 
-	self.navigationItem.customRightView = _progressIndicator;
+	UIBarButtonItem *activityView = [[[UIBarButtonItem alloc] initWithCustomView:_activityIndicator] autorelease];
+	self.navigationItem.rightBarButtonItem = activityView;
 	
 	_loginWebView = [[UIWebView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
 	[_loginWebView setDelegate:self];
@@ -77,12 +83,12 @@
 
 -(void)webViewDidStartLoad:(UIWebView *)webView
 {
-	[_progressIndicator startAnimating];
+	[_activityIndicator startAnimating];
 }
 
 -(void)webViewDidFinishLoad:(UIWebView *)webView
 {
-	[_progressIndicator stopAnimating];
+	[_activityIndicator stopAnimating];
 }
 
 
