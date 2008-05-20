@@ -1,10 +1,14 @@
-//
-//  MKFacebookRequestQueue.h
-//  MKAbeFook
-//
-//  Created by Mike Kinney on 12/12/07.
-//  Copyright 2008 Mike Kinney. All rights reserved.
-//
+/*
+ 
+ MKFacebookRequestQueue.h
+ MKAbeFook
+
+ Created by Mike Kinney on 12/12/07.
+
+ This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License.
+ To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/us/legalcode or send a letter to Creative Commons, 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.
+ 
+*/
 
 //IMPORTANT NOTE: As of this writing this object will release itself when it's done with the queue.  Do not try to autorelease or release this object manually.
 
