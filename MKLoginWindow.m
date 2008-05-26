@@ -61,12 +61,12 @@
 	[[[loginWebView mainFrame] webView] setFrame:visibleArea];
 	*/
 	
-	NSLog(@"loading url: %@", [loginURL description]);
+	//NSLog(@"loading url: %@", [loginURL description]);
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:loginURL];
 	[request setMainDocumentURL:[NSURL URLWithString:@"http://www.facebook.com"]];
 
-	NSHTTPCookieStorage *cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	NSLog(@"cookies: %@", [[cookies cookiesForURL:loginURL] description]);
+	//NSHTTPCookieStorage *cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	//NSLog(@"cookies: %@", [[cookies cookiesForURL:loginURL] description]);
 	
 	[[[loginWebView mainFrame] frameView] setAllowsScrolling:NO];	
 	[[loginWebView mainFrame] loadRequest:request];
@@ -110,8 +110,8 @@
 
 -(void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
-	NSLog([[[loginWebView mainFrame] DOMDocument] description]);
-	NSLog(@"source: %@", [[[[loginWebView mainFrame] dataSource] representation] documentSource]);
+	//NSLog([[[loginWebView mainFrame] DOMDocument] description]);
+	//NSLog(@"source: %@", [[[[loginWebView mainFrame] dataSource] representation] documentSource]);
 }
 
 @end
