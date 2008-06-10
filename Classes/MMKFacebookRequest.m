@@ -163,8 +163,8 @@
 	
 	//to display some type of loading information we need to have access to the facebookconnection delegate and it must respond to the frontView method defined in the mmkfacebook protocol
 	//this area needs a lot of clean up
-	if([[_facebookConnection delegate] respondsToSelector:@selector(applicationView)])
-	{
+	//if([[_facebookConnection delegate] respondsToSelector:@selector(applicationView)])
+	//{
 		if(_displayLoadingSheet == YES)
 		{
 			_loadingSheet = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
@@ -191,7 +191,7 @@
 			[_loadingSheet addSubview:progressIndicator];
 			
 			
-			[[[_facebookConnection delegate] applicationView] addSubview:_loadingSheet];
+			[[[UIApplication sharedApplication] keyWindow] addSubview:_loadingSheet];
 			
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
@@ -250,16 +250,16 @@
 			
 			
 			
-			[[[_facebookConnection delegate] applicationView] addSubview:_loadingView];
+			[[[UIApplication sharedApplication] keyWindow] addSubview:_loadingView];
 			CATransition *animation = [CATransition animation];
 			[animation setDelegate:self];
 			[animation setType:_loadingViewTransitionType];
 			[animation setSubtype:_loadingViewTransitionSubtype];
 			[animation setDuration: _loadingViewTransitionDuration];
 			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-			[[[[_facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
+			[[[[UIApplication sharedApplication] keyWindow] layer] addAnimation: animation forKey:nil];
 		}
-	}
+	//}
 	
 	
 	NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
@@ -395,8 +395,8 @@
 
 -(void)returnToApplicationView
 {
-	if([[_facebookConnection delegate] respondsToSelector:@selector(applicationView)])
-	{
+	//if([[_facebookConnection delegate] respondsToSelector:@selector(applicationView)])
+	//{
 		if(_displayLoadingSheet == YES)
 		{
 			/* this doesn't matter right now, for now just remove the _loadingSheet view
@@ -415,10 +415,10 @@
 			[animation setSubtype:_loadingViewTransitionSubtype];
 			[animation setDuration: _loadingViewTransitionDuration];
 			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-			[[[[_facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
+			[[[[UIApplication sharedApplication] keyWindow] layer] addAnimation: animation forKey:nil];
 			[_loadingView removeFromSuperview];
 		}
-	}
+	//}
 }
 
 

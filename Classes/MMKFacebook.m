@@ -217,6 +217,7 @@ NSString *MMKFacebookFormat = @"XML";
 //this doesn't actually show the login window.  it just starts the process.  see facebookResponseReceived to see the window being displayed.
 -(void)showFacebookLoginWindow
 {
+	/*
 	if(![_delegate respondsToSelector:@selector(applicationView)])
 	{
 		NSException *exception = [NSException exceptionWithName:@"InvalidDelegate"
@@ -226,16 +227,20 @@ NSString *MMKFacebookFormat = @"XML";
 		[exception raise];
 		return;
 	}
-	
+	*/
 	_loginViewController = [[MMKLoginViewController alloc] initWithDelegate:self withSelector:@selector(getAuthSession:)];	
 	_navigationController = [[UINavigationController alloc] initWithRootViewController:_loginViewController];
 	[self createAuthToken];
 		
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.0];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[_delegate applicationView] cache:NO];
 	
-	[[_delegate applicationView] addSubview:[_navigationController view]];
+	//[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[_delegate applicationView] cache:NO];
+	//[[_delegate applicationView] addSubview:[_navigationController view]];	
+	
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[[UIApplication sharedApplication] keyWindow] cache:NO];
+	[[[UIApplication sharedApplication] keyWindow] addSubview:[_navigationController view]];
+
 	
 	[UIView commitAnimations];
 	
@@ -488,12 +493,14 @@ NSString *MMKFacebookFormat = @"XML";
 	//return user to application
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.0];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:[_delegate applicationView] cache:NO];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:[[UIApplication sharedApplication] keyWindow] cache:NO];
 	
 	
 	[[_navigationController view] removeFromSuperview];
 	[_navigationController release];
-	[_loginViewController release];
+	
+	//crashes when released, but still needs to be??
+	//[_loginViewController release];
 	
 	[UIView commitAnimations];
 }
