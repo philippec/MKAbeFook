@@ -29,7 +29,8 @@
 }
 
 -(UIView *)applicationView;
-
+-(void)userLoginSuccessful;
+-(void)returningUserToApplication;
 
 @property (nonatomic, retain) UIWindow *window;
 

@@ -20,6 +20,5 @@
 }
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
 -(void)loadURL:(NSURL *)loginURL;
--(id)webView;
 -(void)loadView;
 @end

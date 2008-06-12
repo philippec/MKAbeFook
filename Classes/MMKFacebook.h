@@ -20,8 +20,9 @@ extern NSString *MMKFacebookFormat;
 
 
 @protocol MMKFacebook
--(UIView *)applicationView; //this is no longer needed 6.10.2008
+-(UIView *)applicationView;
 -(void)userLoginSuccessful;
+-(void)returningUserToApplication;
 @end
 
 /*!

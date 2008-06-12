@@ -217,7 +217,6 @@ NSString *MMKFacebookFormat = @"XML";
 //this doesn't actually show the login window.  it just starts the process.  see facebookResponseReceived to see the window being displayed.
 -(void)showFacebookLoginWindow
 {
-	/*
 	if(![_delegate respondsToSelector:@selector(applicationView)])
 	{
 		NSException *exception = [NSException exceptionWithName:@"InvalidDelegate"
@@ -227,20 +226,16 @@ NSString *MMKFacebookFormat = @"XML";
 		[exception raise];
 		return;
 	}
-	*/
+	
 	_loginViewController = [[MMKLoginViewController alloc] initWithDelegate:self withSelector:@selector(getAuthSession:)];	
 	_navigationController = [[UINavigationController alloc] initWithRootViewController:_loginViewController];
 	[self createAuthToken];
 		
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.0];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[_delegate applicationView] cache:NO];
 	
-	//[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[_delegate applicationView] cache:NO];
-	//[[_delegate applicationView] addSubview:[_navigationController view]];	
-	
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[[UIApplication sharedApplication] keyWindow] cache:NO];
-	[[[UIApplication sharedApplication] keyWindow] addSubview:[_navigationController view]];
-
+	[[_delegate applicationView] addSubview:[_navigationController view]];
 	
 	[UIView commitAnimations];
 	
@@ -343,6 +338,9 @@ NSString *MMKFacebookFormat = @"XML";
 	
 	if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
 		[_delegate performSelector:@selector(userLoginSuccessful)];
+	
+	if([_delegate respondsToSelector:@selector(returningUserToApplication)])
+		[_delegate performSelector:@selector(returningUserToApplication)];
 	
 	return YES;
 }
@@ -491,18 +489,20 @@ NSString *MMKFacebookFormat = @"XML";
 -(void)returnUserToApplication
 {
 	//return user to application
+	if([_delegate respondsToSelector:@selector(returningUserToApplication)])
+		[_delegate performSelector:@selector(returningUserToApplication)];
+
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.0];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:[[UIApplication sharedApplication] keyWindow] cache:NO];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:[_delegate applicationView] cache:NO];
 	
 	
 	[[_navigationController view] removeFromSuperview];
-	[_navigationController release];
-	
-	//crashes when released, but still needs to be??
+	//[_navigationController release];
 	//[_loginViewController release];
 	
 	[UIView commitAnimations];
+	
 }
 
 -(void)facebookResponseReceived:(CXMLDocument *)xml

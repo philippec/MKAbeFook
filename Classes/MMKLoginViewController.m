@@ -54,11 +54,6 @@
 }
 
 
--(id)webView
-{
-	return _loginWebView;
-}
-
 -(void)dealloc
 {
 	[_loginWebView release];

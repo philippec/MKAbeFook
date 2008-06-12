@@ -63,6 +63,8 @@
 	[self.window addSubview:_tabBar];
 	*/
 	 // Show window
+	
+	
 	 [window makeKeyAndVisible];
 
 	 
@@ -92,6 +94,10 @@
 	
 }
 
+-(void)returningUserToApplication
+{
+	NSLog(@"returning to app");
+}
 
 -(void)getUserInfo
 {
@@ -128,6 +134,7 @@
 {
 	return _frontView;
 }
+
 
 
 -(void)facebookResponseReceived:(CXMLDocument *)xml
