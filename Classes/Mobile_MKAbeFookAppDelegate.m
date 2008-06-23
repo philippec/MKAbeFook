@@ -53,19 +53,6 @@
 												withSecret:@"c656ff9157b2d9d93c2c72cf9607044b" 
 												  delegate:self] retain];
 	
-	/*
-	_tabBar = [[UITabBar alloc] initWithFrame:CGRectMake(0, bounds.size.height - 50, bounds.size.width, 50)];
-	
-	UITabBarItem *itemOne = [[UITabBarItem alloc] initWithTitle:@"Login" image:nil target:self action:@selector(showLogin)];
-	[_tabBar setItems:[NSArray arrayWithObject:itemOne]];
-	[itemOne release];
-	
-	[self.window addSubview:_tabBar];
-	*/
-	 // Show window
-	
-	[self userLoginSuccessful];
-	
 	 [window makeKeyAndVisible];
 
 	 
@@ -73,6 +60,7 @@
 
 -(void)showLogin
 {
+	//simulator wipes out preferences after each build
 	if([_facebookConnection loadPersistentSession] == NO)
 		[_facebookConnection showFacebookLoginWindow];
 }
@@ -90,9 +78,6 @@
 	loadUserInfo.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
 	loadUserInfo.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height /3);
 	[_frontView addSubview:loadUserInfo];
-	
-	
-	
 }
 
 -(void)returningUserToApplication
@@ -107,20 +92,22 @@
 	[request setFacebookConnection:_facebookConnection];
 	
 	//display loading sheet
-	//[request displayLoadingSheet:YES];
+	[request displayLoadingSheet:YES];
 
 	//or
 
 	//display entire new view with transitions
 	
-	
+	/*
 	UIView *blue = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[blue setBackgroundColor:[UIColor blueColor]];
 	[request displayLoadingWithView: blue 
 					 transitionType:kCATransitionReveal
 				  transitionSubtype:kCATransitionFromLeft
 						   duration:0.5];
-	
+	*/
+	 
+	 
 	[request setSelector:@selector(gotUserInfo:)];
 	
 	NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];

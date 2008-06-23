@@ -13,7 +13,7 @@
 #import <UIKit/UIKit.h>
 #import "MMKLoginViewController.h"
 
-//copied from apple
+//copied from apple, used for creating cancel buttons.  probably doesn't really belong here.
 #define kStdButtonWidth			106.0
 #define kStdButtonHeight		40.0
 
@@ -256,6 +256,17 @@ Available Delegate Methods
  @version 0.1 and later
 */
 //-(void)grantExtendedPermission:(NSString *)aString;
+
+
+/*!
+ @param title Title for error message window.
+ @param message Error message.
+ @param buttonTitle Duh, button title.
+ 
+This is just a simple wrapper for displaying an UIAlertView.
+ @version 0.2 and later.
+ */
+-(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle;
 
 @end
 

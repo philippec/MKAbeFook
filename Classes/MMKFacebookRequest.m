@@ -42,6 +42,7 @@
 		_loadingViewTransitionType = [[NSString alloc] init];
 		_loadingViewTransitionSubtype = [[NSString alloc] init];
 		_loadingViewTransitionDuration = LOADING_SCREEN_ANIMATION_DURATION;
+		_displayGeneralErrors = YES;
 		
 	}
 	return self;
@@ -49,11 +50,6 @@
 
 -(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector
 {
-	//if(![aFacebookConnection userLoggedIn])
-	//{
-		//hmm what should we do here?
-	//}
-
 	self = [super init];
 	if(self != nil)
 	{
@@ -66,6 +62,7 @@
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
 		_displayLoadingSheet = NO;
+		_displayGeneralErrors = YES;
 		
 	}
 	return self;
@@ -74,11 +71,6 @@
 
 -(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection parameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector
 {
-	//if(![aFacebookConnection userLoggedIn])
-	//{
-	//hmm what should we do here?
-	//}
-	
 	self = [super init];
 	if(self != nil)
 	{
@@ -91,6 +83,7 @@
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
 		_displayLoadingSheet = NO;
+		_displayGeneralErrors = YES;
 	}
 	return self;
 }
@@ -132,6 +125,16 @@
 	_displayLoadingSheet = shouldDisplayLoadingSheet;
 }
 
+-(BOOL)displayGeneralErrors
+{
+	return _displayGeneralErrors;
+}
+
+-(void)setDisplayGeneralErrors:(BOOL)aBool
+{
+	_displayGeneralErrors = aBool;
+}
+
 #pragma mark -
 
 -(void)dealloc
@@ -139,7 +142,9 @@
 	if(_loadingView != nil)
 		[_loadingView release];
 	
-	[_loadingSheet release];
+	if(_loadingSheet != nil)
+		[_loadingSheet release];
+	
 	[_requestURL release];
 	[_parameters release];
 	[_responseData release];
@@ -369,16 +374,22 @@
 	CXMLDocument *returnXML = [[[CXMLDocument alloc] initWithXMLString:temp options:0 error:nil] autorelease];
 	[temp release];
 	
-	 
 	if([returnXML validFacebookResponse] == NO)
 	{
 		if([_delegate respondsToSelector:@selector(receivedFacebookXMLErrorResponse:)])
 			[_delegate performSelector:@selector(receivedFacebookXMLErrorResponse:) withObject:returnXML];
+		
+		if([self displayGeneralErrors])
+		{
+			//TODO: pass back error number
+			[_facebookConnection displayGeneralAPIError:@"Response Error" message:@"Facebook gave us some bad information." buttonTitle:@"OK"];			
+		}
+	}else
+	{
+		if([_delegate respondsToSelector:_selector])
+			[_delegate performSelector:_selector withObject:returnXML];		
 	}
-	
-	if([_delegate respondsToSelector:_selector])
-		[_delegate performSelector:_selector withObject:returnXML];
-	
+
 	[_responseData setData:[NSData data]];
 	_requestIsDone = YES;
 	
@@ -426,10 +437,11 @@
 	[self returnToApplicationView];
 }
 
-//0.6 suggestion to pass connection error.  Thanks Adam.
+//TODO: document that we will automatically present the user with an error message but additional information can be passed or clean up can be done using the delegate calls
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {	
-	//TODO: remove delegate call and return user to application and present an error using soon to be modified displayGeneralAPIError method from the _facebookConnection object
+	if([self displayGeneralErrors])
+		[_facebookConnection displayGeneralAPIError:@"Connection Error" message:@"Are you connected to the interwebs?" buttonTitle:@"OK"];
 	
 	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
 		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];

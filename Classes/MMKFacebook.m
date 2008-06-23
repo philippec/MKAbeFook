@@ -18,8 +18,7 @@
 #include "CXMLElementAdditions.h"
 
 
-//NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
-NSString *MKAPIServerURL = @"http://nothing.reddwarf";
+NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php"; //it would be nice to use http://m.facebook.com/login.php but it doesn't work on the device?  wtf?
 NSString *MMKFacebookAPIVersion = @"1.0";
 NSString *MMKFacebookFormat = @"XML";
@@ -38,9 +37,7 @@ NSString *MMKFacebookFormat = @"XML";
 -(NSString *)authToken;
 -(void)createAuthToken;
 -(NSTimeInterval)timeoutInterval;
--(void)facebookRequestFailed:(NSError *)error;
 -(void)facebookResponseReceived:(CXMLDocument *)xml;
--(void)displayGeneralAPIError;
 -(void)returnUserToApplication;
 @end
 
@@ -74,9 +71,9 @@ NSString *MMKFacebookFormat = @"XML";
 		[self setApiKey:anAPIKey];
 		[self setSecretKey:aSecret];
 		[self setAuthToken:@"none"];
-		[self setSessionKey:@"none"];
-		[self setSessionSecret:@"none"];
-		[self setUid:@"none"];
+		[self setSessionKey:nil];
+		[self setSessionSecret:nil];
+		[self setUid:nil];
 		[self setConnectionTimeoutInterval:5.0];
 		_hasAuthToken = NO;
 		_hasSessionKey = NO;
@@ -94,8 +91,6 @@ NSString *MMKFacebookFormat = @"XML";
 
 -(void)dealloc
 {
-	//TODO: release login window stuff
-	
 	[_apiKey release];
 	[_secretKey release];
 	[_authToken release];
@@ -262,6 +257,7 @@ NSString *MMKFacebookFormat = @"XML";
 		[request setDelegate:self];
 		[request setFacebookConnection:self];
 		[request setSelector:@selector(facebookResponseReceived:)];
+		[request setDisplayGeneralErrors:NO];
 		
 		NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 		[parameters setValue:@"facebook.auth.createToken" forKey:@"method"];
@@ -287,6 +283,7 @@ NSString *MMKFacebookFormat = @"XML";
 			[request setDelegate:self];
 			[request setFacebookConnection:self];
 			[request setSelector:@selector(facebookResponseReceived:)];
+			[request setDisplayGeneralErrors:NO];
 			
 			NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
 			[parameters setValue:@"facebook.auth.getSession" forKey:@"method"];
@@ -483,7 +480,7 @@ NSString *MMKFacebookFormat = @"XML";
 
 	if(fetchError != nil)
 	{
-		[self facebookRequestFailed:nil];		   
+		[self displayGeneralAPIError:nil message:nil buttonTitle:nil];
 		return nil;
 	}else
 	{
@@ -496,12 +493,31 @@ NSString *MMKFacebookFormat = @"XML";
 }
 
 //TODO: allow this to accept title, message, and cancel button title.  use it when we reach a point of no return.
--(void)displayGeneralAPIError
+-(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle
 {
-	UIAlertView *uhOh = [[[UIAlertView alloc] initWithTitle:@"API Problems?" 
-													message:@"Facebook didn't give us the token we needed.  You can try again if you want but consider this login attempt defeated." 
+	NSString *errorTitle;
+	NSString *errorMessage;
+	NSString *errorButtonTitle;
+	
+	if(!title)
+		errorTitle = @"API Error";
+	else
+		errorTitle = [NSString stringWithString:title];
+	
+	if(!message)
+		errorMessage = @"Something done gone exploded.";
+	else
+		errorMessage = [NSString stringWithString:message];
+	
+	if(!buttonTitle)
+		errorButtonTitle = @"Fine!";
+	else
+		errorButtonTitle = [NSString stringWithString:buttonTitle];
+	
+	UIAlertView *uhOh = [[[UIAlertView alloc] initWithTitle:errorTitle
+													message:errorMessage
 												   delegate:self 
-										  cancelButtonTitle:@"Fine!" 
+										  cancelButtonTitle:errorButtonTitle
 										  otherButtonTitles:nil] autorelease];
 	[uhOh show];
 }
@@ -515,40 +531,35 @@ NSString *MMKFacebookFormat = @"XML";
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.0];
 	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:[_delegate applicationView] cache:NO];
-	
 	[[_navigationController view] removeFromSuperview];
-	
 	[UIView commitAnimations];
-	
-	//TODO: fix memory leaks
-	//NOTE: can we release them outside of the animation??
 	[_navigationController release];
 	[_loginViewController release];
 	
+}
+
+-(void)receivedFacebookXMLErrorResponse:(CXMLDocument *)xml
+{
+	if([_delegate respondsToSelector:@selector(userLoginFailed)])
+		[_delegate performSelector:@selector(userLoginFailed)];
+	
+	if([_delegate respondsToSelector:@selector(facebookAuthenticationError:)])
+		[_delegate performSelector:@selector(facebookAuthenticationError:) withObject:[[xml rootElement] dictionaryFromXMLElement]];
+	
+	if(_alertMessagesEnabled == YES)
+	{			
+		[self displayGeneralAPIError:nil message:@"Authentication Error" buttonTitle:nil];
+	}
+	
+	[self returnUserToApplication];
+	return;
 }
 
 //this is kind of clunky.  here we handle all requests used for login.
 //TODO: split this up into multiple methods and assign each request selector appropriately.
 -(void)facebookResponseReceived:(CXMLDocument *)xml
 {
-	if([xml validFacebookResponse] == NO)
-	{
-		
-		if([_delegate respondsToSelector:@selector(userLoginFailed)])
-			[_delegate performSelector:@selector(userLoginFailed)];
-		
-		if([_delegate respondsToSelector:@selector(facebookAuthenticationError:)])
-			[_delegate performSelector:@selector(facebookAuthenticationError:) withObject:[[xml rootElement] dictionaryFromXMLElement]];
-		
-		
-		if(_alertMessagesEnabled == YES)
-		{			
-			[self displayGeneralAPIError];
-		}
-		[self returnUserToApplication];
-		return;
-	}
-	
+
 	//we only get to the following methods if there was no error in the facebook response.  we "shouldn't" need to check for problems in the xml below...
 	if([[[xml rootElement] name] isEqualTo:@"auth_createToken_response"])
 	{
@@ -615,20 +626,13 @@ NSString *MMKFacebookFormat = @"XML";
 		}
 		else
 		{
-			
 			[self resetFacebookConnection];
-			
 			if([_delegate respondsToSelector:@selector(userLoginFailed)])
 				[_delegate performSelector:@selector(userLoginFailed)];
 			
 			if(_alertMessagesEnabled == YES)
 			{
-				UIAlertView *uhOh = [[[UIAlertView alloc] initWithTitle:@"Whoah there, what happened?" 
-																message:@"Something went wrong trying to obtain a session from Facebook.  Try again." 
-															   delegate:nil 
-													  cancelButtonTitle:@"Fine!" 
-													  otherButtonTitles:nil] autorelease];
-				[uhOh show];
+				[self displayGeneralAPIError:nil message:@"Something went wrong trying to obtain a session from Facebook." buttonTitle:nil];
 			}
 			
 		}
@@ -640,19 +644,6 @@ NSString *MMKFacebookFormat = @"XML";
 	}
 }
 
-//this will be called if asynchronous requests fail. or if fetchFacebookData: encounters a network connection problem
--(void)facebookRequestFailed:(NSError *)error
-{
-	if(_alertMessagesEnabled == YES)
-	{
-		UIAlertView *uhOh = [[[UIAlertView alloc] initWithTitle:@"Network Problems?" 
-														message:@"I can't seem to talk to Facebook.com right now." 
-													   delegate:nil 
-											  cancelButtonTitle:@"Fine!" 
-											  otherButtonTitles:nil] autorelease];
-		[uhOh show];
-	}
-}
 
 -(BOOL)userLoggedIn
 {
