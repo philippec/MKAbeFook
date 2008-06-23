@@ -53,6 +53,7 @@ enum
 	MMKFacebookRequestType _urlRequestType;
 	NSMutableDictionary *_parameters;
 	NSURL *_requestURL;
+	BOOL _displayGeneralErrors;
 	
 	/* either displayLoadingSheet or displayLoadingView can be used to show progress while data is loading, they can not both be used at the same time. */
 	
@@ -147,6 +148,15 @@ enum
  */
 -(void)displayLoadingSheet:(BOOL)shouldDisplayLoadingSheet;
 
+/*!
+ NEEDS DOCUMENTATION
+ */
+-(void)setDisplayGeneralErrors:(BOOL)aBool;
+
+/*!
+ NEEDS DOCUMENTATION
+ */
+-(BOOL)displayGeneralErrors;
 
 /*!
  @method setDisplayLoadingView:transition:duration:
