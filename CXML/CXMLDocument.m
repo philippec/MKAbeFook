@@ -9,21 +9,64 @@
 #import "CXMLDocument.h"
 
 #include <libxml/parser.h>
+#include <libxml/HTMLparser.h>
+#include <libxml/HTMLtree.h>
 
 #import "CXMLNode_PrivateExtensions.h"
 #import "CXMLElement.h"
 
 @implementation CXMLDocument
 
+static void htmlparser_error(void *ctx, const char *msg, ...)
+{
+	va_list args;
+	va_start(args, msg);
+	va_end(args);
+}
+
+static void htmlparser_warning(void *ctx, const char *msg, ...)
+{
+	va_list args;
+	va_start(args, msg);
+	va_end(args);
+}
+
 - (id)initWithXMLString:(NSString *)inString options:(NSUInteger)inOptions error:(NSError **)outError
 {
 if ((self = [super init]) != NULL)
 	{
-	xmlDocPtr theDoc = xmlParseDoc((xmlChar *)[inString UTF8String]);
-	
+	xmlDocPtr theDoc;
+	if ( inOptions & CXMLDocumentTidyHTML )
+		{
+		const char *htmlString = (const char*) [inString UTF8String];
+		int length = xmlStrlen( (const xmlChar*)htmlString );
+		htmlParserCtxtPtr ctx = htmlCreateMemoryParserCtxt(htmlString, length);
+
+		if (! ctx ) {
+			return 0;
+		}	
+		
+		ctx->vctxt.error = htmlparser_error;
+		ctx->vctxt.warning = htmlparser_warning;
+		if (ctx->sax != NULL)
+			{
+			ctx->sax->error = htmlparser_error;
+			ctx->sax->warning = htmlparser_warning;
+			}
+		htmlParseDocument(ctx);
+		theDoc = ctx->myDoc;
+		htmlFreeParserCtxt(ctx);
+		}
+	else
+		{
+		theDoc = xmlParseDoc((xmlChar *)[inString UTF8String]);
+		}
+
+
 	if (theDoc != NULL)
 		{
 		_node = (xmlNodePtr)theDoc;
+		NSAssert(_node->_private == NULL, @"TODO");
 		_node->_private = self; // Note. NOT retained (TODO think more about _private usage)
 		}
 	else
@@ -36,11 +79,32 @@ if ((self = [super init]) != NULL)
 return(self);
 }
 
+- (id)initWithContentsOfURL:(NSURL *)inURL options:(NSUInteger)inOptions error:(NSError **)outError
+{
+NSData *theData = [NSData dataWithContentsOfURL:inURL options:NSUncachedRead error:outError];
+if (theData)
+	{
+	self = [self initWithData:theData options:inOptions error:outError];
+	}
+else
+	{
+	
+	self = NULL;
+	}
+	
+return(self);
+}
+
 - (id)initWithData:(NSData *)inData options:(NSUInteger)inOptions error:(NSError **)outError
 {
 if ((self = [super init]) != NULL)
 	{
-	xmlDocPtr theDoc = xmlParseMemory([inData bytes], [inData length]);
+	xmlDocPtr theDoc = NULL;
+
+	if (inData && inData.length > 0)
+		{
+		theDoc = xmlParseMemory([inData bytes], [inData length]);
+		}
 	
 	if (theDoc != NULL)
 		{
@@ -63,7 +127,7 @@ xmlFreeDoc((xmlDocPtr)_node);
 _node = NULL;
 //
 
-[nodePool autorelease];
+[nodePool release];
 nodePool = NULL;
 //
 [super dealloc];
@@ -89,5 +153,12 @@ return([CXMLNode nodeWithLibXMLNode:theLibXMLNode]);
 //- (id)objectByApplyingXSLT:(NSData *)xslt arguments:(NSDictionary *)arguments error:(NSError **)error;
 //- (id)objectByApplyingXSLTString:(NSString *)xslt arguments:(NSDictionary *)arguments error:(NSError **)error;
 //- (id)objectByApplyingXSLTAtURL:(NSURL *)xsltURL arguments:(NSDictionary *)argument error:(NSError **)error;
+- (id)XMLStringWithOptions:(NSUInteger)options
+{
+id root = [self rootElement];
+NSMutableString* xmlString = [NSMutableString stringWithString:@""];
+[root _XMLStringWithOptions:options appendingToString:xmlString];
+return xmlString;
+}
 
 @end

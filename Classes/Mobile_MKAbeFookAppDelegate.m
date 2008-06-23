@@ -64,6 +64,7 @@
 	*/
 	 // Show window
 	
+	[self userLoginSuccessful];
 	
 	 [window makeKeyAndVisible];
 
@@ -106,19 +107,20 @@
 	[request setFacebookConnection:_facebookConnection];
 	
 	//display loading sheet
-	[request displayLoadingSheet:YES];
+	//[request displayLoadingSheet:YES];
 
 	//or
 
 	//display entire new view with transitions
-	/*
+	
+	
 	UIView *blue = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	[blue setBackgroundColor:[UIColor blueColor]];
 	[request displayLoadingWithView: blue 
 					 transitionType:kCATransitionReveal
 				  transitionSubtype:kCATransitionFromLeft
 						   duration:0.5];
-	*/
+	
 	[request setSelector:@selector(gotUserInfo:)];
 	
 	NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];

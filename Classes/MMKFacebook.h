@@ -13,6 +13,10 @@
 #import <UIKit/UIKit.h>
 #import "MMKLoginViewController.h"
 
+//copied from apple
+#define kStdButtonWidth			106.0
+#define kStdButtonHeight		40.0
+
 extern NSString *MKAPIServerURL;
 extern NSString *MKLoginUrl;
 extern NSString *MMKFacebookAPIVersion;
@@ -40,7 +44,12 @@ Available Delegate Methods
  
 -(void)facebookAuthenticationError:(NSDictionary *)error; (optional)<br/>
  &nbsp;&nbsp; Called when an error is encountered attempting to obtain an authToken or authSession.  Passes parsed XML response from Facebook as NSDictionary object.
+
+-(UIView *)applicationView; (required)<br/>
+ &nbsp; &nbsp; Returns application view so we can flip user back and forth between application and login view.
  
+-(void)returningUserToApplication; (optional)<br/>
+ &nbsp;&nbsp; Called as login window is being flipped back to application.  Bet you never would have guessed that.
  
  */
 @interface MMKFacebook : NSObject {
@@ -52,19 +61,21 @@ Available Delegate Methods
 	NSString *_sessionSecret;
 	NSString *_uid;
 	NSString *_defaultsName;
+	
 	BOOL _hasAuthToken;
 	BOOL _hasSessionKey;
 	BOOL _hasSessionSecret;
 	BOOL _hasUid;
 	BOOL _userHasLoggedInMultipleTimes; //used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
-	NSTimeInterval _connectionTimeoutInterval;
-	id _delegate;
 	BOOL _alertMessagesEnabled;
 	BOOL _shouldUseSynchronousLogin;
 	
-	UINavigationController *_navigationController;
-	MMKLoginViewController *_loginViewController;
+	NSTimeInterval _connectionTimeoutInterval;
 	
+	id _delegate;
+	
+	UINavigationController *_navigationController;
+	MMKLoginViewController *_loginViewController;	
 }
 
 
@@ -173,7 +184,7 @@ Available Delegate Methods
 
 
 
-
+//used internally
 -(void)getAuthSession;
 
 
@@ -205,7 +216,7 @@ Available Delegate Methods
 -(NSURL *)generateFacebookURL:(NSDictionary *)parameters;
 
 
-
+//used internally
 -(NSString *)generateTimeStamp;
 
 

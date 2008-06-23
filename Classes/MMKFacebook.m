@@ -12,14 +12,15 @@
 
 #import "MMKFacebook.h"
 #import "MMKFacebookRequest.h"
-#include <CommonCrypto/CommonHMAC.h>
+#include <CommonCrypto/CommonHMAC.h> //might not be documented but we need this for creating md5 hashes, thanks Spotlight!
 #include "CXMLDocument.h"
 #include "CXMLDocumentAdditions.h"
 #include "CXMLElementAdditions.h"
 
 
-NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
-NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
+//NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
+NSString *MKAPIServerURL = @"http://nothing.reddwarf";
+NSString *MKLoginUrl = @"http://www.facebook.com/login.php"; //it would be nice to use http://m.facebook.com/login.php but it doesn't work on the device?  wtf?
 NSString *MMKFacebookAPIVersion = @"1.0";
 NSString *MMKFacebookFormat = @"XML";
 
@@ -72,10 +73,10 @@ NSString *MMKFacebookFormat = @"XML";
 		_defaultsName = [[NSBundle mainBundle] bundleIdentifier];
 		[self setApiKey:anAPIKey];
 		[self setSecretKey:aSecret];
-		[self setAuthToken:nil];
-		[self setSessionKey:nil];
-		[self setSessionSecret:nil];
-		[self setUid:nil];
+		[self setAuthToken:@"none"];
+		[self setSessionKey:@"none"];
+		[self setSessionSecret:@"none"];
+		[self setUid:@"none"];
 		[self setConnectionTimeoutInterval:5.0];
 		_hasAuthToken = NO;
 		_hasSessionKey = NO;
@@ -93,6 +94,8 @@ NSString *MMKFacebookFormat = @"XML";
 
 -(void)dealloc
 {
+	//TODO: release login window stuff
+	
 	[_apiKey release];
 	[_secretKey release];
 	[_authToken release];
@@ -103,6 +106,8 @@ NSString *MMKFacebookFormat = @"XML";
 }
 #pragma mark -
 
+//TODO: use properties!
+#pragma mark Setters and Getters
 -(void)setSecretKey:(NSString *)aSecretKey
 {
 	aSecretKey = [aSecretKey copy];
@@ -213,8 +218,9 @@ NSString *MMKFacebookFormat = @"XML";
 
 #pragma mark -
 
+#pragma mark Login Stuff
 
-//this doesn't actually show the login window.  it just starts the process.  see facebookResponseReceived to see the window being displayed.
+//this method just flips the view and requests an auth token from facebook.  if a valid token is returned to facebookResponseReceived: it loads the login page.
 -(void)showFacebookLoginWindow
 {
 	if(![_delegate respondsToSelector:@selector(applicationView)])
@@ -227,8 +233,10 @@ NSString *MMKFacebookFormat = @"XML";
 		return;
 	}
 	
+	//tell the login window to call getAuthSession: just as it is flipping back to the application view
 	_loginViewController = [[MMKLoginViewController alloc] initWithDelegate:self withSelector:@selector(getAuthSession:)];	
 	_navigationController = [[UINavigationController alloc] initWithRootViewController:_loginViewController];
+	
 	[self createAuthToken];
 		
 	[UIView beginAnimations:nil context:NULL];
@@ -241,7 +249,7 @@ NSString *MMKFacebookFormat = @"XML";
 	
 }
 
-//called when login window is created, if an authToken is generated the login window will display
+//called when login window is created, if an authToken is passed back to facebookResponseReceived: it will load the login window
 -(void)createAuthToken
 {
 	if(_shouldUseSynchronousLogin == YES)
@@ -257,14 +265,14 @@ NSString *MMKFacebookFormat = @"XML";
 		
 		NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 		[parameters setValue:@"facebook.auth.createToken" forKey:@"method"];
+		
 		[request setParameters:parameters];
 		[request sendRequest];
 		[parameters release];
 	}
-
 }
 
-//called when login window is closed, attempts create and save a session
+//called when login window is closed, attempts to create and save a session
 -(void)getAuthSession
 {
 	if(_hasAuthToken)
@@ -283,13 +291,12 @@ NSString *MMKFacebookFormat = @"XML";
 			NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
 			[parameters setValue:@"facebook.auth.getSession" forKey:@"method"];
 			[parameters setValue:[self authToken] forKey:@"auth_token"];
-			
+
 			[request setParameters:parameters];
 			[request sendRequest];
 		}
 	}else
 	{
-		//[self displayGeneralAPIError];
 		[self returnUserToApplication];
 	}
 }
@@ -345,14 +352,19 @@ NSString *MMKFacebookFormat = @"XML";
 	return YES;
 }
 
+#pragma mark -
+
+#pragma mark Misc Helpers
+
 -(void)clearInfiniteSession
 {
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"sessionKey"];
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"secretKey"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[[NSUserDefaults standardUserDefaults] synchronize]; //probably not needed
 	[self resetFacebookConnection];
 }
 
+//TODO: find out if we are actually using this, if not delete it!
 //generateFacebookURL, generateTimeStamp, and generateSigForParameters used in MMKFacebook.m, MKAsyncRequest.m and MKPhotoUploader.m to prepare urls that are sent to facebook.com
 -(NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters
 {
@@ -382,6 +394,7 @@ NSString *MMKFacebookFormat = @"XML";
 	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
 }
 
+// duh, generates appropriate url
 -(NSURL *)generateFacebookURL:(NSDictionary *)parameters
 {
 	NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:parameters];
@@ -419,11 +432,13 @@ NSString *MMKFacebookFormat = @"XML";
 	return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
 }
 
+//sorts parameters keys, creates a string of values, returns md5 hash
 - (NSString *)generateSigForParameters:(NSDictionary *)parameters
 {
 	//sort our dictionary of arguments
 	//somehow the first array that comes from the dictionary doesn't get sorted! so we have to sort that array!
 	//6.23.07 this problem has been here since the beginning, when are we going to fix it?
+	//TODO: FIX THIS! we shouldn't need to sort it twice
 	NSArray *sortedParameters1 = [NSArray arrayWithArray:[parameters keysSortedByValueUsingSelector:@selector(caseInsensitiveCompare:)]];
 	NSArray *sortedParameters = [NSArray arrayWithArray:[sortedParameters1 sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]];
 	//now sortedParameters is finally sorted correctly
@@ -436,7 +451,7 @@ NSString *MMKFacebookFormat = @"XML";
 		[tempString appendString:@"="];
 		[tempString appendString:[parameters valueForKey:anObject]];
 	}
-	//NSLog(tempString);
+
 	//methods except these require we use the secretKey that was assigned during login, not our original one
 	if([[parameters valueForKey:@"method"] isEqualTo:@"facebook.auth.getSession"] || [[parameters valueForKey:@"method"] isEqualTo:@"facebook.auth.createToken"])
 	{
@@ -446,20 +461,24 @@ NSString *MMKFacebookFormat = @"XML";
 		[tempString appendString:[self sessionSecret]];
 	}
 	
-	
 	return [tempString md5Hash];
 }
 
+#pragma mark -
+
+//used for synchronous login requests.  asynchronous requests using MMMKFacebookRequest are better.
 -(id)fetchFacebookData:(NSURL *)theURL
 {
 	NSURLRequest *urlRequest = [NSURLRequest requestWithURL:theURL 
 												cachePolicy:NSURLRequestReloadIgnoringCacheData
 											timeoutInterval:[self connectionTimeoutInterval]];
-	NSHTTPURLResponse *xmlResponse;  //not used right now
+
+	//TODO: check response, prompt alert if needed
+	//NSHTTPURLResponse *xmlResponse;  //not used right now
 	CXMLDocument *returnXML = nil;
 	NSError *fetchError;
 	NSData *responseData = [NSURLConnection sendSynchronousRequest:urlRequest
-												 returningResponse:&xmlResponse
+												 returningResponse:nil
 															 error:&fetchError];
 
 	if(fetchError != nil)
@@ -476,6 +495,7 @@ NSString *MMKFacebookFormat = @"XML";
 
 }
 
+//TODO: allow this to accept title, message, and cancel button title.  use it when we reach a point of no return.
 -(void)displayGeneralAPIError
 {
 	UIAlertView *uhOh = [[[UIAlertView alloc] initWithTitle:@"API Problems?" 
@@ -488,32 +508,29 @@ NSString *MMKFacebookFormat = @"XML";
 
 -(void)returnUserToApplication
 {
-	//return user to application
 	if([_delegate respondsToSelector:@selector(returningUserToApplication)])
 		[_delegate performSelector:@selector(returningUserToApplication)];
 
+	//sometimes this doesn't play nicely with the keyboard.  if things crash when the user tries to return to the application while the keyboard is visible comment the next 3 lines out
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.0];
 	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:[_delegate applicationView] cache:NO];
 	
-	
 	[[_navigationController view] removeFromSuperview];
-	//[_navigationController release];
-	//[_loginViewController release];
 	
 	[UIView commitAnimations];
 	
+	//TODO: fix memory leaks
+	//NOTE: can we release them outside of the animation??
+	[_navigationController release];
+	[_loginViewController release];
+	
 }
 
+//this is kind of clunky.  here we handle all requests used for login.
+//TODO: split this up into multiple methods and assign each request selector appropriately.
 -(void)facebookResponseReceived:(CXMLDocument *)xml
 {
-	//NSLog([xml description]);
-	//NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
-	
-	//NSLog([xmlResponse description]);
-	
-	//NSLog(@"incoming xml retainCount : %i", [xml retainCount]);
-	
 	if([xml validFacebookResponse] == NO)
 	{
 		
@@ -606,7 +623,6 @@ NSString *MMKFacebookFormat = @"XML";
 			
 			if(_alertMessagesEnabled == YES)
 			{
-				
 				UIAlertView *uhOh = [[[UIAlertView alloc] initWithTitle:@"Whoah there, what happened?" 
 																message:@"Something went wrong trying to obtain a session from Facebook.  Try again." 
 															   delegate:nil 

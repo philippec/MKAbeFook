@@ -19,40 +19,35 @@
 #import "CXMLElementAdditions.h"
 
 
-#define LOADING_SCREEN_ANIMATION_DURATION 0.5
+#define LOADING_SCREEN_ANIMATION_DURATION 1.0
+
 
 @implementation MMKFacebookRequest
 
 -(MMKFacebookRequest *)init
 {
 	self = [super init];
-	
 	if(self != nil)
 	{
-		//NSLog(@"initiated1");
-		
+		_loadingView = nil;
 		_facebookConnection = nil;
 		_delegate = nil;
 		_selector = nil;
-		
 		_responseData = [[NSMutableData alloc] init];
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
 		_displayLoadingSheet = NO;
 		_displayLoadingView = NO;
-		
 		_loadingViewTransitionType = [[NSString alloc] init];
 		_loadingViewTransitionSubtype = [[NSString alloc] init];
-		_loadingViewTransitionDuration = 0.5;
+		_loadingViewTransitionDuration = LOADING_SCREEN_ANIMATION_DURATION;
 		
 	}
 	return self;
 }
 
--(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection 
-					   delegate:(id)aDelegate 
-					   selector:(SEL)aSelector
+-(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector
 {
 	//if(![aFacebookConnection userLoggedIn])
 	//{
@@ -62,11 +57,10 @@
 	self = [super init];
 	if(self != nil)
 	{
-		//NSLog(@"initiated2");
+		_loadingView = nil;
 		_facebookConnection = [aFacebookConnection retain];
 		_delegate = aDelegate;
 		_selector = aSelector;
-		
 		_responseData = [[NSMutableData alloc] init];
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MMKPostRequest;
@@ -78,10 +72,7 @@
 }
 
 
--(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection
-									  parameters:(NSDictionary *)parameters
-										delegate:(id)aDelegate 
-										selector:(SEL)aSelector
+-(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection parameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector
 {
 	//if(![aFacebookConnection userLoggedIn])
 	//{
@@ -91,17 +82,20 @@
 	self = [super init];
 	if(self != nil)
 	{
+		_loadingView = nil;
 		_facebookConnection = [aFacebookConnection retain];
 		_delegate = aDelegate;
 		_selector = aSelector;
-		
 		_responseData = [[NSMutableData alloc] init];
 		_parameters = [[NSMutableDictionary dictionaryWithDictionary:parameters] retain];
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
+		_displayLoadingSheet = NO;
 	}
 	return self;
 }
+
+#pragma mark Setters and Getters
 
 -(void)setFacebookConnection:(MMKFacebook *)aFacebookConnection
 {
@@ -131,7 +125,6 @@
 -(void)setParameters:(NSDictionary *)parameters
 {
 	[_parameters addEntriesFromDictionary:parameters];
-	//_parameters = [NSMutableDictionary dictionaryWithDictionary:parameters];
 }
 
 -(void)displayLoadingSheet:(BOOL)shouldDisplayLoadingSheet
@@ -139,9 +132,13 @@
 	_displayLoadingSheet = shouldDisplayLoadingSheet;
 }
 
+#pragma mark -
+
 -(void)dealloc
 {
-	[_loadingSheet removeFromSuperview];
+	if(_loadingView != nil)
+		[_loadingView release];
+	
 	[_loadingSheet release];
 	[_requestURL release];
 	[_parameters release];
@@ -165,13 +162,14 @@
 	//this area needs a lot of clean up
 	if([[_facebookConnection delegate] respondsToSelector:@selector(applicationView)])
 	{
+		//display little view at top of screen with a progress indicator in it
 		if(_displayLoadingSheet == YES)
 		{
 			_loadingSheet = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
 			[_loadingSheet setBackgroundColor:[UIColor grayColor]];						
 			
 			UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-			[cancelButton setFrame:CGRectMake(10, 0, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
+			[cancelButton setFrame:CGRectMake(10, -10, kStdButtonWidth - 15, kStdButtonHeight - 10)];
 			[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
 			[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
 			[_loadingSheet addSubview:cancelButton];
@@ -195,17 +193,16 @@
 			
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
-			[cancelButton setFrame:CGRectMake(10, 30, [cancelButton bounds].size.width,[cancelButton bounds].size.height)]; 
+			[_loadingSheet setFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 70)];
 			[loadingText setFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2 - 40, 33, 80, 20)];
 			[progressIndicator setFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width -40, 30 , 30, 30)];
-			[_loadingSheet setFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 70)];
+			[cancelButton setFrame:CGRectMake(10, 30, kStdButtonWidth - 15, kStdButtonHeight - 10)]; 
 			[UIView commitAnimations];
 
 			[progressIndicator release];
 			[loadingText release];
 
-
-			
+		//flip entire view and display loading message
 		}else if(_displayLoadingView == YES)
 		{
 			if(_loadingView == nil)
@@ -232,8 +229,8 @@
 				
 				//add default cancel button to upper left of view
 				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-				//[cancelButton setFrame:CGRectMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - [cancelButton bounds].size.width /2, [[UIScreen mainScreen] bounds].size.height / 2 + 50, [cancelButton bounds].size.width, [cancelButton bounds].size.height)];
-				cancelButton.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - 5, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 50);
+				[cancelButton setFrame:CGRectMake(10, 40, kStdButtonWidth - 15, kStdButtonHeight - 10)];
+				//cancelButton.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - 5, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 50);
 				[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
 				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
 				[_loadingView addSubview:cancelButton];
@@ -242,7 +239,7 @@
 			{
 				//add default cancel button to upper left of view
 				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-				[cancelButton setFrame:CGRectMake(10, 40, [cancelButton bounds].size.width,[cancelButton bounds].size.height)];
+				[cancelButton setFrame:CGRectMake(10, 40, kStdButtonWidth - 15, kStdButtonHeight - 10)];
 				[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
 				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
 				[_loadingView addSubview:cancelButton];				
@@ -255,12 +252,14 @@
 			[animation setDelegate:self];
 			[animation setType:_loadingViewTransitionType];
 			[animation setSubtype:_loadingViewTransitionSubtype];
-			[animation setDuration: _loadingViewTransitionDuration];
+			[animation setDuration: LOADING_SCREEN_ANIMATION_DURATION];
 			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
 			[[[[_facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
 		}
 	}
 	
+	
+	//now to actually prepare the request!
 	
 	NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
 	NSString *applicationVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
@@ -274,7 +273,6 @@
 	_requestIsDone = NO;
 	if(_urlRequestType == MMKPostRequest)
 	{
-		//NSLog([_facebookConnection description]);
 		NSMutableURLRequest *postRequest = [NSMutableURLRequest requestWithURL:_requestURL 
 																	 cachePolicy:NSURLRequestReloadIgnoringCacheData 
 																 timeoutInterval:[_facebookConnection connectionTimeoutInterval]];
@@ -303,10 +301,9 @@
 		
 		NSEnumerator *e = [_parameters keyEnumerator];
 		id key;
-		NSString *imageKey = nil; //apparently G4s don't like it when you don't at least set this to = nil.  0.7.3 fix.
+		NSString *imageKey = nil;
 		while(key = [e nextObject])
 		{
-			
 			if([[_parameters objectForKey:key] isKindOfClass:[UIImage class]])
 			{
 				/*SKIPPING PHOTO HANDLING FOR NOW
@@ -326,21 +323,19 @@
 				*/
 			}else
 			{
-			 
 				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:[[_parameters valueForKey:key] dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];				
 			}
 			 
 		}
-		//0.7.1 fix.  we can't remove this during the while loop so we'll do it here
+		//we can't remove this during the while loop so we'll do it here
 		if(imageKey != nil)
 			[_parameters removeObjectForKey:imageKey];
 		
 		[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"sig\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
 		[postBody appendData:[[_facebookConnection generateSigForParameters:_parameters] dataUsingEncoding:NSUTF8StringEncoding]];
 		[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
-		
 		[postRequest setHTTPBody:postBody];
 		_dasConnection = [NSURLConnection connectionWithRequest:postRequest delegate:self];
 	}
@@ -348,12 +343,10 @@
 	if(_urlRequestType == MMKGetRequest)
 	{
 		NSURL *theURL = [_facebookConnection generateFacebookURL:_parameters];
-		
 		NSMutableURLRequest *getRequest = [NSMutableURLRequest requestWithURL:theURL 
 																  cachePolicy:NSURLRequestReloadIgnoringCacheData 
 															  timeoutInterval:[_facebookConnection connectionTimeoutInterval]];
 		[getRequest setValue:userAgent forHTTPHeaderField:@"User-Agent"];
-		
 		_dasConnection = [NSURLConnection connectionWithRequest:getRequest delegate:self];
 	}
 	 
@@ -373,7 +366,7 @@
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
 	NSString *temp = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-	CXMLDocument *returnXML = [[CXMLDocument alloc] initWithXMLString:temp options:0 error:nil];
+	CXMLDocument *returnXML = [[[CXMLDocument alloc] initWithXMLString:temp options:0 error:nil] autorelease];
 	[temp release];
 	
 	 
@@ -413,7 +406,7 @@
 			[animation setDelegate:self];
 			[animation setType:_loadingViewTransitionType];
 			[animation setSubtype:_loadingViewTransitionSubtype];
-			[animation setDuration: _loadingViewTransitionDuration];
+			[animation setDuration: LOADING_SCREEN_ANIMATION_DURATION];
 			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
 			[[[[_facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
 			[_loadingView removeFromSuperview];
@@ -436,16 +429,17 @@
 //0.6 suggestion to pass connection error.  Thanks Adam.
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {	
+	//TODO: remove delegate call and return user to application and present an error using soon to be modified displayGeneralAPIError method from the _facebookConnection object
+	
 	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
 		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
 }
 
+//TODO: this should be somthing like setLoadingViewDisplay....
 -(void)displayLoadingWithView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration
 {
 	_displayLoadingSheet = NO;
-	
 	_displayLoadingView = YES;
-	
 	_loadingView = view;
 
 	transitionType = [transitionType copy];

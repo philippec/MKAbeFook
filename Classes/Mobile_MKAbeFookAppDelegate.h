@@ -12,9 +12,7 @@
 #import "MMKFacebook.h"
 
 
-//copied from apple
-#define kStdButtonWidth			106.0
-#define kStdButtonHeight		40.0
+
 
 
 @interface Mobile_MKAbeFookAppDelegate : NSObject <MMKFacebook> {

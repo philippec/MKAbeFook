@@ -8,6 +8,10 @@
 
 #import "CXMLNode.h"
 
+enum {
+	CXMLDocumentTidyHTML = 1 << 9
+};
+
 @class CXMLElement;
 
 @interface CXMLDocument : CXMLNode {
@@ -15,6 +19,7 @@
 }
 
 - (id)initWithXMLString:(NSString *)inString options:(NSUInteger)inOptions error:(NSError **)outError;
+- (id)initWithContentsOfURL:(NSURL *)inURL options:(NSUInteger)inOptions error:(NSError **)outError;
 - (id)initWithData:(NSData *)inData options:(NSUInteger)inOptions error:(NSError **)outError;
 
 //- (NSString *)characterEncoding;
@@ -32,5 +37,7 @@
 //- (id)objectByApplyingXSLT:(NSData *)xslt arguments:(NSDictionary *)arguments error:(NSError **)error;
 //- (id)objectByApplyingXSLTString:(NSString *)xslt arguments:(NSDictionary *)arguments error:(NSError **)error;
 //- (id)objectByApplyingXSLTAtURL:(NSURL *)xsltURL arguments:(NSDictionary *)argument error:(NSError **)error;
+
+//- (id)XMLStringWithOptions:(NSUInteger)options;
 
 @end

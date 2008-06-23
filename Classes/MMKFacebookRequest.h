@@ -43,17 +43,19 @@ enum
   @version 0.1 and later
  */
 @interface MMKFacebookRequest : NSObject {
-	NSURLConnection *_dasConnection; //internal connection used if object is used multiple times.  blame the beer.
+	
+	NSURLConnection *_dasConnection; //internal connection used if object is used multiple times.
 	MMKFacebook *_facebookConnection;
 	id _delegate;
 	SEL _selector;
 	NSMutableData *_responseData;
-	BOOL _requestIsDone; //dirty stupid way of trying to prevent crashing when trying to cancel the request when it's not active.  isn't there a better way to do this?
+	BOOL _requestIsDone; //how we prevent crashing when trying to cancel the request when it's not active.  isn't there a better way to do this?
 	MMKFacebookRequestType _urlRequestType;
 	NSMutableDictionary *_parameters;
 	NSURL *_requestURL;
 	
 	/* either displayLoadingSheet or displayLoadingView can be used to show progress while data is loading, they can not both be used at the same time. */
+	
 	/* displays sheet from top of screen while loading */
 	BOOL _displayLoadingSheet;
 	UIView *_loadingSheet;
@@ -144,7 +146,6 @@ enum
  @discussion Displays a sheet from top of screen with indeterminate progress indicator and cancel button while request is loading.  Automatically removed from screen when request completes.
  */
 -(void)displayLoadingSheet:(BOOL)shouldDisplayLoadingSheet;
-
 
 
 /*!

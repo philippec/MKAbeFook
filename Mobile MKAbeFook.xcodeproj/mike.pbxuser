@@ -2,18 +2,18 @@
 {
 	1D3623240D0F684500981E51 /* Mobile_MKAbeFookAppDelegate.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1050, 849}}";
-			sepNavSelRange = "{368, 0}";
-			sepNavVisRange = "{0, 517}";
-			sepNavWindowFrame = "{{-1652, 97}, {1109, 929}}";
+			sepNavIntBoundsRect = "{{0, 0}, {619, 595}}";
+			sepNavSelRange = "{223, 0}";
+			sepNavVisRange = "{0, 628}";
+			sepNavWindowFrame = "{{16, 353}, {678, 675}}";
 		};
 	};
 	1D3623250D0F684500981E51 /* Mobile_MKAbeFookAppDelegate.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {944, 1974}}";
-			sepNavSelRange = "{3775, 5}";
-			sepNavVisRange = "{0, 1962}";
-			sepNavWindowFrame = "{{175, 78}, {1003, 950}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1075, 2184}}";
+			sepNavSelRange = "{4004, 0}";
+			sepNavVisRange = "{2784, 1895}";
+			sepNavWindowFrame = "{{-1401, 122}, {1134, 907}}";
 		};
 	};
 	1D6058900D05DD3D006BFB54 /* Mobile MKAbeFook */ = {
@@ -21,101 +21,6 @@
 		executables = (
 			27603D540D9D7E520014BB6B /* Mobile MKAbeFook */,
 		);
-	};
-	275E8BAA0DCBF9E2000F1884 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 27F420CD0D9DD055000520D3 /* MMKFacebook.m */;
-		name = "MMKFacebook.m: 747";
-		rLen = 0;
-		rLoc = 24825;
-		rType = 0;
-		vrLen = 909;
-		vrLoc = 23668;
-	};
-	275E8BAB0DCBF9E2000F1884 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 27F420CD0D9DD055000520D3 /* MMKFacebook.m */;
-		name = "MMKFacebook.m: 34";
-		rLen = 0;
-		rLoc = 1682;
-		rType = 0;
-		vrLen = 1233;
-		vrLoc = 781;
-	};
-	275E8BAD0DCBF9E2000F1884 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 27F420CD0D9DD055000520D3 /* MMKFacebook.m */;
-		name = "MMKFacebook.m: 478";
-		rLen = 0;
-		rLoc = 16038;
-		rType = 0;
-		vrLen = 1339;
-		vrLoc = 14645;
-	};
-	275E8BAE0DCBF9E2000F1884 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 27F420CD0D9DD055000520D3 /* MMKFacebook.m */;
-		name = "MMKFacebook.m: 751";
-		rLen = 0;
-		rLoc = 24825;
-		rType = 0;
-		vrLen = 799;
-		vrLoc = 23925;
-	};
-	275E8BB10DCBF9E2000F1884 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 275E8BB20DCBF9E2000F1884 /* CommonDigest.h */;
-		rLen = 0;
-		rLoc = 2147483647;
-		rType = 0;
-	};
-	275E8BB20DCBF9E2000F1884 /* CommonDigest.h */ = {
-		isa = PBXFileReference;
-		lastKnownFileType = sourcecode.c.h;
-		name = CommonDigest.h;
-		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.0.sdk/usr/include/CommonCrypto/CommonDigest.h;
-		sourceTree = "<absolute>";
-	};
-	275E8BB30DCBF9E2000F1884 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 275E8BB40DCBF9E2000F1884 /* CommonDigest.h */;
-		name = "CommonDigest.h: 111";
-		rLen = 56;
-		rLoc = 3851;
-		rType = 0;
-		vrLen = 1619;
-		vrLoc = 2754;
-	};
-	275E8BB40DCBF9E2000F1884 /* CommonDigest.h */ = {
-		isa = PBXFileReference;
-		name = CommonDigest.h;
-		path = /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.0.sdk/usr/include/CommonCrypto/CommonDigest.h;
-		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {609, 3108}}";
-			sepNavSelRange = "{3851, 56}";
-			sepNavVisRange = "{2754, 1680}";
-		};
-	};
-	275E8BBD0DCBFA29000F1884 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 275E8BB40DCBF9E2000F1884 /* CommonDigest.h */;
-		name = "CommonDigest.h: 111";
-		rLen = 56;
-		rLoc = 3851;
-		rType = 0;
-		vrLen = 1680;
-		vrLoc = 2754;
-	};
-	275E8BC00DCBFA50000F1884 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 275E8BB40DCBF9E2000F1884 /* CommonDigest.h */;
-		name = "CommonDigest.h: 111";
-		rLen = 56;
-		rLoc = 3851;
-		rType = 0;
-		vrLen = 1680;
-		vrLoc = 2754;
 	};
 	27603D540D9D7E520014BB6B /* Mobile MKAbeFook */ = {
 		isa = PBXExecutable;
@@ -158,54 +63,54 @@
 	};
 	27F420CD0D9DD055000520D3 /* MMKFacebook.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {721, 7644}}";
-			sepNavSelRange = "{24825, 0}";
-			sepNavVisRange = "{23146, 1691}";
-			sepNavWindowFrame = "{{301, 91}, {780, 937}}";
+			sepNavFolds = "{\n    c =     (\n                {\n            r = \"{1792, 114}\";\n            s = 0;\n        },\n                {\n            r = \"{3213, 83}\";\n            s = 0;\n        },\n                {\n            r = \"{3323, 21}\";\n            s = 0;\n        },\n                {\n            r = \"{3386, 71}\";\n            s = 0;\n        },\n                {\n            r = \"{3481, 18}\";\n            s = 0;\n        },\n                {\n            r = \"{3548, 88}\";\n            s = 0;\n        },\n                {\n            r = \"{3664, 22}\";\n            s = 0;\n        },\n                {\n            r = \"{3741, 103}\";\n            s = 0;\n        },\n                {\n            r = \"{3875, 25}\";\n            s = 0;\n        },\n                {\n            r = \"{3935, 53}\";\n            s = 0;\n        },\n                {\n            r = \"{4009, 15}\";\n            s = 0;\n        },\n                {\n            r = \"{4067, 96}\";\n            s = 0;\n        },\n                {\n            r = \"{4189, 21}\";\n            s = 0;\n        },\n                {\n            r = \"{4228, 20}\";\n            s = 0;\n        },\n                {\n            r = \"{4323, 59}\";\n            s = 0;\n        },\n                {\n            r = \"{4429, 37}\";\n            s = 0;\n        },\n                {\n            r = \"{4506, 33}\";\n            s = 0;\n        },\n                {\n            r = \"{4564, 32}\";\n            s = 0;\n        },\n                {\n            r = \"{4648, 38}\";\n            s = 0;\n        },\n                {\n            r = \"{4722, 37}\";\n            s = 0;\n        },\n                {\n            r = \"{4996, 955}\";\n            s = 0;\n        },\n                {\n            r = \"{6107, 708}\";\n            s = 0;\n        },\n                {\n            r = \"{6917, 876}\";\n            s = 0;\n        },\n                {\n            r = \"{7955, 1992}\";\n            s = 0;\n        },\n                {\n            r = \"{10022, 259}\";\n            s = 0;\n        },\n                {\n            r = \"{10622, 1506}\";\n            s = 0;\n        },\n                {\n            r = \"{12223, 1707}\";\n            s = 0;\n        },\n                {\n            r = \"{13965, 83}\";\n            s = 0;\n        },\n                {\n            r = \"{14188, 1387}\";\n            s = 0;\n        }\n    );\n    r = \"{0, 24996}\";\n    s = 0;\n}";
+			sepNavIntBoundsRect = "{{0, 0}, {1112, 6790}}";
+			sepNavSelRange = "{6131, 29}";
+			sepNavVisRange = "{5007, 2154}";
+			sepNavWindowFrame = "{{863, 114}, {1171, 914}}";
 		};
 	};
 	27F420CE0D9DD055000520D3 /* MMKFacebook.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1050, 3640}}";
-			sepNavSelRange = "{9117, 0}";
-			sepNavVisRange = "{7829, 2896}";
-			sepNavWindowFrame = "{{-1549, 93}, {1109, 929}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1119, 3920}}";
+			sepNavSelRange = "{666, 0}";
+			sepNavVisRange = "{0, 2085}";
+			sepNavWindowFrame = "{{27, 102}, {1178, 926}}";
 		};
 	};
 	27F420FD0D9DD2DE000520D3 /* MMKLoginViewController.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1050, 1260}}";
-			sepNavSelRange = "{2512, 0}";
-			sepNavVisRange = "{1465, 1342}";
-			sepNavWindowFrame = "{{-1178, 8}, {1109, 929}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1229, 1064}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{393, 1631}";
+			sepNavWindowFrame = "{{70, 97}, {1288, 931}}";
 		};
 	};
 	27F420FE0D9DD2DE000520D3 /* MMKLoginViewController.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1050, 872}}";
-			sepNavSelRange = "{1766, 0}";
-			sepNavVisRange = "{0, 1803}";
+			sepNavSelRange = "{1668, 0}";
+			sepNavVisRange = "{0, 1807}";
 			sepNavWindowFrame = "{{543, 98}, {1109, 929}}";
 		};
 	};
 	27F421480D9DDD6B000520D3 /* MMKFacebookRequest.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {771, 2870}}";
-			sepNavSelRange = "{8710, 0}";
-			sepNavVisRange = "{6584, 2505}";
-			sepNavWindowFrame = "{{-1676, 105}, {830, 919}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1092, 2450}}";
+			sepNavSelRange = "{6994, 0}";
+			sepNavVisRange = "{520, 3005}";
+			sepNavWindowFrame = "{{394, 131}, {1151, 897}}";
 		};
 	};
 	27F421490D9DDD6B000520D3 /* MMKFacebookRequest.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1050, 5978}}";
-			sepNavSelRange = "{6653, 0}";
-			sepNavVisRange = "{4823, 3230}";
-			sepNavWindowFrame = "{{-882, -159}, {1109, 929}}";
+			sepNavIntBoundsRect = "{{0, 0}, {796, 6454}}";
+			sepNavSelRange = "{16695, 0}";
+			sepNavVisRange = "{16065, 2025}";
+			sepNavWindowFrame = "{{9, 77}, {855, 951}}";
 		};
 	};
 	29B97313FDCFA39411CA2CEA /* Project object */ = {
-		activeArchitecture = i386;
 		activeBuildConfigurationName = Debug;
 		activeExecutable = 27603D540D9D7E520014BB6B /* Mobile MKAbeFook */;
 		activeTarget = 1D6058900D05DD3D006BFB54 /* Mobile MKAbeFook */;
@@ -219,18 +124,8 @@
 			27603D540D9D7E520014BB6B /* Mobile MKAbeFook */,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 231468453;
-			PBXWorkspaceStateSaveDate = 231468453;
-		};
-		perUserProjectItems = {
-			275E8BAA0DCBF9E2000F1884 /* PBXTextBookmark */ = 275E8BAA0DCBF9E2000F1884 /* PBXTextBookmark */;
-			275E8BAB0DCBF9E2000F1884 /* PBXTextBookmark */ = 275E8BAB0DCBF9E2000F1884 /* PBXTextBookmark */;
-			275E8BAD0DCBF9E2000F1884 /* PBXTextBookmark */ = 275E8BAD0DCBF9E2000F1884 /* PBXTextBookmark */;
-			275E8BAE0DCBF9E2000F1884 /* PBXTextBookmark */ = 275E8BAE0DCBF9E2000F1884 /* PBXTextBookmark */;
-			275E8BB10DCBF9E2000F1884 /* PBXTextBookmark */ = 275E8BB10DCBF9E2000F1884 /* PBXTextBookmark */;
-			275E8BB30DCBF9E2000F1884 /* PBXTextBookmark */ = 275E8BB30DCBF9E2000F1884 /* PBXTextBookmark */;
-			275E8BBD0DCBFA29000F1884 /* PBXTextBookmark */ = 275E8BBD0DCBFA29000F1884 /* PBXTextBookmark */;
-			275E8BC00DCBFA50000F1884 /* PBXTextBookmark */ = 275E8BC00DCBFA50000F1884 /* PBXTextBookmark */;
+			PBXPerProjectTemplateStateSaveDate = 235839737;
+			PBXWorkspaceStateSaveDate = 235839737;
 		};
 		sourceControlManager = 27603D5C0D9D7E570014BB6B /* Source Control */;
 		userBuildSettings = {

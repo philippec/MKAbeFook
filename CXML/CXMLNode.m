@@ -10,8 +10,10 @@
 
 #import "CXMLNode_PrivateExtensions.h"
 #import "CXMLDocument.h"
+#import "CXMLElement.h"
 
 #include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
 
 @implementation CXMLNode
 
@@ -19,7 +21,8 @@
 {
 if (_node)
 	{
-	_node->_private = NULL;
+	if (_node->_private == self)
+		_node->_private = NULL;
 	_node = NULL;
 	}
 //
@@ -45,14 +48,18 @@ else
 - (NSString *)stringValue
 {
 NSAssert(_node != NULL, @"TODO");
-
-xmlChar *theXMLString = xmlNodeListGetString(_node->doc, _node->children, YES);
+xmlChar *theXMLString;
+if ( _node->type == CXMLTextKind ) 
+	theXMLString = _node->content;
+else
+	theXMLString = xmlNodeListGetString(_node->doc, _node->children, YES);
 
 NSString *theStringValue = NULL;
 if (theXMLString != NULL)
 	{
 	theStringValue = [NSString stringWithUTF8String:(const char *)theXMLString];
-	xmlFree(theXMLString);
+	if ( _node->type != CXMLTextKind )
+		xmlFree(theXMLString);
 	}
 
 return(theStringValue);
@@ -173,8 +180,39 @@ NSAssert(_node != NULL, @"TODO");
 return([NSString stringWithFormat:@"<%@ %p %@ %@>", NSStringFromClass([self class]), self, [self name], [self stringValue]]);
 }
 
-//- (NSString *)XMLString;
-//- (NSString *)XMLStringWithOptions:(NSUInteger)options;
+- (NSString *)XMLString
+{
+return [self XMLStringWithOptions:0];
+}
+
+
+- (NSString*)_XMLStringWithOptions:(NSUInteger)options appendingToString:(NSMutableString*)str
+{
+id value;
+switch([self kind])
+	{
+	case CXMLAttributeKind:
+		value = [NSMutableString stringWithString:[self stringValue]];
+		[value replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:0 range:NSMakeRange(0, [value length])];
+		[str appendString:[NSString stringWithFormat:@" %@=\"%@\"", [self name], value]];
+		break;
+	case CXMLTextKind:
+		[str appendString:[self stringValue]];
+		break;
+	case XML_COMMENT_NODE:
+	case XML_CDATA_SECTION_NODE:
+		// TODO: NSXML does not have XML_CDATA_SECTION_NODE correspondent.
+		break;
+	default:
+		NSAssert1(NO, @"TODO not implemented type (%d).",  [self kind]);
+	}
+return str;
+}
+
+- (NSString *)XMLStringWithOptions:(NSUInteger)options
+{
+return [self _XMLStringWithOptions:options appendingToString:@""];
+}
 //- (NSString *)canonicalXMLStringPreservingComments:(BOOL)comments;
 
 - (NSArray *)nodesForXPath:(NSString *)xpath error:(NSError **)error
@@ -185,6 +223,7 @@ NSArray *theResult = NULL;
 
 CXMLNode *theRootDocument = [self rootDocument];
 xmlXPathContextPtr theXPathContext = xmlXPathNewContext((xmlDocPtr)theRootDocument->_node);
+theXPathContext->node = _node;
 
 // TODO considering putting xmlChar <-> UTF8 into a NSString category
 xmlXPathObjectPtr theXPathObject = xmlXPathEvalExpression((const xmlChar *)[xpath UTF8String], theXPathContext);
