@@ -542,10 +542,7 @@ NSString *MMKFacebookFormat = @"XML";
 {
 	if([_delegate respondsToSelector:@selector(userLoginFailed)])
 		[_delegate performSelector:@selector(userLoginFailed)];
-	
-	if([_delegate respondsToSelector:@selector(facebookAuthenticationError:)])
-		[_delegate performSelector:@selector(facebookAuthenticationError:) withObject:[[xml rootElement] dictionaryFromXMLElement]];
-	
+		
 	if(_alertMessagesEnabled == YES)
 	{			
 		[self displayGeneralAPIError:nil message:@"Authentication Error" buttonTitle:nil];

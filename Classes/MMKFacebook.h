@@ -26,7 +26,6 @@ extern NSString *MMKFacebookFormat;
 @protocol MMKFacebook
 -(UIView *)applicationView;
 -(void)userLoginSuccessful;
--(void)returningUserToApplication;
 @end
 
 /*!
@@ -41,9 +40,6 @@ Available Delegate Methods
  
 -(void)userLoginFailed; (optional)<br/>
 &nbsp;&nbsp; Called when login window is closed and either authToken, authSession or uid cannot be verified.
- 
--(void)facebookAuthenticationError:(NSDictionary *)error; (optional)<br/>
- &nbsp;&nbsp; Called when an error is encountered attempting to obtain an authToken or authSession.  Passes parsed XML response from Facebook as NSDictionary object.
 
 -(UIView *)applicationView; (required)<br/>
  &nbsp; &nbsp; Returns application view so we can flip user back and forth between application and login view.

@@ -10,9 +10,9 @@
 	};
 	1D3623250D0F684500981E51 /* Mobile_MKAbeFookAppDelegate.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1075, 2184}}";
-			sepNavSelRange = "{4004, 0}";
-			sepNavVisRange = "{2784, 1895}";
+			sepNavIntBoundsRect = "{{0, 0}, {1075, 2044}}";
+			sepNavSelRange = "{3939, 0}";
+			sepNavVisRange = "{2259, 1953}";
 			sepNavWindowFrame = "{{-1401, 122}, {1134, 907}}";
 		};
 	};
@@ -21,6 +21,20 @@
 		executables = (
 			27603D540D9D7E520014BB6B /* Mobile MKAbeFook */,
 		);
+	};
+	273050B40E106C2900AA93A3 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 1D3623250D0F684500981E51 /* Mobile_MKAbeFookAppDelegate.m */;
+	};
+	273050BD0E106F6500AA93A3 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 1D3623250D0F684500981E51 /* Mobile_MKAbeFookAppDelegate.m */;
+		name = "Mobile_MKAbeFookAppDelegate.m: 114";
+		rLen = 0;
+		rLoc = 3939;
+		rType = 0;
+		vrLen = 1953;
+		vrLoc = 2259;
 	};
 	27603D540D9D7E520014BB6B /* Mobile MKAbeFook */ = {
 		isa = PBXExecutable;
@@ -63,19 +77,18 @@
 	};
 	27F420CD0D9DD055000520D3 /* MMKFacebook.m */ = {
 		uiCtxt = {
-			sepNavFolds = "{\n    c =     (\n                {\n            r = \"{1792, 114}\";\n            s = 0;\n        },\n                {\n            r = \"{3213, 83}\";\n            s = 0;\n        },\n                {\n            r = \"{3323, 21}\";\n            s = 0;\n        },\n                {\n            r = \"{3386, 71}\";\n            s = 0;\n        },\n                {\n            r = \"{3481, 18}\";\n            s = 0;\n        },\n                {\n            r = \"{3548, 88}\";\n            s = 0;\n        },\n                {\n            r = \"{3664, 22}\";\n            s = 0;\n        },\n                {\n            r = \"{3741, 103}\";\n            s = 0;\n        },\n                {\n            r = \"{3875, 25}\";\n            s = 0;\n        },\n                {\n            r = \"{3935, 53}\";\n            s = 0;\n        },\n                {\n            r = \"{4009, 15}\";\n            s = 0;\n        },\n                {\n            r = \"{4067, 96}\";\n            s = 0;\n        },\n                {\n            r = \"{4189, 21}\";\n            s = 0;\n        },\n                {\n            r = \"{4228, 20}\";\n            s = 0;\n        },\n                {\n            r = \"{4323, 59}\";\n            s = 0;\n        },\n                {\n            r = \"{4429, 37}\";\n            s = 0;\n        },\n                {\n            r = \"{4506, 33}\";\n            s = 0;\n        },\n                {\n            r = \"{4564, 32}\";\n            s = 0;\n        },\n                {\n            r = \"{4648, 38}\";\n            s = 0;\n        },\n                {\n            r = \"{4722, 37}\";\n            s = 0;\n        },\n                {\n            r = \"{4996, 955}\";\n            s = 0;\n        },\n                {\n            r = \"{6107, 708}\";\n            s = 0;\n        },\n                {\n            r = \"{6917, 876}\";\n            s = 0;\n        },\n                {\n            r = \"{7955, 1992}\";\n            s = 0;\n        },\n                {\n            r = \"{10022, 259}\";\n            s = 0;\n        },\n                {\n            r = \"{10622, 1506}\";\n            s = 0;\n        },\n                {\n            r = \"{12223, 1707}\";\n            s = 0;\n        },\n                {\n            r = \"{13965, 83}\";\n            s = 0;\n        },\n                {\n            r = \"{14188, 1387}\";\n            s = 0;\n        }\n    );\n    r = \"{0, 24996}\";\n    s = 0;\n}";
-			sepNavIntBoundsRect = "{{0, 0}, {1112, 6790}}";
-			sepNavSelRange = "{6131, 29}";
-			sepNavVisRange = "{5007, 2154}";
-			sepNavWindowFrame = "{{863, 114}, {1171, 914}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1112, 10626}}";
+			sepNavSelRange = "{9634, 15}";
+			sepNavVisRange = "{8359, 2696}";
+			sepNavWindowFrame = "{{641, 114}, {1171, 914}}";
 		};
 	};
 	27F420CE0D9DD055000520D3 /* MMKFacebook.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1119, 3920}}";
-			sepNavSelRange = "{666, 0}";
-			sepNavVisRange = "{0, 2085}";
-			sepNavWindowFrame = "{{27, 102}, {1178, 926}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1119, 4074}}";
+			sepNavSelRange = "{819, 0}";
+			sepNavVisRange = "{570, 1941}";
+			sepNavWindowFrame = "{{44, 102}, {1178, 926}}";
 		};
 	};
 	27F420FD0D9DD2DE000520D3 /* MMKLoginViewController.m */ = {
@@ -96,18 +109,18 @@
 	};
 	27F421480D9DDD6B000520D3 /* MMKFacebookRequest.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1092, 2450}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1092, 2590}}";
 			sepNavSelRange = "{6994, 0}";
-			sepNavVisRange = "{520, 3005}";
-			sepNavWindowFrame = "{{394, 131}, {1151, 897}}";
+			sepNavVisRange = "{2852, 3115}";
+			sepNavWindowFrame = "{{447, 131}, {1151, 897}}";
 		};
 	};
 	27F421490D9DDD6B000520D3 /* MMKFacebookRequest.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {796, 6454}}";
-			sepNavSelRange = "{16695, 0}";
-			sepNavVisRange = "{16065, 2025}";
-			sepNavWindowFrame = "{{9, 77}, {855, 951}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1172, 6356}}";
+			sepNavSelRange = "{15700, 0}";
+			sepNavVisRange = "{13749, 2356}";
+			sepNavWindowFrame = "{{9, 85}, {1231, 943}}";
 		};
 	};
 	29B97313FDCFA39411CA2CEA /* Project object */ = {
@@ -124,8 +137,12 @@
 			27603D540D9D7E520014BB6B /* Mobile MKAbeFook */,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 235839737;
-			PBXWorkspaceStateSaveDate = 235839737;
+			PBXPerProjectTemplateStateSaveDate = 235954865;
+			PBXWorkspaceStateSaveDate = 235954865;
+		};
+		perUserProjectItems = {
+			273050B40E106C2900AA93A3 /* PBXBookmark */ = 273050B40E106C2900AA93A3 /* PBXBookmark */;
+			273050BD0E106F6500AA93A3 /* PBXTextBookmark */ = 273050BD0E106F6500AA93A3 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 27603D5C0D9D7E570014BB6B /* Source Control */;
 		userBuildSettings = {

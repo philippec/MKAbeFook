@@ -164,7 +164,7 @@
 	}
 	
 	//to display some type of loading information we need to have access to the facebookconnection delegate and it must respond to the frontView method defined in the mmkfacebook protocol
-	//this area needs a lot of clean up
+	//TODO: this area needs a lot of clean up
 	if([[_facebookConnection delegate] respondsToSelector:@selector(applicationView)])
 	{
 		//display little view at top of screen with a progress indicator in it
@@ -381,7 +381,7 @@
 		
 		if([self displayGeneralErrors])
 		{
-			//TODO: pass back error number
+			//TODO: pass back error number etc... instead of generic message
 			[_facebookConnection displayGeneralAPIError:@"Response Error" message:@"Facebook gave us some bad information." buttonTitle:@"OK"];			
 		}
 	}else
