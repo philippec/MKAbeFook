@@ -13,6 +13,7 @@
 #import "MKFacebookRequest.h"
 #import "MKFacebook.h"
 #import "NSXMLDocumentAdditions.h"
+#import "NSXMLElementAdditions.h"
 
 @implementation MKFacebookRequest
 
@@ -24,7 +25,7 @@
 	{
 		//NSLog(@"initiated1");
 		
-		facebookConnection = nil;
+		_facebookConnection = nil;
 		_delegate = nil;
 		_selector = nil;
 		
@@ -32,6 +33,7 @@
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
+		_displayGeneralErrors = YES;
 		
 	}
 	return self;
@@ -50,7 +52,7 @@
 	if(self != nil)
 	{
 		//NSLog(@"initiated2");
-		facebookConnection = [aFacebookConnection retain];
+		_facebookConnection = [aFacebookConnection retain];
 		_delegate = aDelegate;
 		_selector = aSelector;
 		
@@ -58,6 +60,7 @@
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
+		_displayGeneralErrors = YES;
 	}
 	return self;
 }
@@ -76,7 +79,7 @@
 	self = [super init];
 	if(self != nil)
 	{
-		facebookConnection = [aFacebookConnection retain];
+		_facebookConnection = [aFacebookConnection retain];
 		_delegate = aDelegate;
 		_selector = aSelector;
 		
@@ -84,13 +87,14 @@
 		_parameters = [[NSMutableDictionary dictionaryWithDictionary:parameters] retain];
 		_urlRequestType = MKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
+		_displayGeneralErrors = YES;
 	}
 	return self;
 }
 
 -(void)setFacebookConnection:(MKFacebook *)aFacebookConnection
 {
-	facebookConnection = aFacebookConnection;
+	_facebookConnection = aFacebookConnection;
 }
 
 -(void)setDelegate:(id)delegate
@@ -117,6 +121,17 @@
 {
 	[_parameters addEntriesFromDictionary:parameters]; //fixes memory leak 0.7.4 - mike
 }
+
+-(BOOL)displayGeneralErrors
+{
+	return _displayGeneralErrors;
+}
+
+-(void)setDisplayGeneralErrors:(BOOL)aBool
+{
+	_displayGeneralErrors = aBool;
+}
+
 
 -(void)dealloc
 {
@@ -152,10 +167,10 @@
 	_requestIsDone = NO;
 	if(_urlRequestType == MKPostRequest)
 	{
-		//NSLog([facebookConnection description]);
+		//NSLog([_facebookConnection description]);
 		NSMutableURLRequest *postRequest = [NSMutableURLRequest requestWithURL:_requestURL 
 																	 cachePolicy:NSURLRequestReloadIgnoringCacheData 
-																 timeoutInterval:[facebookConnection connectionTimeoutInterval]];
+																 timeoutInterval:[_facebookConnection connectionTimeoutInterval]];
 		
 		[postRequest setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 		
@@ -169,14 +184,14 @@
 		
 		//add items that are required by all requests to _parameters dictionary so they are added to the postRequest and we can easily make a sig from them
 		[_parameters setValue:MKFacebookAPIVersion forKey:@"v"];
-		[_parameters setValue:[facebookConnection apiKey] forKey:@"api_key"];
+		[_parameters setValue:[_facebookConnection apiKey] forKey:@"api_key"];
 		[_parameters setValue:MKFacebookFormat forKey:@"format"];
 		
 		//all other methods require call_id and session_key
 		if(![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
 		{
-			[_parameters setValue:[facebookConnection sessionKey] forKey:@"session_key"];
-			[_parameters setValue:[facebookConnection generateTimeStamp] forKey:@"call_id"];
+			[_parameters setValue:[_facebookConnection sessionKey] forKey:@"session_key"];
+			[_parameters setValue:[_facebookConnection generateTimeStamp] forKey:@"call_id"];
 		}
 		
 		NSEnumerator *e = [_parameters keyEnumerator];
@@ -215,7 +230,7 @@
 			[_parameters removeObjectForKey:imageKey];
 		
 		[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"sig\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-		[postBody appendData:[[facebookConnection generateSigForParameters:_parameters] dataUsingEncoding:NSUTF8StringEncoding]];
+		[postBody appendData:[[_facebookConnection generateSigForParameters:_parameters] dataUsingEncoding:NSUTF8StringEncoding]];
 		[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
 		
 		[postRequest setHTTPBody:postBody];
@@ -224,11 +239,11 @@
 	
 	if(_urlRequestType == MKGetRequest)
 	{
-		NSURL *theURL = [facebookConnection generateFacebookURL:_parameters];
+		NSURL *theURL = [_facebookConnection generateFacebookURL:_parameters];
 		
 		NSMutableURLRequest *getRequest = [NSMutableURLRequest requestWithURL:theURL 
 																  cachePolicy:NSURLRequestReloadIgnoringCacheData 
-															  timeoutInterval:[facebookConnection connectionTimeoutInterval]];
+															  timeoutInterval:[_facebookConnection connectionTimeoutInterval]];
 		[getRequest setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 		
 		dasConnection = [NSURLConnection connectionWithRequest:getRequest delegate:self];
@@ -244,19 +259,34 @@
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
+	NSError *error;
 	NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData
 														   options:0
-															 error:nil] autorelease];
-	//NSLog([returnXML description]);
-	if([returnXML validFacebookResponse] == NO)
+															 error:&error] autorelease];
+	if(error != nil)
+	{
+		[_facebookConnection displayGeneralAPIError:@"API Error" message:@"Facebook returned puke, the API might be down." buttonTitle:@"OK" details:[[error userInfo] description]];
+	}
+	else if([returnXML validFacebookResponse] == NO)
 	{
 		if([_delegate respondsToSelector:@selector(receivedFacebookXMLErrorResponse:)])
 			[_delegate performSelector:@selector(receivedFacebookXMLErrorResponse:) withObject:returnXML];
+		
+		
+		//NSLog(@"error: %@", [returnXML description]);
+		NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
+		NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
+		if([self displayGeneralErrors])
+		{
+			[_facebookConnection displayGeneralAPIError:errorTitle message:[errorDictionary valueForKey:@"error_msg"] buttonTitle:@"OK" details:[errorDictionary description]];			
+		}
+	}else
+	{
+		//finally we can assume it's a successful request and pass it back
+		if([_delegate respondsToSelector:_selector])
+			[_delegate performSelector:_selector withObject:returnXML];		
 	}
 	
-	if([_delegate respondsToSelector:_selector])
-		[_delegate performSelector:_selector withObject:returnXML];
-	 
 	[_responseData setData:[NSData data]];
 	_requestIsDone = YES;
 }
@@ -274,6 +304,12 @@
 //0.6 suggestion to pass connection error.  Thanks Adam.
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {	
+	
+	if([self displayGeneralErrors])
+	{
+		[_facebookConnection displayGeneralAPIError:@"Connection Error" message:@"Are you connected to the interwebs?" buttonTitle:@"OK" details:[[error userInfo] description]];
+	}
+	
 	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
 		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
 }

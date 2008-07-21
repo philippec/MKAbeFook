@@ -19,10 +19,15 @@
 	IBOutlet NSButton *closeSheetButton; 
 	id _delegate;
 	SEL _selector;
+	
+	IBOutlet NSProgressIndicator *loadingWindowProgressIndicator; //used to display activity while setting up everything needed before facebook login page can even be requested.  auth token etc... added in 0.7.7
 }
 
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
 -(id)initForSheetWithDelegate:aDelegate withSelector:(SEL)aSelector;
+-(void)displayLoadingWindowIndicator;
+-(void)hideLoadingWindowIndicator;
+
 -(void)loadURL:(NSURL *)loginURL;
 -(IBAction)closeSheet:(id)sender;
 -(void)setWindowSize:(NSSize)windowSize;

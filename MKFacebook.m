@@ -15,6 +15,7 @@
 #import "CocoaCryptoHashing.h"
 #import "MKParsingExtras.h"
 #import "NSXMLElementAdditions.h"
+#import "MKErrorWindow.h"
 
 NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
@@ -266,6 +267,7 @@ NSString *MKFacebookFormat = @"XML";
 		[self facebookResponseReceived:xml];
 	}else
 	{
+		[loginWindow displayLoadingWindowIndicator];
 		MKFacebookRequest *request = [[[MKFacebookRequest alloc] init] autorelease];
 		[request setDelegate:self];
 		[request setFacebookConnection:self];
@@ -476,7 +478,8 @@ NSString *MKFacebookFormat = @"XML";
 
 	if(fetchError != nil)
 	{
-		[self facebookRequestFailed:nil];		   
+		if(_alertMessagesEnabled == YES)
+			[self displayGeneralAPIError:@"Network Problems?" message:@"I can't seem to talk to Facebook.com right now.  This is a problem." buttonTitle:@"Fine!" details:nil];
 		return nil;
 	}else
 	{
@@ -507,12 +510,7 @@ NSString *MKFacebookFormat = @"XML";
 		
 		if(_alertMessagesEnabled == YES)
 		{
-			NSAlert *uhOh = [NSAlert alertWithMessageText:@"API Problems?"
-											defaultButton:@"Fine!" 
-										  alternateButton:nil 
-											  otherButton:nil 
-								informativeTextWithFormat:@"Facebook didn't give us the token we needed.  You can try again if you want but consider this login attempt defeated."];
-			[uhOh runModal];
+			[self displayGeneralAPIError:@"API Problems?" message:@"Facebook didn't give us the token we needed.  You can try again if you want but consider this login attempt defeated." buttonTitle:@"Fine!" details:nil];
 		}
 		return;
 	}
@@ -531,6 +529,7 @@ NSString *MKFacebookFormat = @"XML";
 		[loginString appendString:MKFacebookAPIVersion];
 		[loginString appendString:@"&popup"];
 		[loginString appendString:@"&skipcookie"];
+		[loginWindow hideLoadingWindowIndicator];
 		[loginWindow loadURL:[NSURL URLWithString:loginString]];
 		[loginString release];
 		return;
@@ -591,12 +590,7 @@ NSString *MKFacebookFormat = @"XML";
 			
 			if(_alertMessagesEnabled == YES)
 			{
-				NSAlert *uhOh = [NSAlert alertWithMessageText:@"Whoah there, what happened?"
-												defaultButton:@"Fine!" 
-											  alternateButton:nil 
-												  otherButton:nil 
-									informativeTextWithFormat:@"Something went wrong trying to obtain a session from Facebook.  You will need to try to login again."];
-				[uhOh runModal];
+				[self displayGeneralAPIError:@"Whoa there, what happened?" message:@"Something went wrong trying to obtain a session from Facebook.  You will need to try to login again." buttonTitle:@"Fine!" details:nil];
 			}
 			
 		}
@@ -605,17 +599,13 @@ NSString *MKFacebookFormat = @"XML";
 	}
 }
 
-//this will be called if asynchronous requests fail. or if fetchFacebookData: encounters a network connection problem
+//this will be called if asynchronous requests fail.
+//all asynchronous requests this class is a delegate of are related to logging in so it's safe to put the stuff needed to clean up the login window here
 -(void)facebookRequestFailed:(NSError *)error
 {
-	if(_alertMessagesEnabled == YES)
+	if(loginWindow != nil)
 	{
-		NSAlert *uhOh = [NSAlert alertWithMessageText:@"Network Problems?"
-										defaultButton:@"Fine!" 
-									  alternateButton:nil 
-										  otherButton:nil 
-							informativeTextWithFormat:@"I can't seem to talk to Facebook.com right now.  This is a problem."];
-		[uhOh runModal];
+		[loginWindow hideLoadingWindowIndicator];
 	}
 }
 
@@ -652,12 +642,7 @@ NSString *MKFacebookFormat = @"XML";
 	{
 		if([self alertsEnabled] == YES)
 		{
-			NSAlert *uhOh = [NSAlert alertWithMessageText:@"No user logged in!"
-											defaultButton:@"OK Fine!" 
-										  alternateButton:nil 
-											  otherButton:nil 
-								informativeTextWithFormat:@"Permissions cannnot be extended if no one is logged in."];
-			[uhOh runModal];
+			[self displayGeneralAPIError:@"No user logged in!" message:@"Permissions cannnot be extended if no one is logged in." buttonTitle:@"OK Fine!" details:nil];			
 		}
 		return;
 	}
@@ -669,6 +654,33 @@ NSString *MKFacebookFormat = @"XML";
 	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@", [self apiKey], MKFacebookAPIVersion, aString]];
 	[loginWindow loadURL:url];
 	
+}
+
+
+
+-(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle details:(NSString *)details
+{
+	NSString *errorTitle;
+	NSString *errorMessage;
+	NSString *errorButtonTitle;
+	
+	if(!title)
+		errorTitle = @"API Error";
+	else
+		errorTitle = [NSString stringWithString:title];
+	
+	if(!message)
+		errorMessage = @"Something done gone exploded.";
+	else
+		errorMessage = [NSString stringWithString:message];
+	
+	if(!buttonTitle)
+		errorButtonTitle = @"Fine!";
+	else
+		errorButtonTitle = [NSString stringWithString:buttonTitle];
+	
+	MKErrorWindow *error = [MKErrorWindow errorWindowWithTitle:errorTitle message:errorMessage details:details];
+	[error display];
 }
 
 @end

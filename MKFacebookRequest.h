@@ -48,7 +48,7 @@ typedef int MKFacebookRequestType;
  */
 @interface MKFacebookRequest : NSObject {
 	NSURLConnection *dasConnection; //internal connection used if object is used multiple times.  blame the beer.
-	MKFacebook *facebookConnection;
+	MKFacebook *_facebookConnection;
 	id _delegate;
 	SEL _selector;
 	NSMutableData *_responseData;
@@ -56,6 +56,7 @@ typedef int MKFacebookRequestType;
 	MKFacebookRequestType _urlRequestType;
 	NSMutableDictionary *_parameters;
 	NSURL *_requestURL;
+	BOOL _displayGeneralErrors;
 }
 
 -(MKFacebookRequest *)init;
@@ -121,4 +122,20 @@ typedef int MKFacebookRequestType;
  */
 -(void)cancelRequest;
  
+
+/*!
+ @param aBool Automatically display errorr windows or not.
+ 
+ Sets whether or not instance should automatically display error windows when network connection or xml parsing errors are encountered.  Default is yes.
+ 
+ @version 0.7.7 and later
+ */
+-(void)setDisplayGeneralErrors:(BOOL)aBool;
+
+/*!
+ @result Returns boolean indicating whether or not instance will automatically display error windows or not.
+ @version 0.7.7 and later
+ */
+-(BOOL)displayGeneralErrors;
+
 @end

@@ -18,6 +18,8 @@
 			<dict>
 				<key>closeSheetButton</key>
 				<string>NSButton</string>
+				<key>loadingWindowProgressIndicator</key>
+				<string>NSProgressIndicator</string>
 				<key>loginWebView</key>
 				<string>WebView</string>
 			</dict>
