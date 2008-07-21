@@ -28,6 +28,18 @@
 	return self;
 }
 
+-(void)displayLoadingWindowIndicator
+{
+	[loadingWindowProgressIndicator setHidden:NO];
+	[loadingWindowProgressIndicator startAnimation:nil];
+}
+
+-(void)hideLoadingWindowIndicator
+{
+	[loadingWindowProgressIndicator stopAnimation:nil];
+	[loadingWindowProgressIndicator setHidden:YES];
+}
+
 -(id)initForSheetWithDelegate:(id)aDelegate withSelector:(SEL)aSelector
 {
 	_delegate = aDelegate;
@@ -63,7 +75,7 @@
 	
 	//NSLog(@"loading url: %@", [loginURL description]);
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:loginURL];
-	[request setMainDocumentURL:[NSURL URLWithString:@"http://www.facebook.com"]];
+	//[request setMainDocumentURL:[NSURL URLWithString:@"http://www.facebook.com"]];
 
 	//NSHTTPCookieStorage *cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 	//NSLog(@"cookies: %@", [[cookies cookiesForURL:loginURL] description]);
@@ -78,7 +90,6 @@
 {
 	[[self window] orderOut:sender];
 	[NSApp endSheet:[self window] returnCode:1];
-	//[[self window] performClose:sender];
 	[self windowWillClose:nil];
 }
 

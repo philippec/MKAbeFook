@@ -237,6 +237,10 @@ Available Delegate Methods
 */
 -(void)grantExtendedPermission:(NSString *)aString;
 
+
+/*used internally, new in 0.7.7*/
+-(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle details:(NSString *)details;
+
 @end
 
 
