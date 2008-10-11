@@ -254,6 +254,8 @@
 		
 		dasConnection = [NSURLConnection connectionWithRequest:getRequest delegate:self];
 	}
+
+	[[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityStarted" object:nil];
 	 
 }
 
@@ -295,6 +297,8 @@
 	
 	[_responseData setData:[NSData data]];
 	_requestIsDone = YES;
+	
+	
 }
 
 -(void)cancelRequest

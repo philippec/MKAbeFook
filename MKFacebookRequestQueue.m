@@ -29,6 +29,7 @@
 		_requestsArray = [[NSMutableArray alloc] init];
 		_cancelRequestQueue = NO;
 		_currentRequest = 0;
+		_timeBetweenRequests = 1.0;
 	}
 	return self;
 }
@@ -46,6 +47,7 @@
 		_requestsArray = (NSMutableArray *)requests;
 		_currentRequest = 0;
 		_cancelRequestQueue = NO;
+		_timeBetweenRequests = 1.0;
 	}
 	return self;
 }
@@ -88,7 +90,7 @@
 
 -(void)startNextRequest
 {
-	if(_currentRequest < [_requestsArray count] && _cancelRequestQueue == NO && [_requestsArray count] != 0 )
+	if(_currentRequest <= [_requestsArray count] && _cancelRequestQueue == NO && [_requestsArray count] != 0 )
 	{
 		NSDictionary *progress = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:_currentRequest], @"current", [NSNumber numberWithInt:[_requestsArray count]], @"total", nil];
 		
@@ -98,17 +100,22 @@
 		[[_requestsArray objectAtIndex:_currentRequest] setDelegate:self];
 		[[_requestsArray objectAtIndex:_currentRequest] setSelector:@selector(httpRequestFinished:)];
 		[[_requestsArray objectAtIndex:_currentRequest] sendRequest];
+		NSLog(@"request started");
 	}
 	_currentRequest++;
 }
 
+
 -(void)httpRequestFinished:(id)data
 {
+	NSLog(@"requst completed");
 	if([_delegate respondsToSelector:_lastRequestResponseSelector])
 		[_delegate performSelector:_lastRequestResponseSelector withObject:data];
-
+	
 	if(_currentRequest < [_requestsArray count] && _cancelRequestQueue == NO && [_requestsArray count] != 0)
 	{
+		NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:_timeBetweenRequests];
+		[NSThread sleepUntilDate:sleepUntilDate];
 		[self startNextRequest];
 	}
 	else
@@ -119,6 +126,16 @@
 			[_delegate performSelector:_allRequestsFinishedSelector];
 	}
 		
+}
+
+-(float)timeBetweenRequests
+{
+	return _timeBetweenRequests;
+}
+
+-(void)setTimeBetweenRequests:(float)waitTime
+{
+	_timeBetweenRequests = waitTime;
 }
 
 -(void)cancelRequestQueue
@@ -132,8 +149,11 @@
 
 -(void)facebookRequestFailed:(id)data
 {	
+	/*
 	if([_delegate respondsToSelector:@selector(queueRequestFailed:)])
 		[_delegate performSelector:@selector(queueRequestFailed:) withObject:data];
+	 */
+	[self httpRequestFinished:data];
 }
 
 

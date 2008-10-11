@@ -44,6 +44,7 @@
 	SEL _allRequestsFinishedSelector;
 	int _currentRequest;
 	BOOL _cancelRequestQueue;
+	float _timeBetweenRequests;
 }
 
 
@@ -84,7 +85,7 @@
 -(void)setLastRequestResponseSelector:(SEL)selector;
 
 /*!
- @param selector Method to be called when all requests have been completed.  Should accept (NSXMLDocument *) as argument.  NSXMLDocument will be the response from Facebook.
+ @param selector Method to be called when all requests have been completed.
   @version 0.7 and later
  */
 -(void)setAllRequestsFinishedSelector:(SEL)selector;
@@ -102,6 +103,18 @@
 -(void)startRequestQueue;
 
 /*!
+ Time in seconds between requests.
+ @version 0.8 and later
+ */
+-(float)timeBetweenRequests;
+
+/*!
+ @param waitTime Number of seconds to wait between requests. Default is 1.0
+ @version 0.8 and later
+ */
+-(void)setTimeBetweenRequests:(float)waitTime;
+
+/*!
   Attempts to stop the current request being processed and prevents any further requests from starting.
   @version 0.7 and later
  */
@@ -109,5 +122,6 @@
 
 -(void)startNextRequest;
 
+-(void)httpRequestFinished:(id)data;
 
 @end
