@@ -48,6 +48,7 @@
 		_currentRequest = 0;
 		_cancelRequestQueue = NO;
 		_timeBetweenRequests = 1.0;
+		_shouldPauseBetweenRequests = NO;
 	}
 	return self;
 }
@@ -114,8 +115,11 @@
 	
 	if(_currentRequest < [_requestsArray count] && _cancelRequestQueue == NO && [_requestsArray count] != 0)
 	{
-		NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:_timeBetweenRequests];
-		[NSThread sleepUntilDate:sleepUntilDate];
+		if(_shouldPauseBetweenRequests == YES)
+		{
+			NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:_timeBetweenRequests];
+			[NSThread sleepUntilDate:sleepUntilDate];			
+		}
 		[self startNextRequest];
 	}
 	else
@@ -126,6 +130,11 @@
 			[_delegate performSelector:_allRequestsFinishedSelector];
 	}
 		
+}
+
+-(void)setShouldPauseBetweenRequests:(BOOL)aBool
+{
+	_shouldPauseBetweenRequests = aBool;
 }
 
 -(float)timeBetweenRequests

@@ -61,6 +61,7 @@ Available Delegate Methods
 	id _delegate;
 	BOOL _alertMessagesEnabled;
 	BOOL _shouldUseSynchronousLogin;
+	BOOL _displayAPIErrorAlerts;
 }
 
 /*!
@@ -225,7 +226,7 @@ Available Delegate Methods
 /*!
  @param aBool Send YES if login procedure should use sychronous requests, or no to use asynchronous requests.
   
- If you call showFacebookLoginWindow or showFacebookLoginWindowForSheet while the main run loop is not in NSDefaultMainRunLoop mode you will need to use sychronous login requests.  For example if a modal window is present you will need to sychronous requests.  Use this method when working with iPhoto or Apeture plugins.
+ If you call showFacebookLoginWindow or showFacebookLoginWindowForSheet while the main run loop is not in NSDefaultMainRunLoop mode you will need to use sychronous login requests.  For example if a modal window is present you will need to use sychronous requests.  Use this method when working with iPhoto or Apeture plugins.
  */
 -(void)setShouldUseSynchronousLogin:(BOOL)aBool;
 
@@ -246,6 +247,40 @@ Available Delegate Methods
 
 /*used internally, new in 0.7.7*/
 -(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle details:(NSString *)details;
+
+/*!
+ Set whether or not alert windows should be displayed if Facebook returns an error.  Default is YES.
+ @param aBool Should we display the error or should we not?
+ @version 0.8 and later
+ */
+-(void)setDisplayAPIErrorAlerts:(BOOL)aBool;
+
+/*!
+ @result Returns YES if alerts are enabled, maybe so (but actually NO) if they are not.
+ @version 0.8 and later
+ */
+-(BOOL)displayAPIErrorAlerts;
+
+
+@end
+
+/*!
+ Some methods you should implement.
+ @version 0.8 and later
+ */
+@protocol MKFacebookDelegate
+
+/*!
+ Called after authentication process has finished and it has been established that a use has successfully logged in.
+ @version 0.8 and later
+ */
+-(void)userLoginSuccessful;
+
+/*!
+ You have three guesses as to why this gets called.
+ @version 0.8 and later
+ */
+-(void)userLoginFailed;
 
 @end
 
