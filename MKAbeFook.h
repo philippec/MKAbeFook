@@ -8,6 +8,7 @@
  */
 #import "MKFacebook.h"
 #import "MKFacebookRequest.h"
+#import "MKEventsRequest.h"
 #import "MKFaceBookRequestQueue.h"
 #import "NSXMLDocumentAdditions.h"
 #import "NSXMLElementAdditions.h"

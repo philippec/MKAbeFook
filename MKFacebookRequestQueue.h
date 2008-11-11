@@ -45,6 +45,7 @@
 	int _currentRequest;
 	BOOL _cancelRequestQueue;
 	float _timeBetweenRequests;
+	BOOL _shouldPauseBetweenRequests;
 }
 
 
@@ -103,7 +104,16 @@
 -(void)startRequestQueue;
 
 /*!
+ Set whether or not queue should automatically pause between requests in order to try to prevent the too many requests error.  Default is NO.
+ @param aBool Should we wait or should we go now?
+ @version 0.8 and later
+ */
+-(void)setShouldPauseBetweenRequests:(BOOL)aBool;
+
+
+/*!
  Time in seconds between requests.
+ @result time in seconds
  @version 0.8 and later
  */
 -(float)timeBetweenRequests;

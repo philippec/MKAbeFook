@@ -61,10 +61,10 @@ NSString *MKFacebookFormat = @"XML";
 														 reason:@"Delegate requires -(void)userLoginSuccessful method" 
 													   userInfo:nil];
 		
-		[exception raise];	
+		[exception raise];
 		return nil;
 	}
-	
+		
 	self = [super init];
 	if(self != nil)
 	{
@@ -85,6 +85,7 @@ NSString *MKFacebookFormat = @"XML";
 		_delegate = aDelegate;
 		_alertMessagesEnabled = YES;
 		_shouldUseSynchronousLogin = NO;
+		_displayAPIErrorAlerts = YES;
 	}
 	return self;
 }
@@ -126,6 +127,7 @@ NSString *MKFacebookFormat = @"XML";
 		_delegate = aDelegate;
 		_alertMessagesEnabled = YES;
 		_shouldUseSynchronousLogin = NO;
+		_displayAPIErrorAlerts = YES;
 	}
 	return self;
 }
@@ -253,13 +255,15 @@ NSString *MKFacebookFormat = @"XML";
 {
 	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed			
 	[[loginWindow window] center];
+	[[loginWindow window] setTitle:@"Login"];
 	[loginWindow showWindow:self];
 	[self createAuthToken];
 }
 
 -(NSWindow *)showFacebookLoginWindowForSheet
 {
-	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 				
+	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 
+	[[loginWindow window] setTitle:@"Login"];
 	[self createAuthToken];
 	return [loginWindow window];
 }
@@ -654,6 +658,7 @@ NSString *MKFacebookFormat = @"XML";
 	}
 	
 	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:nil]; //will be released when closed			
+	[[loginWindow window] setTitle:@"Extended Permissions"];
 	[loginWindow showWindow:self];
 	[loginWindow setWindowSize:NSMakeSize(800, 600)];
 	
@@ -688,6 +693,17 @@ NSString *MKFacebookFormat = @"XML";
 	MKErrorWindow *error = [MKErrorWindow errorWindowWithTitle:errorTitle message:errorMessage details:details];
 	[error display];
 }
+
+-(void)setDisplayAPIErrorAlerts:(BOOL)aBool
+{
+	_displayAPIErrorAlerts = aBool;
+}
+
+-(BOOL)displayAPIErrorAlerts
+{
+	return _displayAPIErrorAlerts;
+}
+
 
 @end
 

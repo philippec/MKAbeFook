@@ -39,6 +39,8 @@ typedef int MKFacebookRequestType;
  
  
  The MKFacebookRequest class is be capable of handling most of the methods available by the Facebook API, including facebook.photos.upload.  To upload a photo using this class include a NSImage object in your NSDictionary of parameters you set and set the method key value to "facebook.photos.upload".  The name of the key for the NSImage object can be any string.
+
+ This class will post notifications named "MKFacebookRequestActivityStarted" and "MKFacebookRequestActivityEnded" when network activity starts and ends. (version 0.8 and later). 
  
  See the MKFacebookRequestQueue class for sending a series of requests that are sent incrementally after the previous request has been completed.
  
@@ -62,10 +64,31 @@ typedef int MKFacebookRequestType;
 	MKFacebookRequestType _urlRequestType;
 	NSMutableDictionary *_parameters;
 	NSURL *_requestURL;
-	BOOL _displayGeneralErrors;
+	BOOL _displayAPIErrorAlert;
+	int _numberOfRequestAttempts;
+	int _requestAttemptCount;
 }
 
--(MKFacebookRequest *)init;
+
+/*!
+ @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
+ @param aDelegate The object that will receive the information returned by Facebook.
+ @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument. 
+ @version 0.8 and later
+ */
++(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
+
+
+/*!
+ @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
+ @param aDelegate The object that will receive the information returned by Facebook.
+ @version 0.8 and later
+ */
++(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate;
+
+
+
+-(id)init;
 
 /*!
  @param aFacebookConnection A MKFacebook object that has been used to log in a user.  This object must have a valid sessionKey. 
@@ -74,7 +97,7 @@ typedef int MKFacebookRequestType;
   This method returns a new MKFacebookRequest object that can be used to retrieve data from Facebook.
  @version 0.7 and later
  */
--(MKFacebookRequest *)initWithFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
+-(id)initWithFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
 
 /*!
  @param aFacebookConnection A MKFacebook object that has been used to log in a user.
@@ -84,7 +107,8 @@ typedef int MKFacebookRequestType;
   This method returns a new MKFacebookRequest object that can be used to retrieve data from Facebook.
   @version 0.7 and later
  */
--(MKFacebookRequest *)initWithFacebookConnection:(MKFacebook *)aFacebookConnection parameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector;
+-(id)initWithFacebookConnection:(MKFacebook *)aFacebookConnection parameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector;
+
 
 /*!
 @param aFacebookConnection A MKFacebook object that has been used to log in a user.  This object must have a valid sessionKey.
@@ -97,6 +121,8 @@ typedef int MKFacebookRequestType;
   @version 0.7 and later
  */
 -(void)setDelegate:(id)delegate;
+
+-(id)delegate;
 
 /*!
  @param selector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument.
@@ -134,14 +160,32 @@ typedef int MKFacebookRequestType;
  
  Sets whether or not instance should automatically display error windows when network connection or xml parsing errors are encountered.  Default is yes.
  
- @version 0.7.7 and later
+ @version 0.8 and later
  */
--(void)setDisplayGeneralErrors:(BOOL)aBool;
+-(void)setDisplayAPIErrorAlert:(BOOL)aBool;
 
 /*!
  @result Returns boolean indicating whether or not instance will automatically display error windows or not.
- @version 0.7.7 and later
+ @version 0.8 and later
  */
--(BOOL)displayGeneralErrors;
+-(BOOL)displayAPIErrorAlert;
+
+
+/*!
+ Sets how many times the request should be attempted before giving up.  Note: the delegate will not receive notification of a failed attempt unless all attempts fail.  Default is 5.
+ @version 0.8 and later
+ */
+-(void)setNumberOfRequestAttempts:(int)requestAttempts;
 
 @end
+
+
+//meh, some random thoughts for request subclasses.  needs some more thought.  subclassing needs structure.
+@protocol MKFacebookRequestProtocol
++(id)requestUsingFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
+-(id)initWithFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
+//response handling
+-(void)receivedFacebookResponse:(NSXMLDocument *)xmlResponse;
+@end
+
+

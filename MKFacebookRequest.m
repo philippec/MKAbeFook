@@ -23,14 +23,24 @@
 
 @implementation MKFacebookRequest
 
--(MKFacebookRequest *)init
+
++(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector
+{
+	MKFacebookRequest *theRequest = [[[MKFacebookRequest alloc] initWithFacebookConnection:aFacebookConnection delegate:aDelegate selector:aSelector] autorelease];
+	return theRequest;
+}
+
++(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate
+{
+	MKFacebookRequest *theRequest = [[[MKFacebookRequest alloc] initWithFacebookConnection:aFacebookConnection delegate:aDelegate selector:nil] autorelease];
+	return theRequest;	
+}
+
+-(id)init
 {
 	self = [super init];
-	
 	if(self != nil)
 	{
-		//NSLog(@"initiated1");
-		
 		_facebookConnection = nil;
 		_delegate = nil;
 		_selector = nil;
@@ -39,73 +49,60 @@
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayGeneralErrors = YES;
+		_displayAPIErrorAlert = YES;
+		_numberOfRequestAttempts = 5;
 		
 	}
 	return self;
 }
 
--(MKFacebookRequest *)initWithFacebookConnection:(MKFacebook *)aFacebookConnection 
+-(id)initWithFacebookConnection:(MKFacebook *)aFacebookConnection 
 					   delegate:(id)aDelegate 
 					   selector:(SEL)aSelector
 {
-	//if(![aFacebookConnection userLoggedIn])
-	//{
-		//hmm what should we do here?
-	//}
-
-	self = [super init];
+	self = [self init];
 	if(self != nil)
 	{
-		//NSLog(@"initiated2");
-		_facebookConnection = [aFacebookConnection retain];
-		_delegate = aDelegate;
-		_selector = aSelector;
-		
-		_responseData = [[NSMutableData alloc] init];
-		_parameters = [[NSMutableDictionary alloc] init];
-		_urlRequestType = MKPostRequest;
-		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayGeneralErrors = YES;
+		[self setDelegate:aDelegate];
+		[self setSelector:aSelector];
 	}
 	return self;
 }
 
 
--(MKFacebookRequest *)initWithFacebookConnection:(MKFacebook *)aFacebookConnection
+-(id)initWithFacebookConnection:(MKFacebook *)aFacebookConnection
 									  parameters:(NSDictionary *)parameters
 										delegate:(id)aDelegate 
 										selector:(SEL)aSelector
+{
+	self = [self init];
+	if(self != nil)
+	{
+		[self setDelegate:aDelegate];
+		[self setSelector:aSelector];
+		[self setParameters:parameters];
+	}
+	return self;
+}
+
+
+-(void)setFacebookConnection:(MKFacebook *)aFacebookConnection
 {
 	//if(![aFacebookConnection userLoggedIn])
 	//{
 	//hmm what should we do here?
 	//}
-	
-	self = [super init];
-	if(self != nil)
-	{
-		_facebookConnection = [aFacebookConnection retain];
-		_delegate = aDelegate;
-		_selector = aSelector;
-		
-		_responseData = [[NSMutableData alloc] init];
-		_parameters = [[NSMutableDictionary dictionaryWithDictionary:parameters] retain];
-		_urlRequestType = MKPostRequest;
-		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayGeneralErrors = YES;
-	}
-	return self;
-}
-
--(void)setFacebookConnection:(MKFacebook *)aFacebookConnection
-{
 	_facebookConnection = aFacebookConnection;
 }
 
 -(void)setDelegate:(id)delegate
 {
 	_delegate = delegate;
+}
+
+-(id)delegate
+{
+	return _delegate;
 }
 
 -(void)setSelector:(SEL)selector
@@ -128,14 +125,15 @@
 	[_parameters addEntriesFromDictionary:parameters]; //fixes memory leak 0.7.4 - mike
 }
 
--(BOOL)displayGeneralErrors
+
+-(void)setDisplayAPIErrorAlert:(BOOL)aBool
 {
-	return _displayGeneralErrors;
+	_displayAPIErrorAlert = aBool;
 }
 
--(void)setDisplayGeneralErrors:(BOOL)aBool
+-(BOOL)displayAPIErrorAlert
 {
-	_displayGeneralErrors = aBool;
+	return _displayAPIErrorAlert;
 }
 
 
@@ -193,7 +191,7 @@
 		[_parameters setValue:[_facebookConnection apiKey] forKey:@"api_key"];
 		[_parameters setValue:MKFacebookFormat forKey:@"format"];
 		
-		//all other methods require call_id and session_key
+		//all other methods require call_id and session_key.
 		if(![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
 		{
 			[_parameters setValue:[_facebookConnection sessionKey] forKey:@"session_key"];
@@ -255,7 +253,7 @@
 		dasConnection = [NSURLConnection connectionWithRequest:getRequest delegate:self];
 	}
 
-	[[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityStarted" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityStarted" object:nil];
 	 
 }
 
@@ -267,6 +265,8 @@
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
+	
 	NSError *error;
 	NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData
 														   options:0
@@ -283,8 +283,25 @@
 		
 		//NSLog(@"error: %@", [returnXML description]);
 		NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
+		
+		//4 is a magic number that represents "The application has reached the maximum number of requests allowed. More requests are allowed once the time window has completed."
+		//luckily for us Facebook doesn't define "the time window".  fuckers.
+		//we will also try the request again if we see a 1 (unknown) or 2 (service unavailable) error
+		int errorInt = [[errorDictionary valueForKey:@"error_code"] intValue];
+		if((errorInt == 4 || errorInt == 1 || errorInt == 2 ) && _numberOfRequestAttempts <= _requestAttemptCount)
+		{
+			NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:2.0];
+			[NSThread sleepUntilDate:sleepUntilDate];
+			[_responseData setData:[NSData data]];
+			_requestAttemptCount++;
+			NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
+			[self sendRequest];
+			return;
+		}
+		
 		NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
-		if([self displayGeneralErrors])
+		
+		if([self displayAPIErrorAlert] || [_facebookConnection displayAPIErrorAlerts])
 		{
 			[_facebookConnection displayGeneralAPIError:errorTitle message:[errorDictionary valueForKey:@"error_msg"] buttonTitle:@"OK" details:[errorDictionary description]];			
 		}
@@ -298,7 +315,6 @@
 	[_responseData setData:[NSData data]];
 	_requestIsDone = YES;
 	
-	
 }
 
 -(void)cancelRequest
@@ -309,19 +325,27 @@
 		[dasConnection cancel];
 		_requestIsDone = YES;
 	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
 }
 
 //0.6 suggestion to pass connection error.  Thanks Adam.
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {	
 	
-	if([self displayGeneralErrors])
+	if([self displayAPIErrorAlert] || [_facebookConnection displayAPIErrorAlerts])
 	{
 		[_facebookConnection displayGeneralAPIError:@"Connection Error" message:@"Are you connected to the interwebs?" buttonTitle:@"OK" details:[[error userInfo] description]];
 	}
 	
 	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
 		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
+	
+	[[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:self];
+}
+
+-(void)setNumberOfRequestAttempts:(int)requestAttempts
+{
+	_numberOfRequestAttempts = requestAttempts;
 }
 
 

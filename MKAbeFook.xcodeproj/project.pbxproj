@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		274BC9E00B36BF620080F786 /* CocoaCryptoHashing.h in Headers */ = {isa = PBXBuildFile; fileRef = 274BC9DE0B36BF620080F786 /* CocoaCryptoHashing.h */; };
 		274BC9E10B36BF620080F786 /* CocoaCryptoHashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 274BC9DF0B36BF620080F786 /* CocoaCryptoHashing.m */; };
+		2761C0080EBFEB0800EE443D /* MKPhotosRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */; };
+		2761C0090EBFEB0800EE443D /* MKPhotosRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */; };
 		277BC3CA0D14566F00B9EFFE /* MKFacebookRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */; };
 		277BC3CB0D14566F00B9EFFE /* MKFacebookRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		277BC3CE0D14577200B9EFFE /* NSXMLElementAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */; };
@@ -20,6 +22,8 @@
 		2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */; };
 		2784C16B0E34D7CB00AD28B1 /* MKErrorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2784C1690E34D7CB00AD28B1 /* MKErrorWindow.m */; };
 		2784C16D0E34D81E00AD28B1 /* ErrorWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */; };
+		27CF35830EAADF4300399FF9 /* MKEventsRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27CF35810EAADF4300399FF9 /* MKEventsRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27CF35840EAADF4300399FF9 /* MKEventsRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CF35820EAADF4300399FF9 /* MKEventsRequest.m */; };
 		27D8B08D0AE6FF57007941CF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8B08C0AE6FF57007941CF /* WebKit.framework */; };
 		27D8B0A60AE6FFA7007941CF /* MKLoginWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D8B0A40AE6FFA7007941CF /* MKLoginWindow.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		27D8B0A70AE6FFA7007941CF /* MKLoginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D8B0A50AE6FFA7007941CF /* MKLoginWindow.m */; };
@@ -44,6 +48,8 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		274BC9DE0B36BF620080F786 /* CocoaCryptoHashing.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CocoaCryptoHashing.h; sourceTree = "<group>"; };
 		274BC9DF0B36BF620080F786 /* CocoaCryptoHashing.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = CocoaCryptoHashing.m; sourceTree = "<group>"; };
+		2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKPhotosRequest.h; sourceTree = "<group>"; };
+		2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKPhotosRequest.m; sourceTree = "<group>"; };
 		277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKFacebookRequest.m; sourceTree = "<group>"; };
 		277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKFacebookRequest.h; sourceTree = "<group>"; };
 		277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLElementAdditions.m; sourceTree = "<group>"; };
@@ -57,6 +63,8 @@
 		2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = ErrorWindow.nib; sourceTree = "<group>"; };
 		27B41A240B9B4C150040374E /* MKPhotoUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKPhotoUploader.h; sourceTree = "<group>"; };
 		27B41A250B9B4C150040374E /* MKPhotoUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKPhotoUploader.m; sourceTree = "<group>"; };
+		27CF35810EAADF4300399FF9 /* MKEventsRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKEventsRequest.h; sourceTree = "<group>"; };
+		27CF35820EAADF4300399FF9 /* MKEventsRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKEventsRequest.m; sourceTree = "<group>"; };
 		27D8B08C0AE6FF57007941CF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		27D8B0A40AE6FFA7007941CF /* MKLoginWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MKLoginWindow.h; sourceTree = "<group>"; };
 		27D8B0A50AE6FFA7007941CF /* MKLoginWindow.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = MKLoginWindow.m; sourceTree = "<group>"; };
@@ -135,6 +143,7 @@
 				27D8B0A90AE6FFB2007941CF /* MKFacebook.m */,
 				277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */,
 				277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */,
+				2761C0130EC0006900EE443D /* Request Subclasses */,
 				277BC4CB0D14815E00B9EFFE /* MKFacebookRequestQueue.h */,
 				277BC4CA0D14815E00B9EFFE /* MKFacebookRequestQueue.m */,
 			);
@@ -157,6 +166,17 @@
 				27D8B08C0AE6FF57007941CF /* WebKit.framework */,
 			);
 			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		2761C0130EC0006900EE443D /* Request Subclasses */ = {
+			isa = PBXGroup;
+			children = (
+				27CF35810EAADF4300399FF9 /* MKEventsRequest.h */,
+				27CF35820EAADF4300399FF9 /* MKEventsRequest.m */,
+				2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */,
+				2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */,
+			);
+			name = "Request Subclasses";
 			sourceTree = "<group>";
 		};
 		277BC4CE0D14816300B9EFFE /* Deprecated */ = {
@@ -233,6 +253,8 @@
 				277BC3FC0D14691600B9EFFE /* NSXMLDocumentAdditions.h in Headers */,
 				277BC4CD0D14815E00B9EFFE /* MKFacebookRequestQueue.h in Headers */,
 				2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */,
+				27CF35830EAADF4300399FF9 /* MKEventsRequest.h in Headers */,
+				2761C0080EBFEB0800EE443D /* MKPhotosRequest.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +327,8 @@
 				277BC3FD0D14691600B9EFFE /* NSXMLDocumentAdditions.m in Sources */,
 				277BC4CC0D14815E00B9EFFE /* MKFacebookRequestQueue.m in Sources */,
 				2784C16B0E34D7CB00AD28B1 /* MKErrorWindow.m in Sources */,
+				27CF35840EAADF4300399FF9 /* MKEventsRequest.m in Sources */,
+				2761C0090EBFEB0800EE443D /* MKPhotosRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
