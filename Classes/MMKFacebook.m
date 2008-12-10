@@ -229,7 +229,7 @@ NSString *MMKFacebookFormat = @"XML";
 	}
 	
 	//tell the login window to call getAuthSession: just as it is flipping back to the application view
-	_loginViewController = [[MMKLoginViewController alloc] initWithDelegate:self withSelector:@selector(getAuthSession:)];	
+	_loginViewController = [[MMKLoginViewController alloc] initWithDelegate:self withSelector:@selector(getAuthSession)];	
 	_navigationController = [[UINavigationController alloc] initWithRootViewController:_loginViewController];
 	
 	[self createAuthToken];
@@ -264,6 +264,7 @@ NSString *MMKFacebookFormat = @"XML";
 		
 		[request setParameters:parameters];
 		[request sendRequest];
+		[request displayLoadingSheet:NO];
 		[parameters release];
 	}
 }
@@ -310,7 +311,7 @@ NSString *MMKFacebookFormat = @"XML";
 	NSString *key = (NSString *)[domain objectForKey:@"sessionKey"];
 	NSString *secret = (NSString *)[domain objectForKey:@"sessionSecret"];
 	
-	if (!key || [key isEqualTo:@""] || !secret || [secret isEqualTo:@""]) {
+	if (!key || [key isEqualToString:@""] || !secret || [secret isEqualToString:@""]) {
 		return NO;
 	}
 	
@@ -384,7 +385,7 @@ NSString *MMKFacebookFormat = @"XML";
 	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
 	id key;
 	while ((key = [enumerator nextObject])) {
-		if([key isNotEqualTo:@"method"]) //remember we already did this one
+		if(![key isEqualToString:@"method"]) //remember we already did this one
 			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
 	}			
 	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
@@ -417,7 +418,7 @@ NSString *MMKFacebookFormat = @"XML";
 		if([[mutableDictionary objectForKey:key] isKindOfClass:[UIImage class]])
 			[mutableDictionary removeObjectForKey:key];
 		
-		if([key isNotEqualTo:@"method"]) //remember we already did this one
+		if(![key isEqualToString:@"method"]) //remember we already did this one
 			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
 	}			
 	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
@@ -450,7 +451,7 @@ NSString *MMKFacebookFormat = @"XML";
 	}
 
 	//methods except these require we use the secretKey that was assigned during login, not our original one
-	if([[parameters valueForKey:@"method"] isEqualTo:@"facebook.auth.getSession"] || [[parameters valueForKey:@"method"] isEqualTo:@"facebook.auth.createToken"])
+	if([[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || [[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
 	{
 		[tempString appendString:[self secretKey]];
 	}else
@@ -558,7 +559,7 @@ NSString *MMKFacebookFormat = @"XML";
 {
 
 	//we only get to the following methods if there was no error in the facebook response.  we "shouldn't" need to check for problems in the xml below...
-	if([[[xml rootElement] name] isEqualTo:@"auth_createToken_response"])
+	if([[[xml rootElement] name] isEqualToString:@"auth_createToken_response"])
 	{
 		[self setAuthToken:[[xml rootElement] stringValue]];
 		_hasAuthToken = TRUE;
@@ -576,7 +577,7 @@ NSString *MMKFacebookFormat = @"XML";
 		return;
 	}
 	
-	if([[[xml rootElement] name] isEqualTo:@"auth_getSession_response"])
+	if([[[xml rootElement] name] isEqualToString:@"auth_getSession_response"])
 	{
 		//NSLog(@"got here");
 		NSDictionary *response = [[xml rootElement] dictionaryFromXMLElement];
@@ -607,7 +608,7 @@ NSString *MMKFacebookFormat = @"XML";
 		
 		if([self userLoggedIn])
 		{
-			if([_defaultsName isNotEqualTo:@""] && useInfiniteSessions)
+			if(![_defaultsName isEqualToString:@""] && useInfiniteSessions)
 			{
 				//NSDictionary *sessionDefaults = [NSDictionary dictionaryWithObjectsAndKeys:[self sessionKey], @"sessionKey", [self sessionSecret], @"sessionSecret", nil];
 				//[[NSUserDefaults standardUserDefaults] setPersistentDomain:sessionDefaults forName:_defaultsName];
@@ -669,7 +670,7 @@ NSString *MMKFacebookFormat = @"XML";
 
 
 //TODO: flip application view and display browser that loads appropriate url to modify extended permissions
-/*
+
 -(void)grantExtendedPermission:(NSString *)aString
 {
 	if([self userLoggedIn] == NO)
@@ -686,15 +687,23 @@ NSString *MMKFacebookFormat = @"XML";
 		return;
 	}
 	
-	_loginViewController = [[MKLoginWindow alloc] initWithDelegate:self withSelector:nil]; //will be released when closed			
-	[_loginViewController showWindow:self];
-	[_loginViewController setWindowSize:NSMakeSize(800, 600)];
+	_loginViewController = [[MMKLoginViewController alloc] initWithDelegate:self withSelector:@selector(returnUserToApplication)];	
+	_navigationController = [[UINavigationController alloc] initWithRootViewController:_loginViewController];
+	
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:1.0];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:[_delegate applicationView] cache:NO];
+	
+	[[_delegate applicationView] addSubview:[_navigationController view]];
+	
+	[UIView commitAnimations];
 	
 	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@", [self apiKey], MMKFacebookAPIVersion, aString]];
 	[_loginViewController loadURL:url];
 	
 }
- */
+
 
 @end
 
