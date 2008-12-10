@@ -21,6 +21,7 @@
 	UILabel *_text;
 	UIButton *_loginButton;
 	MMKFacebook *_facebookConnection;
+
 }
 
 -(UIView *)applicationView;

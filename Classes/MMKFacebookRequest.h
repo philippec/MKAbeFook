@@ -61,12 +61,6 @@ enum
 	BOOL _displayLoadingSheet;
 	UIView *_loadingSheet;
 	
-	/* displays entire new view while loading */
-	BOOL _displayLoadingView;
-	NSString *_loadingViewTransitionType;
-	NSString *_loadingViewTransitionSubtype;
-	CFTimeInterval _loadingViewTransitionDuration;
-	UIView *_loadingView;
 }
 
 -(MMKFacebookRequest *)init;
@@ -143,7 +137,7 @@ enum
 
 /*!
  @method setDisplayLoadingSheet:
- @param shouldDisplayLoadingSheet BOOL value, YES if you want to display the loading sheet.  NO if you don't.  Default is NO.
+ @param shouldDisplayLoadingSheet BOOL value, YES if you want to display the loading sheet.  NO if you don't.  Default is YES.
  @discussion Displays a sheet from top of screen with indeterminate progress indicator and cancel button while request is loading.  Automatically removed from screen when request completes.
  */
 -(void)displayLoadingSheet:(BOOL)shouldDisplayLoadingSheet;
@@ -158,15 +152,6 @@ enum
  */
 -(BOOL)displayGeneralErrors;
 
-/*!
- @method setDisplayLoadingView:transition:duration:
- @param view The view to display instead of the current application front view.  Use nil to use default loading screen, see MMKLoadingView.m
- @param transitionType Transition type to perform while swapping the loading view and application view. (kCATransitionFade, kCATransitionMoveIn, kCATransitionPush, kCATransitionReveal)
- @param transitionSubtype Transition subtype to perform while swapping the loading view and application view.
- @param duratiton Duration of transition. (kCATransitionFromRight, kCATransitionFromLeft, kCATransitionFromTop, kCATransitionFromBottom)
- @Discussion Replaces entire application front view with custom UIView loading screen.  Automatically applies transitions between loading view and application front view.
- */
--(void)displayLoadingWithView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration;
 
 -(void)returnToApplicationView;
 @end

@@ -12,6 +12,7 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		2725B08C0EEF3D8D000FAAC3 /* testPicture.png in Resources */ = {isa = PBXBuildFile; fileRef = 2725B08B0EEF3D8D000FAAC3 /* testPicture.png */; };
 		27B1144C0DAD9E15004F0E9B /* CXMLElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B1143E0DAD9E15004F0E9B /* CXMLElement.m */; };
 		27B1144D0DAD9E15004F0E9B /* CXMLDocumentAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B114410DAD9E15004F0E9B /* CXMLDocumentAdditions.m */; };
 		27B1144E0DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B114430DAD9E15004F0E9B /* CXMLDocument_PrivateExtensions.m */; };
@@ -32,6 +33,7 @@
 		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* Mobile MKAbeFook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mobile MKAbeFook.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2725B08B0EEF3D8D000FAAC3 /* testPicture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = testPicture.png; sourceTree = "<group>"; };
 		27B1143E0DAD9E15004F0E9B /* CXMLElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CXMLElement.m; path = CXML/CXMLElement.m; sourceTree = "<group>"; };
 		27B1143F0DAD9E15004F0E9B /* CXMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLElement.h; path = CXML/CXMLElement.h; sourceTree = "<group>"; };
 		27B114400DAD9E15004F0E9B /* CXMLDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CXMLDocument.h; path = CXML/CXMLDocument.h; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				8D1107310486CEB800E47090 /* Info.plist */,
+				2725B08B0EEF3D8D000FAAC3 /* testPicture.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -216,6 +219,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2725B08C0EEF3D8D000FAAC3 /* testPicture.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,6 +251,7 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -263,13 +268,15 @@
 				OTHER_LDFLAGS = "-lxml2";
 				PREBINDING = NO;
 				PRODUCT_NAME = "Mobile MKAbeFook";
-				SDKROOT = iphonesimulator2.0;
+				SDKROOT = iphoneos2.2;
 			};
 			name = Debug;
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -281,10 +288,11 @@
 				GCC_PREFIX_HEADER = "Mobile MKAbeFook_Prefix.pch";
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				INFOPLIST_FILE = Info.plist;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lxml2";
 				PREBINDING = NO;
 				PRODUCT_NAME = "Mobile MKAbeFook";
-				SDKROOT = iphonesimulator2.0;
+				SDKROOT = iphoneos2.2;
 			};
 			name = Release;
 		};

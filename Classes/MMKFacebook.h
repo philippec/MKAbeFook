@@ -249,9 +249,9 @@ Available Delegate Methods
  
  This method will display a new window and load the Facebook URL  http://www.facebook.com/authorize.php?api_key=YOUR_API_KEY&v=1.0&ext_perm=PERMISSION_NAME
  authentication information is filled in automatically.  If no user is logged in an alert message will be displayed unless they have been turned off.
- @version 0.1 and later
+ @version 0.3 and later
 */
-//-(void)grantExtendedPermission:(NSString *)aString;
+-(void)grantExtendedPermission:(NSString *)aString;
 
 
 /*!
@@ -263,6 +263,7 @@ This is just a simple wrapper for displaying an UIAlertView.
  @version 0.2 and later.
  */
 -(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle;
+
 
 @end
 

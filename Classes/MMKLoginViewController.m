@@ -31,7 +31,7 @@
 	[leftButton setTitle:@"Back To App" forState:UIControlStateNormal];
 	[leftButton addTarget:_delegate action:@selector(getAuthSession) forControlEvents:UIControlEventTouchUpInside];
 	 */
-	UIBarButtonItem *leftBarButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:_delegate action:@selector(getAuthSession)] autorelease];
+	UIBarButtonItem *leftBarButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:_delegate action:_selector] autorelease];
 	
 	self.navigationItem.leftBarButtonItem = leftBarButton;
 	//[leftButton release];

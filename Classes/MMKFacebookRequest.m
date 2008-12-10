@@ -29,7 +29,6 @@
 	self = [super init];
 	if(self != nil)
 	{
-		_loadingView = nil;
 		_facebookConnection = nil;
 		_delegate = nil;
 		_selector = nil;
@@ -37,11 +36,7 @@
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayLoadingSheet = NO;
-		_displayLoadingView = NO;
-		_loadingViewTransitionType = [[NSString alloc] init];
-		_loadingViewTransitionSubtype = [[NSString alloc] init];
-		_loadingViewTransitionDuration = LOADING_SCREEN_ANIMATION_DURATION;
+		_displayLoadingSheet = YES;
 		_displayGeneralErrors = YES;
 		
 	}
@@ -53,7 +48,6 @@
 	self = [super init];
 	if(self != nil)
 	{
-		_loadingView = nil;
 		_facebookConnection = [aFacebookConnection retain];
 		_delegate = aDelegate;
 		_selector = aSelector;
@@ -61,7 +55,7 @@
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayLoadingSheet = NO;
+		_displayLoadingSheet = YES;
 		_displayGeneralErrors = YES;
 		
 	}
@@ -74,7 +68,6 @@
 	self = [super init];
 	if(self != nil)
 	{
-		_loadingView = nil;
 		_facebookConnection = [aFacebookConnection retain];
 		_delegate = aDelegate;
 		_selector = aSelector;
@@ -82,7 +75,7 @@
 		_parameters = [[NSMutableDictionary dictionaryWithDictionary:parameters] retain];
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayLoadingSheet = NO;
+		_displayLoadingSheet = YES;
 		_displayGeneralErrors = YES;
 	}
 	return self;
@@ -139,8 +132,6 @@
 
 -(void)dealloc
 {
-	if(_loadingView != nil)
-		[_loadingView release];
 	
 	if(_loadingSheet != nil)
 		[_loadingSheet release];
@@ -196,70 +187,17 @@
 			
 			[[[_facebookConnection delegate] applicationView] addSubview:_loadingSheet];
 			
-			[UIView beginAnimations:nil context:NULL];
-			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
+			//[UIView beginAnimations:nil context:NULL];
+			//[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
 			[_loadingSheet setFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 70)];
 			[loadingText setFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2 - 40, 33, 80, 20)];
 			[progressIndicator setFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width -40, 30 , 30, 30)];
 			[cancelButton setFrame:CGRectMake(10, 30, kStdButtonWidth - 15, kStdButtonHeight - 10)]; 
-			[UIView commitAnimations];
+			//[UIView commitAnimations];
 
 			[progressIndicator release];
 			[loadingText release];
 
-		//flip entire view and display loading message
-		}else if(_displayLoadingView == YES)
-		{
-			if(_loadingView == nil)
-			{
-				_loadingView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
-				[_loadingView setBackgroundColor:[UIColor magentaColor]];
-
-				UILabel *loadingText = [[UILabel alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2 - 40, [[UIScreen mainScreen] bounds].size.height / 2 - 50, 100, 20)];
-				//loadingText.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2, [[UIScreen mainScreen] applicationFrame].size.height / 2 - 50);
-				[loadingText setBackgroundColor:[UIColor clearColor]];
-				[loadingText setTextAlignment:UITextAlignmentCenter];
-				loadingText.text = @"Loading...";
-				loadingText.font = [UIFont boldSystemFontOfSize:19.0];
-				loadingText.textColor = [UIColor whiteColor];
-				[_loadingView addSubview:loadingText];
-				[loadingText release];
-				
-				UIActivityIndicatorView *progressIndicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height / 2, 30, 30)];
-				progressIndicator.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 5);
-				[progressIndicator setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
-				[progressIndicator startAnimating];
-				[_loadingView addSubview:progressIndicator];
-				[progressIndicator release];
-				
-				//add default cancel button to upper left of view
-				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-				[cancelButton setFrame:CGRectMake(10, 40, kStdButtonWidth - 15, kStdButtonHeight - 10)];
-				//cancelButton.center = CGPointMake([[UIScreen mainScreen] applicationFrame].size.width / 2 - 5, [[UIScreen mainScreen] applicationFrame].size.height / 2 + 50);
-				[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
-				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
-				[_loadingView addSubview:cancelButton];
-				
-			}else
-			{
-				//add default cancel button to upper left of view
-				UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-				[cancelButton setFrame:CGRectMake(10, 40, kStdButtonWidth - 15, kStdButtonHeight - 10)];
-				[cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
-				[cancelButton addTarget:self action:@selector(cancelRequest) forControlEvents:UIControlEventTouchUpInside];
-				[_loadingView addSubview:cancelButton];				
-			}
-			
-			
-			
-			[[[_facebookConnection delegate] applicationView] addSubview:_loadingView];
-			CATransition *animation = [CATransition animation];
-			[animation setDelegate:self];
-			[animation setType:_loadingViewTransitionType];
-			[animation setSubtype:_loadingViewTransitionSubtype];
-			[animation setDuration: LOADING_SCREEN_ANIMATION_DURATION];
-			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-			[[[[_facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
 		}
 	}
 	
@@ -311,12 +249,14 @@
 		{
 			if([[_parameters objectForKey:key] isKindOfClass:[UIImage class]])
 			{
-				/*SKIPPING PHOTO HANDLING FOR NOW
-				NSData *resizedTIFFData = [[_parameters objectForKey:key] TIFFRepresentation];
+				NSLog(@"found picture to upload");
+				NSData *imageData = UIImageJPEGRepresentation([_parameters objectForKey:key], 1.0);
+				/*
+				NSData *resizedTIFFData = [[_parameters objectForKey:key] UIImageJPEGRepresentation];
 				NSBitmapImageRep *resizedImageRep = [NSBitmapImageRep imageRepWithData: resizedTIFFData];
 				NSDictionary *imageProperties = [NSDictionary dictionaryWithObject:[NSNumber numberWithFloat: 1.0] forKey:UIImageCompressionFactor];
 				NSData *imageData = [resizedImageRep representationUsingType: NSJPEGFileType properties: imageProperties];
-				
+				*/
 				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; filename=\"something\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:[[NSString stringWithString:@"Content-Type: image/jpeg\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];	
 				[postBody appendData: imageData];
@@ -325,7 +265,6 @@
 				//we need to remove this the image object from the dictionary so we can generate a correct sig from the other values, but we can't do it here or leopard will complain.  so we'll do it OUTSIDE the while loop.
 				//[_parameters removeObjectForKey:key];
 				imageKey = [NSString stringWithString:key];
-				*/
 			}else
 			{
 				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -371,8 +310,11 @@
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
 	NSString *temp = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
+	NSLog(temp);
 	CXMLDocument *returnXML = [[[CXMLDocument alloc] initWithXMLString:temp options:0 error:nil] autorelease];
 	[temp release];
+	
+
 	
 	if([returnXML validFacebookResponse] == NO)
 	{
@@ -382,7 +324,7 @@
 		if([self displayGeneralErrors])
 		{
 			//TODO: pass back error number etc... instead of generic message
-			[_facebookConnection displayGeneralAPIError:@"Response Error" message:@"Facebook gave us some bad information." buttonTitle:@"OK"];			
+			[_facebookConnection displayGeneralAPIError:@"Response Error" message:@"Facebook gave us some bad information." buttonTitle:@"OK"];
 		}
 	}else
 	{
@@ -411,16 +353,6 @@
 			*/
 			[_loadingSheet removeFromSuperview];
 			
-		}else if(_displayLoadingView == YES)
-		{
-			CATransition *animation = [CATransition animation];
-			[animation setDelegate:self];
-			[animation setType:_loadingViewTransitionType];
-			[animation setSubtype:_loadingViewTransitionSubtype];
-			[animation setDuration: LOADING_SCREEN_ANIMATION_DURATION];
-			[animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-			[[[[_facebookConnection delegate] applicationView] layer] addAnimation: animation forKey:nil];
-			[_loadingView removeFromSuperview];
 		}
 	}
 }
@@ -445,25 +377,6 @@
 	
 	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
 		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
-}
-
-//TODO: this should be somthing like setLoadingViewDisplay....
--(void)displayLoadingWithView:(UIView *)view transitionType:(NSString *)transitionType transitionSubtype:(NSString *)transitionSubtype duration:(CFTimeInterval)duration
-{
-	_displayLoadingSheet = NO;
-	_displayLoadingView = YES;
-	_loadingView = view;
-
-	transitionType = [transitionType copy];
-	[_loadingViewTransitionType release];
-	_loadingViewTransitionType = transitionType;
-	
-	transitionSubtype = [transitionSubtype copy];
-	[_loadingViewTransitionSubtype release];
-	_loadingViewTransitionSubtype = transitionSubtype;
-	
-	_loadingViewTransitionDuration = duration;
-	
 }
 
 

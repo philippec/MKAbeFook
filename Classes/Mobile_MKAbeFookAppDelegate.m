@@ -27,7 +27,7 @@
 	[_frontView setBackgroundColor:[UIColor whiteColor]];
 	
 	CGRect bounds = [[UIScreen mainScreen] bounds];
-	CGRect rect = CGRectMake(0, bounds.size.height / 5, bounds.size.width, 20);
+	CGRect rect = CGRectMake(0, bounds.size.height / 10, bounds.size.width, 20);
 	_text = [[UILabel alloc] initWithFrame:rect];
 	[_text setTextAlignment:UITextAlignmentCenter];
 	_text.text = @"Hello Mobile MKAbeFook.";
@@ -76,8 +76,33 @@
 	[loadUserInfo addTarget:self action:@selector(getUserInfo) forControlEvents:UIControlEventTouchUpInside];
 	loadUserInfo.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
 	loadUserInfo.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-	loadUserInfo.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height /3);
+	loadUserInfo.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height / 4);
 	[_frontView addSubview:loadUserInfo];
+	
+	UIImageView *testPictureView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"testPicture.png"]];
+	testPictureView.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height -200);
+	[_frontView addSubview:testPictureView];
+	[testPictureView release];
+
+	UIButton *uploadPiratePicture = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+	uploadPiratePicture.frame = CGRectMake(0.0, 0.0, kStdButtonWidth * 2, kStdButtonHeight);
+	[uploadPiratePicture setTitle:@"Upload Pirate Picture" forState:UIControlStateNormal];
+	[uploadPiratePicture addTarget:self action:@selector(uploadPiratePicture) forControlEvents:UIControlEventTouchUpInside];
+	loadUserInfo.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+	uploadPiratePicture.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+	uploadPiratePicture.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height -100);
+	[_frontView addSubview:uploadPiratePicture];
+	
+
+	UIButton *grantExtendedPermissions = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+	grantExtendedPermissions.frame = CGRectMake(0.0, 0.0, kStdButtonWidth * 2, kStdButtonHeight);
+	[grantExtendedPermissions setTitle:@"Grant Offline Permisison" forState:UIControlStateNormal];
+	[grantExtendedPermissions addTarget:self action:@selector(grantExtendedPermissions) forControlEvents:UIControlEventTouchUpInside];
+	grantExtendedPermissions.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+	grantExtendedPermissions.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+	grantExtendedPermissions.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height -50);
+	[_frontView addSubview:grantExtendedPermissions];
+	
 }
 
 -(void)returningUserToApplication
@@ -94,20 +119,6 @@
 	//display loading sheet
 	[request displayLoadingSheet:YES];
 
-	//or
-
-	//display entire new view with transitions
-	
-	/*
-	UIView *blue = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	[blue setBackgroundColor:[UIColor blueColor]];
-	[request displayLoadingWithView: blue 
-					 transitionType:kCATransitionReveal
-				  transitionSubtype:kCATransitionFromLeft
-						   duration:0.5];
-	*/
-	 
-	 
 	[request setSelector:@selector(gotUserInfo:)];
 	
 	NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
@@ -119,6 +130,32 @@
 	[parameters release];
 }
 
+-(void)uploadPiratePicture
+{
+	MMKFacebookRequest *request = [[[MMKFacebookRequest alloc] init] autorelease];
+	[request setDelegate:self];
+	[request setFacebookConnection:_facebookConnection];
+	
+	//display loading sheet
+	[request displayLoadingSheet:YES];
+	
+	[request setSelector:@selector(uploadedPicture:)];
+	
+	NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+	[parameters setValue:@"facebook.photos.upload" forKey:@"method"];
+	//[parameters setValue:@"126349408045409169" forKey:@"aid"];
+	[parameters setValue:@"pirate flag" forKey:@"caption"];
+	[parameters setValue:[UIImage imageNamed:@"testPicture.png"] forKey:@"picture"];
+	[request setParameters:parameters];
+	[request sendRequest];
+	[parameters release];
+	
+}
+
+-(void)grantExtendedPermissions
+{
+	[_facebookConnection grantExtendedPermission:@"offline_access"];
+}
 -(UIView *)applicationView
 {
 	return _frontView;
@@ -130,6 +167,11 @@
 {
 	NSLog([[[xml rootElement] arrayFromXMLElement] description]);
 
+}
+
+-(void)uploadedPicture:(CXMLDocument *)xml
+{
+	_text.text = @"Picture uploaded, visit site to verify";
 }
 
 -(void)gotUserInfo:(CXMLDocument *)xml
