@@ -735,6 +735,7 @@ It basicaly re-encodes the string, but ignores escape characters + and %, and al
 }
 
 //borrowed from CocoaCryptoHashing categories
+//created by Denis Defreyne released under FreeBSD License
 -(NSString *)md5Hash
 {
 	NSData *tempData = [self dataUsingEncoding:NSUTF8StringEncoding];
