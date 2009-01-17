@@ -4,7 +4,7 @@
 //
 //  Created by Mike on 10/11/06.
 /*
- Copyright (c) 2008, Mike Kinney
+ Copyright (c) 2009, Mike Kinney
  All rights reserved.
  
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -140,7 +140,7 @@ Available Delegate Methods
  @param aConnectionTimeoutInterval
   Sets the length of time to wait before an attempted connection gives up.  Default time is 5 seconds.
  */
--(void)setConnectionTimeoutInterval:(double)aConnectionTimeoutInterval;
+-(void)setConnectionTimeoutInterval:(NSTimeInterval)aConnectionTimeoutInterval;
 
 /*!
  @result Retuns current connection timeout interval.
