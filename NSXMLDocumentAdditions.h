@@ -4,7 +4,7 @@
 //
 //  Created by Mike Kinney on 12/15/07.
 /*
- Copyright (c) 2008, Mike Kinney
+ Copyright (c) 2009, Mike Kinney
  All rights reserved.
  
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
