@@ -84,7 +84,7 @@ NSString *MKFacebookFormat = @"XML";
 		userHasLoggedInMultipleTimes = FALSE;
 		_delegate = aDelegate;
 		_shouldUseSynchronousLogin = NO;
-		_displayAPIErrorAlerts = NO;
+		_displayAPIErrorAlerts = YES;
 	}
 	return self;
 }
@@ -125,7 +125,7 @@ NSString *MKFacebookFormat = @"XML";
 		userHasLoggedInMultipleTimes = FALSE;
 		_delegate = aDelegate;
 		_shouldUseSynchronousLogin = NO;
-		_displayAPIErrorAlerts = NO;
+		_displayAPIErrorAlerts = YES;
 	}
 	return self;
 }
