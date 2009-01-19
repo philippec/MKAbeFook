@@ -79,12 +79,9 @@
 										delegate:(id)aDelegate 
 										selector:(SEL)aSelector
 {
-	self = [self init];
+	self = [self initWithFacebookConnection:aFacebookConnection delegate:aDelegate selector:aSelector];
 	if(self != nil)
 	{
-		[self setDelegate:aDelegate];
-		[self setSelector:aSelector];
-		[self setParameters:parameters];
 		[self setFacebookConnection:aFacebookConnection];
 	}
 	return self;

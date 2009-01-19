@@ -91,13 +91,6 @@ typedef int MKFacebookRequestType;
 +(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
 
 
-/*!
- @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
- @param aDelegate The object that will receive the response returned by Facebook.
- @version 0.8 and later
- */
-+(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate;
-
 
 
 -(id)init;

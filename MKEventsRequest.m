@@ -34,7 +34,7 @@
 	{
 		[self setFacebookConnection:facebookConnection];
 		[self setDelegate:self];
-		[self setSelector:@selector(receivedFacebookResponse:)];
+		[self setSelector:@selector(facebookResponseReceived:)];
 		__delegate = delegate;
 		_returnXML = NO;
 	}
