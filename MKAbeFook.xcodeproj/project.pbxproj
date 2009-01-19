@@ -19,7 +19,7 @@
 		277BC3FD0D14691600B9EFFE /* NSXMLDocumentAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3FB0D14691600B9EFFE /* NSXMLDocumentAdditions.m */; };
 		277BC4CC0D14815E00B9EFFE /* MKFacebookRequestQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC4CA0D14815E00B9EFFE /* MKFacebookRequestQueue.m */; };
 		277BC4CD0D14815E00B9EFFE /* MKFacebookRequestQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC4CB0D14815E00B9EFFE /* MKFacebookRequestQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */; };
+		2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2784C16B0E34D7CB00AD28B1 /* MKErrorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2784C1690E34D7CB00AD28B1 /* MKErrorWindow.m */; };
 		2784C16D0E34D81E00AD28B1 /* ErrorWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */; };
 		27CF35830EAADF4300399FF9 /* MKEventsRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27CF35810EAADF4300399FF9 /* MKEventsRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
