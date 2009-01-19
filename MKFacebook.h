@@ -116,19 +116,6 @@ Available Delegate Methods
 -(MKFacebook *)initUsingAPIKey:(NSString *)anAPIKey usingSecret:(NSString *)aSecret delegate:(id)aDelegate withDefaultsName:(NSString *)aDefaultsName;
 
 
-/*!
- @param aBool Specify yes or no to enable or disable alert messages.
-  
- If alerts are enabled MKFacebook will automatically display simple alert messages if errors are encountered while trying to authenticate and log into Facebook.com.  As of 0.7 alert messages are enabled by default.
-  @version 0.7 and later
- */
--(void)setAlertsEnabled:(BOOL)aBool;
-
-/*!
- @result Returns YES if alert messages are enabled, NO if they are disabled.
-@version 0.7 and later
- */
--(BOOL)alertsEnabled;
 
 
 -(NSString *)apiKey;

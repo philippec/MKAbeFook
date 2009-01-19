@@ -49,7 +49,7 @@
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayAPIErrorAlert = YES;
+		_displayAPIErrorAlert = NO;
 		_numberOfRequestAttempts = 5;
 		
 	}
@@ -150,7 +150,7 @@
 -(void)sendRequest
 {
 	
-	NSLog(@"sending request to: %@", [_requestURL description]);
+	//NSLog(@"sending request to: %@", [_requestURL description]);
 	
 	if([_parameters count] == 0)
 	{
@@ -337,10 +337,8 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {	
 	
-	NSLog(@"got a failed error");
 	if([self displayAPIErrorAlert] || [_facebookConnection displayAPIErrorAlerts])
 	{
-		NSLog(@"should have gotten here");
 		[_facebookConnection displayGeneralAPIError:@"Connection Error" message:@"Are you connected to the interwebs?" buttonTitle:@"OK" details:[[error userInfo] description]];
 	}
 	
