@@ -95,7 +95,6 @@
 {
 	//if(![aFacebookConnection userLoggedIn])
 	//{
-	//hmm what should we do here?
 	//}
 	_facebookConnection = aFacebookConnection;
 }
@@ -152,6 +151,17 @@
 
 -(void)sendRequest
 {
+	//if no user is logged in and they're trying to send a request OTHER than something required for logging in a user abort the request
+	if(![_facebookConnection userLoggedIn] && (![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"]))
+	{
+		NSException *exception = [NSException exceptionWithName:@"Invalid Facebook Connection"
+														 reason:@"MKFacebookRequest could not continue because no user is logged in.  Request has been aborted."
+													   userInfo:nil];
+		
+		[exception raise];
+		return;
+	}
+	
 	
 	//NSLog(@"sending request to: %@", [_requestURL description]);
 	
@@ -192,11 +202,12 @@
 		[postRequest setHTTPMethod:@"POST"];
 		[postRequest addValue:contentType forHTTPHeaderField:@"Content-Type"];
 		[postBody appendData:[[NSString stringWithFormat:@"--%@\r\n", stringBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
-		
+
 		//add items that are required by all requests to _parameters dictionary so they are added to the postRequest and we can easily make a sig from them
 		[_parameters setValue:MKFacebookAPIVersion forKey:@"v"];
 		[_parameters setValue:[_facebookConnection apiKey] forKey:@"api_key"];
-		[_parameters setValue:MKFacebookFormat forKey:@"format"];
+		[_parameters setValue:MKFacebookResponseFormat forKey:@"format"];
+		
 		
 		//all other methods require call_id and session_key.
 		if(![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
@@ -204,6 +215,8 @@
 			[_parameters setValue:[_facebookConnection sessionKey] forKey:@"session_key"];
 			[_parameters setValue:[_facebookConnection generateTimeStamp] forKey:@"call_id"];
 		}
+
+		
 		
 		NSEnumerator *e = [_parameters keyEnumerator];
 		id key;
