@@ -25,8 +25,8 @@
  */
 enum MKFacebookRequestType
 {
-	MKPostRequest = 0,
-	MKGetRequest = 1 << 0
+	MKPostRequest,
+	MKGetRequest
 };
 
 typedef int MKFacebookRequestType;
@@ -35,7 +35,7 @@ typedef int MKFacebookRequestType;
  @brief Request information from Facebook
  
  @class MKFacebookRequest
-  MKFacebookRequest handles all requests to the Facebook API.  It can send requests as either POST or GET and return the results to the specified delegate / selector.  This object requires a NSDictionary of parameters that contains the parameters for a request to the Facebook API.  Included in the dictionary must be a key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo".  Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id", do not need to be in the NSDictionary of parameters you pass into the object, they will be inserted automatically.
+  MKFacebookRequest handles all requests to the Facebook API.  It can send requests as either POST or GET and return the results to a specified delegate and selector.  This object requires a NSDictionary of parameters that contains the parameters for a request to the Facebook API.  Included in the dictionary must be a key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo".  Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id", do not need to be in the NSDictionary of parameters you pass into the object, they will be inserted automatically.
  
  
  The MKFacebookRequest class is be capable of handling most of the methods available by the Facebook API, including facebook.photos.upload.  To upload a photo using this class include a NSImage object in your NSDictionary of parameters you set and set the method key value to "facebook.photos.upload".  The name of the key for the NSImage object can be any string.
@@ -44,10 +44,10 @@ typedef int MKFacebookRequestType;
  
  See the MKFacebookRequestQueue class for sending a series of requests that are sent incrementally after the previous request has been completed.
  
- Available Delegate Methods
+ Available Delegate Methods (important changes in 0.8)
  
  -(void)facebookResponseReceived:(id)response; <br/>
- &nbsp;&nbsp; Called when Facebook returns a valid response.  Passes XML returned by Facebook.  Set a selector to change where responses are sent to.
+ &nbsp;&nbsp; Called when Facebook returns a valid response.  Passes XML returned by Facebook.  If you do not assign a selector use this method to handle reponses from Facebook.  If you want the responses sent elsewhere assign the request a selector.
  
  -(void)facebookErrorResponseReceived:(id)errorResponse;<br/>
  &nbsp;&nbsp; Called when an error is returned by Facebook.  Passes XML returned by Facebook.
@@ -76,7 +76,7 @@ typedef int MKFacebookRequestType;
 
 /*!
  @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
- @param aDelegate The object that will receive the information returned by Facebook.  This should implement -(void)facebookResponseReceived:(id)response to handle data returned from Facebook
+ @param aDelegate The object that will receive the information returned by Facebook.  This should implement -(void)facebookResponseReceived:(id)response to handle data returned from Facebook.  Set a selector to have responses sent elsewhere.
  @version 0.8 and later
  */
 +(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate;
@@ -84,7 +84,7 @@ typedef int MKFacebookRequestType;
 
 /*!
  @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
- @param aDelegate The object that will receive the information returned by Facebook.
+ @param aDelegate The object that will receive the response returned by Facebook.
  @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument. 
  @version 0.8 and later
  */
@@ -93,7 +93,7 @@ typedef int MKFacebookRequestType;
 
 /*!
  @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
- @param aDelegate The object that will receive the information returned by Facebook.
+ @param aDelegate The object that will receive the response returned by Facebook.
  @version 0.8 and later
  */
 +(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate;

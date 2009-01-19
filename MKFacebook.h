@@ -25,7 +25,7 @@
 extern NSString *MKAPIServerURL;
 extern NSString *MKLoginUrl;
 extern NSString *MKFacebookAPIVersion;
-extern NSString *MKFacebookFormat;
+extern NSString *MKFacebookResponseFormat;
 /*!
  @brief Login and commuincate with Facebook.com
  

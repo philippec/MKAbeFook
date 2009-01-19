@@ -26,7 +26,7 @@
 NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
 NSString *MKFacebookAPIVersion = @"1.0";
-NSString *MKFacebookFormat = @"XML";
+NSString *MKFacebookResponseFormat = @"XML";
 
 @interface MKFacebook (Private)
 -(void)setApiKey:(NSString *)anApiKey;
@@ -365,7 +365,7 @@ NSString *MKFacebookFormat = @"XML";
 	[mutableDictionary setValue:aMethodName forKey:@"method"];
 	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
 	[mutableDictionary setValue:[self apiKey] forKey:@"api_key"];
-	[mutableDictionary setValue:MKFacebookFormat forKey:@"format"];
+	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
 	
 	//all other methods require call_id and session_key
 	if(![aMethodName isEqualToString:@"facebook.auth.getSession"] || ![aMethodName isEqualToString:@"facebook.auth.createToken"])
@@ -394,7 +394,7 @@ NSString *MKFacebookFormat = @"XML";
 	//these will be here for all requests. 
 	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
 	[mutableDictionary setValue:[self apiKey] forKey:@"api_key"];
-	[mutableDictionary setValue:MKFacebookFormat forKey:@"format"];
+	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
 	
 	//all other methods require call_id and session_key
 	if(![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])

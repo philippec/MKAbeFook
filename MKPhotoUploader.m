@@ -137,7 +137,7 @@
 	[tempDictionary setValue:anAid forKey:@"aid"];
 	[tempDictionary setValue:aCaption forKey:@"caption"];
 	[tempDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
-	[tempDictionary setValue:MKFacebookFormat forKey:@"format"];
+	[tempDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
 	[tempDictionary setValue:[facebookConnection sessionKey] forKey:@"session_key"];
 	[tempDictionary setValue:[facebookConnection apiKey] forKey:@"api_key"];
 	
@@ -175,7 +175,7 @@
 	[postBody appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", stringBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	[postBody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"format\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-	[postBody appendData:[[NSString stringWithString:MKFacebookFormat] dataUsingEncoding:NSUTF8StringEncoding]];
+	[postBody appendData:[[NSString stringWithString:MKFacebookResponseFormat] dataUsingEncoding:NSUTF8StringEncoding]];
 	[postBody appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", stringBoundary] dataUsingEncoding:NSUTF8StringEncoding]];
 	
 	[postBody appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"aid\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
