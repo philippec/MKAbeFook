@@ -83,9 +83,8 @@ NSString *MKFacebookFormat = @"XML";
 		hasUid = FALSE;
 		userHasLoggedInMultipleTimes = FALSE;
 		_delegate = aDelegate;
-		_alertMessagesEnabled = YES;
 		_shouldUseSynchronousLogin = NO;
-		_displayAPIErrorAlerts = YES;
+		_displayAPIErrorAlerts = NO;
 	}
 	return self;
 }
@@ -125,9 +124,8 @@ NSString *MKFacebookFormat = @"XML";
 		hasUid = FALSE;
 		userHasLoggedInMultipleTimes = FALSE;
 		_delegate = aDelegate;
-		_alertMessagesEnabled = YES;
 		_shouldUseSynchronousLogin = NO;
-		_displayAPIErrorAlerts = YES;
+		_displayAPIErrorAlerts = NO;
 	}
 	return self;
 }
@@ -227,15 +225,6 @@ NSString *MKFacebookFormat = @"XML";
 	return connectionTimeoutInterval;
 }
 
--(void)setAlertsEnabled:(BOOL)aBool
-{
-	_alertMessagesEnabled = aBool;
-}
-
--(BOOL)alertsEnabled
-{
-	return _alertMessagesEnabled;
-}
 
 -(void)setShouldUseSynchronousLogin:(BOOL)aBool
 {
@@ -488,7 +477,7 @@ NSString *MKFacebookFormat = @"XML";
 
 	if(fetchError != nil)
 	{
-		if(_alertMessagesEnabled == YES)
+		if(_displayAPIErrorAlerts == YES)
 			[self displayGeneralAPIError:@"Network Problems?" message:@"I can't seem to talk to Facebook.com right now.  This is a problem." buttonTitle:@"Fine!" details:nil];
 		return nil;
 	}else
@@ -518,7 +507,7 @@ NSString *MKFacebookFormat = @"XML";
 			[_delegate performSelector:@selector(facebookAuthenticationError:) withObject:[[xml rootElement] dictionaryFromXMLElement]];
 		
 		
-		if(_alertMessagesEnabled == YES)
+		if(_displayAPIErrorAlerts == YES)
 		{
 			[self displayGeneralAPIError:@"API Problems?" message:@"Facebook didn't give us the token we needed.  You can try again if you want but consider this login attempt defeated." buttonTitle:@"Fine!" details:nil];
 		}
@@ -598,7 +587,7 @@ NSString *MKFacebookFormat = @"XML";
 			if([_delegate respondsToSelector:@selector(userLoginFailed)])
 				[_delegate performSelector:@selector(userLoginFailed)];
 			
-			if(_alertMessagesEnabled == YES)
+			if(_displayAPIErrorAlerts == YES)
 			{
 				[self displayGeneralAPIError:@"Whoa there, what happened?" message:@"Something went wrong trying to obtain a session from Facebook.  You will need to try to login again." buttonTitle:@"Fine!" details:nil];
 			}
@@ -650,7 +639,7 @@ NSString *MKFacebookFormat = @"XML";
 {
 	if([self userLoggedIn] == NO)
 	{
-		if([self alertsEnabled] == YES)
+		if(_displayAPIErrorAlerts == YES)
 		{
 			[self displayGeneralAPIError:@"No user logged in!" message:@"Permissions cannnot be extended if no one is logged in." buttonTitle:@"OK Fine!" details:nil];			
 		}
