@@ -40,13 +40,16 @@ typedef int MKFacebookRequestType;
  
  The MKFacebookRequest class is be capable of handling most of the methods available by the Facebook API, including facebook.photos.upload.  To upload a photo using this class include a NSImage object in your NSDictionary of parameters you set and set the method key value to "facebook.photos.upload".  The name of the key for the NSImage object can be any string.
 
- This class will post notifications named "MKFacebookRequestActivityStarted" and "MKFacebookRequestActivityEnded" when network activity starts and ends. (version 0.8 and later). 
+ This class will post notifications named "MKFacebookRequestActivityStarted" and "MKFacebookRequestActivityEnded" when network activity starts and ends.  You are responsible for adding observers. (version 0.8 and later). 
  
  See the MKFacebookRequestQueue class for sending a series of requests that are sent incrementally after the previous request has been completed.
  
  Available Delegate Methods
  
- -(void)receivedFacebookXMLErrorResponse:(id)failedResponse;<br/>
+ -(void)facebookResponseReceived:(id)response; <br/>
+ &nbsp;&nbsp; Called when Facebook returns a valid response.  Passes XML returned by Facebook.  Set a selector to change where responses are sent to.
+ 
+ -(void)facebookErrorResponseReceived:(id)errorResponse;<br/>
  &nbsp;&nbsp; Called when an error is returned by Facebook.  Passes XML returned by Facebook.
  
  -(void)facebookRequestFailed:(id)error;<br/>
@@ -68,6 +71,15 @@ typedef int MKFacebookRequestType;
 	int _numberOfRequestAttempts;
 	int _requestAttemptCount;
 }
+
+
+
+/*!
+ @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
+ @param aDelegate The object that will receive the information returned by Facebook.  This should implement -(void)facebookResponseReceived:(id)response to handle data returned from Facebook
+ @version 0.8 and later
+ */
++(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate;
 
 
 /*!

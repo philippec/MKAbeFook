@@ -61,7 +61,7 @@ Available Delegate Methods
 	id _delegate;
 	BOOL _alertMessagesEnabled;
 	BOOL _shouldUseSynchronousLogin;
-	BOOL _displayAPIErrorAlerts;
+	BOOL _displayLoginAlerts;
 }
 
 /*!
@@ -236,17 +236,17 @@ Available Delegate Methods
 -(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle details:(NSString *)details;
 
 /*!
- Set whether or not alert windows should be displayed if Facebook returns an error.  Default is YES.
+ Set whether or not alert windows should be displayed if Facebook returns an error during the login process.  Default is YES.
  @param aBool Should we display the error or should we not?
  @version 0.8 and later
  */
--(void)setDisplayAPIErrorAlerts:(BOOL)aBool;
+-(void)setDisplayLoginAlerts:(BOOL)aBool;
 
 /*!
- @result Returns YES if alerts are enabled, maybe so (but actually NO) if they are not.
+ @result Returns YES if login alerts are enabled, maybe so (but actually NO) if they are not.
  @version 0.8 and later
  */
--(BOOL)displayAPIErrorAlerts;
+-(BOOL)displayLoginAlerts;
 
 
 @end
