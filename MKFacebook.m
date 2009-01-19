@@ -275,6 +275,7 @@ NSString *MKFacebookFormat = @"XML";
 		NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
 		[parameters setValue:@"facebook.auth.createToken" forKey:@"method"];
 		[request setParameters:parameters];
+		//[request setDisplayAPIErrorAlert:YES];
 		[request sendRequest];
 	}
 
@@ -301,6 +302,7 @@ NSString *MKFacebookFormat = @"XML";
 			[parameters setValue:[self authToken] forKey:@"auth_token"];
 			
 			[request setParameters:parameters];
+			//[request setDisplayAPIErrorAlert:YES];
 			[request sendRequest];
 		}
 	}
@@ -509,6 +511,7 @@ NSString *MKFacebookFormat = @"XML";
 		
 		if(_displayAPIErrorAlerts == YES)
 		{
+			//NSLog(@"got here");
 			[self displayGeneralAPIError:@"API Problems?" message:@"Facebook didn't give us the token we needed.  You can try again if you want but consider this login attempt defeated." buttonTitle:@"Fine!" details:nil];
 		}
 		return;
@@ -536,7 +539,7 @@ NSString *MKFacebookFormat = @"XML";
 	
 	if([[[xml rootElement] name] isEqualTo:@"auth_getSession_response"])
 	{
-		
+
 		NSDictionary *response = [[xml rootElement] dictionaryFromXMLElement];
 		
 		BOOL useInfiniteSessions = NO;
@@ -581,7 +584,7 @@ NSString *MKFacebookFormat = @"XML";
 		}
 		else
 		{
-			
+
 			[self resetFacebookConnection];
 			
 			if([_delegate respondsToSelector:@selector(userLoginFailed)])
