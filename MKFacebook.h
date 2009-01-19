@@ -32,7 +32,8 @@ extern NSString *MKFacebookResponseFormat;
  @class MKFacebook
  MKFacebook is used to set up a connection to the Facebook API.  It handles creating an auth token, generating an auth session and logging a in a user.  MKFacebook stores the session secret and session key that are used in all requests to the Facebook API.
 
-Available Delegate Methods 
+Available Delegate Methods
+ 
 -(void)userLoginSuccessful; (required)<br/>
 &nbsp;&nbsp; Called when login window is closed and valid authToken, authSession, and uid have been verified.
  
@@ -151,6 +152,11 @@ Available Delegate Methods
 
 /*!
   Attempts to load a stored infinte session for the application.  This method checks NSUserDefaults for a stored sessionKey and sessionSecret.  It uses a synchronous request to try to authenticate the stored session.  Note: The MKFacebook class only allows a persistent session to be loaded once per instance.  For example, if a persistent session is successfully loaded then the resetFacebookConnection method is called that instance of MKFacebook will return false for every call to loadPersistentSession for the remainder of its existence.  This behavior may change in the future.
+ 
+ In order for a user to receive what appears to be an infinite session they must grant the application "offline_access" using -(void)grantExtendedPermisison:(NSString *)aString;.  Unfortunately the user will have to login one more time after this is called before -(void)loadPersistentSession; will work.
+ 
+ Trying to load a persistent session will use a synchronous request, your application might hang if the connectionTimeoutInterval is set to a high number of seconds.
+ 
  @result Returns true if stored session information is valid and a user id is successfully returned from Facebook otherwise it returns false.
  */
 -(BOOL)loadPersistentSession;
