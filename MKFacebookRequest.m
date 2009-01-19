@@ -306,7 +306,7 @@
 		
 		NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
 		
-		if([self displayAPIErrorAlert] || [_facebookConnection displayAPIErrorAlerts])
+		if([self displayAPIErrorAlert])
 		{
 			[_facebookConnection displayGeneralAPIError:errorTitle message:[errorDictionary valueForKey:@"error_msg"] buttonTitle:@"OK" details:[errorDictionary description]];			
 		}
