@@ -12,7 +12,7 @@
 #import "MKFaceBookRequestQueue.h"
 #import "NSXMLDocumentAdditions.h"
 #import "NSXMLElementAdditions.h"
-
+#import "MKErrorWindow.h"
 
 
 //deprecated 0.7
