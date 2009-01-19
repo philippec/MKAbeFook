@@ -64,7 +64,10 @@
 	if(self != nil)
 	{
 		[self setDelegate:aDelegate];
-		[self setSelector:aSelector];
+		if(aSelector == nil)
+			[self setSelector:@selector(facebookResponseReceived:)];
+		else
+			[self setSelector:aSelector];
 		[self setFacebookConnection:aFacebookConnection];
 	}
 	return self;
@@ -268,7 +271,7 @@
 	[_responseData appendData:data];
 }
 
-//requests are ALWAYS passed back to the delegate
+//responses are ONLY passed back if they do not contain any errors
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
@@ -279,17 +282,13 @@
 															 error:&error] autorelease];
 	if(error != nil)
 	{
-		[_facebookConnection displayGeneralAPIError:@"API Error" message:@"Facebook returned puke, the API might be down." buttonTitle:@"OK" details:[[error userInfo] description]];
-	}
-	else if([returnXML validFacebookResponse] == NO)
+		[_facebookConnection displayGeneralAPIError:@"API Error" 
+											message:@"Facebook returned puke, the API might be down." 
+										buttonTitle:@"OK" 
+											details:[[error userInfo] description]];
+	}else if([returnXML validFacebookResponse] == NO)
 	{
-		if([_delegate respondsToSelector:@selector(receivedFacebookXMLErrorResponse:)])
-			[_delegate performSelector:@selector(receivedFacebookXMLErrorResponse:) withObject:returnXML];
-		
-		
-		//NSLog(@"error: %@", [returnXML description]);
 		NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
-		
 		//4 is a magic number that represents "The application has reached the maximum number of requests allowed. More requests are allowed once the time window has completed."
 		//luckily for us Facebook doesn't define "the time window".  fuckers.
 		//we will also try the request again if we see a 1 (unknown) or 2 (service unavailable) error
@@ -304,17 +303,22 @@
 			[self sendRequest];
 			return;
 		}
-		
+		NSLog(@"I GAVE UP!!! throw it away...");
+		//we've tried the request a few times, now we're giving up.
+		if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
+			[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnXML];
+
 		NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
-		
 		if([self displayAPIErrorAlert])
 		{
 			[_facebookConnection displayGeneralAPIError:errorTitle message:[errorDictionary valueForKey:@"error_msg"] buttonTitle:@"OK" details:[errorDictionary description]];			
 		}
+	}else
+	{
+		if([_delegate respondsToSelector:_selector])
+			[_delegate performSelector:_selector withObject:returnXML];		
 	}
 	
-	if([_delegate respondsToSelector:_selector])
-		[_delegate performSelector:_selector withObject:returnXML];		
 
 	
 	[_responseData setData:[NSData data]];
@@ -337,7 +341,7 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {	
 	
-	if([self displayAPIErrorAlert] || [_facebookConnection displayAPIErrorAlerts])
+	if([self displayAPIErrorAlert])
 	{
 		[_facebookConnection displayGeneralAPIError:@"Connection Error" message:@"Are you connected to the interwebs?" buttonTitle:@"OK" details:[[error userInfo] description]];
 	}
