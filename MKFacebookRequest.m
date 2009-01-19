@@ -268,6 +268,7 @@
 	[_responseData appendData:data];
 }
 
+//requests are ALWAYS passed back to the delegate
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
@@ -310,12 +311,11 @@
 		{
 			[_facebookConnection displayGeneralAPIError:errorTitle message:[errorDictionary valueForKey:@"error_msg"] buttonTitle:@"OK" details:[errorDictionary description]];			
 		}
-	}else
-	{
-		//finally we can assume it's a successful request and pass it back
-		if([_delegate respondsToSelector:_selector])
-			[_delegate performSelector:_selector withObject:returnXML];		
 	}
+	
+	if([_delegate respondsToSelector:_selector])
+		[_delegate performSelector:_selector withObject:returnXML];		
+
 	
 	[_responseData setData:[NSData data]];
 	_requestIsDone = YES;
