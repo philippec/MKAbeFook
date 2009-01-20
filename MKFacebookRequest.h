@@ -194,3 +194,34 @@ typedef int MKFacebookRequestType;
 @end
 
 
+/*!
+ @version 0.8 and later
+ */
+@protocol MKFacebookRequestDelegate
+
+/*!
+ Called when Facebook returns a valid response.  Passes XML returned by Facebook.  If you do not assign a selector use this method to handle reponses from Facebook.  If you want the responses sent elsewhere assign the request a selector.
+
+ @version 0.8 and later
+ */
+-(void)facebookResponseReceived:(id)response;
+
+/*!
+Called when an error is returned by Facebook.  Passes XML returned by Facebook.
+ 
+ @version 0.8 and later
+ */
+-(void)facebookErrorResponseReceived:(id)errorResponse;
+
+
+/*!
+ Called when the request could not be made.  Passes NSError containing information about why it failed (usually due to NSURLConnection problem).
+ 
+ @version 0.8 and later
+ */
+-(void)facebookRequestFailed:(id)error;
+
+
+@end
+
+

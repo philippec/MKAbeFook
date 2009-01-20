@@ -149,7 +149,7 @@
 -(void)sendRequest
 {
 	//if no user is logged in and they're trying to send a request OTHER than something required for logging in a user abort the request
-	if(![_facebookConnection userLoggedIn] && (![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"]))
+	if(![_facebookConnection userLoggedIn] && (![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] && ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"]))
 	{
 		NSException *exception = [NSException exceptionWithName:@"Invalid Facebook Connection"
 														 reason:@"MKFacebookRequest could not continue because no user is logged in.  Request has been aborted."
