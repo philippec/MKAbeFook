@@ -263,15 +263,14 @@ NSString *MMKFacebookFormat = @"XML";
 		MMKFacebookRequest *request = [[[MMKFacebookRequest alloc] init] autorelease];
 		[request setDelegate:self];
 		[request setFacebookConnection:self];
-		[request setSelector:@selector(facebookResponseReceived:)];
-		[request setDisplayGeneralErrors:NO];
+		[request setDisplayAPIErrorAlert:NO];
 		
 		NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
 		[parameters setValue:@"facebook.auth.createToken" forKey:@"method"];
 		
 		[request setParameters:parameters];
-		[request sendRequest];
 		[request displayLoadingSheet:NO];
+		[request sendRequest];
 		[parameters release];
 	}
 }
@@ -290,13 +289,13 @@ NSString *MMKFacebookFormat = @"XML";
 			MMKFacebookRequest *request = [[[MMKFacebookRequest alloc] init] autorelease];
 			[request setDelegate:self];
 			[request setFacebookConnection:self];
-			[request setSelector:@selector(facebookResponseReceived:)];
-			[request setDisplayGeneralErrors:NO];
+			[request setDisplayAPIErrorAlert:NO];
 			
 			NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
 			[parameters setValue:@"facebook.auth.getSession" forKey:@"method"];
 			[parameters setValue:[self authToken] forKey:@"auth_token"];
 
+			[request displayLoadingSheet:NO];
 			[request setParameters:parameters];
 			[request sendRequest];
 		}
@@ -613,6 +612,7 @@ NSString *MMKFacebookFormat = @"XML";
 		if([[response valueForKey:@"expires"] intValue] == 0)
 			useInfiniteSessions = YES;
 		
+		//TODO: this isn't all neccesary now because we know that we will only get to this method if facebook returns a valid resposne.  error checking should be moved to facebookErrorResponseReceived
 		if([self userLoggedIn])
 		{
 			if(![_defaultsName isEqualToString:@""] && useInfiniteSessions)
@@ -649,6 +649,15 @@ NSString *MMKFacebookFormat = @"XML";
 	}
 }
 
+-(void)facebookErrorResponseReceived:(id)response
+{
+	NSLog(@"received error");
+	if(_alertMessagesEnabled == YES)
+	{
+		[self displayGeneralAPIError:nil message:@"Something went wrong during the login..." buttonTitle:nil];
+	}
+	[self returnUserToApplication];
+}
 
 -(BOOL)userLoggedIn
 {

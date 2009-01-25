@@ -39,9 +39,12 @@ enum
  
  See the MKFacebookRequestQueue class for sending a series of requests that are sent incrementally after the previous request has been completed.
  
- Available Delegate Methods
+ Delegate Methods
  
- -(void)receivedFacebookXMLErrorResponse:(id)failedResponse;<br/>
+ -(void)facebookResponseReceived:(id)response<br/>
+ &nbsp;&nbsp; Called when Facebook returns a valid response.  Passes XML returned by Facebook.
+ 
+ -(void)facebookErrorResponseReceived:(id)response;<br/>
  &nbsp;&nbsp; Called when an error is returned by Facebook.  Passes XML returned by Facebook.
  
  -(void)facebookRequestFailed:(id)error;<br/>
@@ -61,7 +64,8 @@ enum
 	NSMutableDictionary *_parameters;
 	NSURL *_requestURL;
 	BOOL _displayGeneralErrors;
-	
+	int _numberOfRequestAttempts;
+	int _requestAttemptCount;
 	/* either displayLoadingSheet or displayLoadingView can be used to show progress while data is loading, they can not both be used at the same time. */
 	
 	/* displays sheet from top of screen while loading */
@@ -69,6 +73,9 @@ enum
 	UIView *_loadingSheet;
 	
 }
+//TODO: documentation
++(id)requestUsingFacebookConnection:(MMKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
++(id)requestUsingFacebookConnection:(MMKFacebook *)aFacebookConnection delegate:(id)aDelegate;
 
 -(MMKFacebookRequest *)init;
 
@@ -149,16 +156,25 @@ enum
  */
 -(void)displayLoadingSheet:(BOOL)shouldDisplayLoadingSheet;
 
-/*!
- NEEDS DOCUMENTATION
- */
--(void)setDisplayGeneralErrors:(BOOL)aBool;
 
-/*!
- NEEDS DOCUMENTATION
- */
--(BOOL)displayGeneralErrors;
+//TODO: Documentation
+-(void)setDisplayAPIErrorAlert:(BOOL)aBool;
 
+//TODO: Documentation
+-(BOOL)displayAPIErrorAlert;
 
+//TODO: Documentation
 -(void)returnToApplicationView;
+
+@end
+
+
+
+//TODO: Documentation
+@protocol MMKFacebookRequestDelegate
+
+-(void)facebookResponseReceived:(id)response;
+-(void)facebookErrorResponseReceived:(id)response;
+-(void)facebookRequestFailed:(id)error;
+
 @end

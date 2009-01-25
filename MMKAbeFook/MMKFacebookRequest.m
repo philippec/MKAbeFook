@@ -31,6 +31,20 @@
 
 @implementation MMKFacebookRequest
 
+
+
++(id)requestUsingFacebookConnection:(MMKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector
+{
+	MMKFacebookRequest *theRequest = [[[MMKFacebookRequest alloc] initWithFacebookConnection:aFacebookConnection delegate:aDelegate selector:aSelector] autorelease];
+	return theRequest;
+}
+
++(id)requestUsingFacebookConnection:(MMKFacebook *)aFacebookConnection delegate:(id)aDelegate
+{
+	MMKFacebookRequest *theRequest = [[[MMKFacebookRequest alloc] initWithFacebookConnection:aFacebookConnection delegate:aDelegate selector:nil] autorelease];
+	return theRequest;	
+}
+
 -(MMKFacebookRequest *)init
 {
 	self = [super init];
@@ -38,52 +52,47 @@
 	{
 		_facebookConnection = nil;
 		_delegate = nil;
-		_selector = nil;
+		_selector = @selector(facebookResponseReceived:);
+		
 		_responseData = [[NSMutableData alloc] init];
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MMKPostRequest;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
 		_displayLoadingSheet = YES;
 		_displayGeneralErrors = YES;
+		_numberOfRequestAttempts = 5;
 		
 	}
 	return self;
 }
 
--(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector
+-(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection 
+										 delegate:(id)aDelegate 
+										 selector:(SEL)aSelector
 {
-	self = [super init];
+	self = [self init];
 	if(self != nil)
 	{
-		_facebookConnection = [aFacebookConnection retain];
-		_delegate = aDelegate;
-		_selector = aSelector;
-		_responseData = [[NSMutableData alloc] init];
-		_parameters = [[NSMutableDictionary alloc] init];
-		_urlRequestType = MMKPostRequest;
-		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayLoadingSheet = YES;
-		_displayGeneralErrors = YES;
-		
+		[self setDelegate:aDelegate];
+		if(aSelector == nil)
+			[self setSelector:@selector(facebookResponseReceived:)];
+		else
+			[self setSelector:aSelector];
+		[self setFacebookConnection:aFacebookConnection];
 	}
 	return self;
 }
 
 
--(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection parameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector
+-(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection 
+									   parameters:(NSDictionary *)parameters 
+										 delegate:(id)aDelegate 
+										 selector:(SEL)aSelector
 {
-	self = [super init];
+	self = [self initWithFacebookConnection:aFacebookConnection delegate:aDelegate selector:aSelector];
 	if(self != nil)
 	{
-		_facebookConnection = [aFacebookConnection retain];
-		_delegate = aDelegate;
-		_selector = aSelector;
-		_responseData = [[NSMutableData alloc] init];
-		_parameters = [[NSMutableDictionary dictionaryWithDictionary:parameters] retain];
-		_urlRequestType = MMKPostRequest;
-		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
-		_displayLoadingSheet = YES;
-		_displayGeneralErrors = YES;
+		[self setFacebookConnection:aFacebookConnection];
 	}
 	return self;
 }
@@ -125,12 +134,12 @@
 	_displayLoadingSheet = shouldDisplayLoadingSheet;
 }
 
--(BOOL)displayGeneralErrors
+-(BOOL)displayAPIErrorAlert
 {
 	return _displayGeneralErrors;
 }
 
--(void)setDisplayGeneralErrors:(BOOL)aBool
+-(void)setDisplayAPIErrorAlert:(BOOL)aBool
 {
 	_displayGeneralErrors = aBool;
 }
@@ -151,6 +160,39 @@
 
 -(void)sendRequest
 {
+
+	if(_facebookConnection == nil)
+	{
+		UIAlertView *uhOh = [[[UIAlertView alloc] initWithTitle:@"Not Connected"
+														message:@"Please login to Facebook"
+													   delegate:self 
+											  cancelButtonTitle:@"Fine!"
+											  otherButtonTitles:nil] autorelease];
+		[uhOh show];
+		return;
+	}
+	
+	//if no user is logged in and they're trying to send a request OTHER than something required for logging in a user abort the request
+	if(![_facebookConnection userLoggedIn] && (![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] && ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"]))
+	{
+		/*
+		NSException *exception = [NSException exceptionWithName:@"Invalid Facebook Connection"
+														 reason:@"MKFacebookRequest could not continue because no user is logged in.  Request has been aborted."
+													   userInfo:nil];
+		
+		[exception raise];
+		 */
+		UIAlertView *uhOh = [[[UIAlertView alloc] initWithTitle:@"Not Connected"
+														message:@"Please login to Facebook"
+													   delegate:self 
+											  cancelButtonTitle:@"Fine!"
+											  otherButtonTitles:nil] autorelease];
+		[uhOh show];
+		
+		return;
+	}
+	
+	
 	if([_parameters count] == 0)
 	{
 		if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
@@ -316,22 +358,46 @@
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"MMKFacebookRequestActivityEnded" object:nil];
+	
 	NSString *temp = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
 	NSLog(temp);
-	CXMLDocument *returnXML = [[[CXMLDocument alloc] initWithXMLString:temp options:0 error:nil] autorelease];
+	NSError *error = nil;
+	CXMLDocument *returnXML = [[[CXMLDocument alloc] initWithXMLString:temp options:0 error:&error] autorelease];
 	[temp release];
 	
-
 	
-	if([returnXML validFacebookResponse] == NO)
+	if(error != nil)
 	{
-		if([_delegate respondsToSelector:@selector(receivedFacebookXMLErrorResponse:)])
-			[_delegate performSelector:@selector(receivedFacebookXMLErrorResponse:) withObject:returnXML];
-		
-		if([self displayGeneralErrors])
+		[_facebookConnection displayGeneralAPIError:@"API Error" 
+											message:@"Facebook returned puke, the API might be down." 
+										buttonTitle:@"OK"];
+	}else if([returnXML validFacebookResponse] == NO)
+	{
+		NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
+		//4 is a magic number that represents "The application has reached the maximum number of requests allowed. More requests are allowed once the time window has completed."
+		//luckily for us Facebook doesn't define "the time window".  fuckers.
+		//we will also try the request again if we see a 1 (unknown) or 2 (service unavailable) error
+		int errorInt = [[errorDictionary valueForKey:@"error_code"] intValue];
+		if((errorInt == 4 || errorInt == 1 || errorInt == 2 ) && _numberOfRequestAttempts <= _requestAttemptCount)
 		{
-			//TODO: pass back error number etc... instead of generic message
-			[_facebookConnection displayGeneralAPIError:@"Response Error" message:@"Facebook gave us some bad information." buttonTitle:@"OK"];
+			NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:2.0];
+			[NSThread sleepUntilDate:sleepUntilDate];
+			[_responseData setData:[NSData data]];
+			_requestAttemptCount++;
+			NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
+			[self sendRequest];
+			return;
+		}
+		NSLog(@"I GAVE UP!!! throw it away...");
+		//we've tried the request a few times, now we're giving up.
+		if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
+			[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnXML];
+		
+		NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
+		if([self displayAPIErrorAlert])
+		{
+			[_facebookConnection displayGeneralAPIError:errorTitle message:[errorDictionary valueForKey:@"error_msg"] buttonTitle:@"OK"];			
 		}
 	}else
 	{
@@ -379,7 +445,7 @@
 //TODO: document that we will automatically present the user with an error message but additional information can be passed or clean up can be done using the delegate calls
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {	
-	if([self displayGeneralErrors])
+	if([self displayAPIErrorAlert])
 		[_facebookConnection displayGeneralAPIError:@"Connection Error" message:@"Are you connected to the interwebs?" buttonTitle:@"OK"];
 	
 	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
