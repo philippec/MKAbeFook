@@ -85,6 +85,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		_delegate = aDelegate;
 		_shouldUseSynchronousLogin = NO;
 		_displayLoginAlerts = YES;
+		_hasPersistentSession = NO;
 	}
 	return self;
 }
@@ -126,6 +127,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		_delegate = aDelegate;
 		_shouldUseSynchronousLogin = NO;
 		_displayLoginAlerts = YES;
+		_hasPersistentSession = NO;
 	}
 	return self;
 }
@@ -305,14 +307,28 @@ NSString *MKFacebookResponseFormat = @"XML";
 {
 	//userHasLoggedInMultipleTimes, it's set to TRUE in resetFacebookConnection used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
 	if (userHasLoggedInMultipleTimes) {
+		//NSLog(@"persistent login failed, too many login attempts");
 		return NO;
 	}
 	
-	NSDictionary *domain = [[NSUserDefaults standardUserDefaults] persistentDomainForName:defaultsName];
-	NSString *key = (NSString *)[domain objectForKey:@"sessionKey"];
-	NSString *secret = (NSString *)[domain objectForKey:@"sessionSecret"];
+	NSString *key;
+	NSString *secret;
+	
+	if([self useStandardDefaultsSessionStorage])
+	{
+		NSDictionary *domain = [[NSUserDefaults standardUserDefaults] persistentDomainForName:defaultsName];
+		key = (NSString *)[domain objectForKey:@"sessionKey"];
+		secret = (NSString *)[domain objectForKey:@"sessionSecret"];
+	}else
+	{
+		//try to load a session using information the user should have set.  we don't know for sure what's there... but it will fail if it's not valid
+		key = [self sessionKey];
+		secret = [self sessionSecret];
+	}
+	
 	
 	if (!key || [key isEqualTo:@""] || !secret || [secret isEqualTo:@""]) {
+		NSLog(@"persistent login failed, invalid session info");
 		return NO;
 	}
 	
@@ -331,6 +347,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	//0.6 this method shouldn't return true if there was a problem loading the infinite session.  now it won't.  Thanks Adam.
 	if([user validFacebookResponse] == NO)
 	{
+		//NSLog(@"persistent login failed, facebook error");
 		[self resetFacebookConnection];
 		return NO;
 	}
@@ -341,9 +358,13 @@ NSString *MKFacebookResponseFormat = @"XML";
 	
 	// we don't really have a token, but it doesn't matter since we have a session
 	hasAuthToken = YES;
+
+	_hasPersistentSession = YES;
 	
 	if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
 		[_delegate performSelector:@selector(userLoginSuccessful)];
+	
+
 	
 	return YES;
 }
@@ -516,7 +537,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 
 		NSDictionary *response = [[xml rootElement] dictionaryFromXMLElement];
 		
-		BOOL useInfiniteSessions = NO;
+		
+		BOOL useInfiniteSessions = NO; //make iVar
 		//NSLog([response description]);
 		if([response valueForKey:@"session_key"] != @"")
 		{
@@ -542,7 +564,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 		
 		if([self userLoggedIn])
 		{
-			if([defaultsName isNotEqualTo:@""] && useInfiniteSessions)
+			//store persistent session information in the application defaults
+			if([defaultsName isNotEqualTo:@""] && useInfiniteSessions && _useStandardDefaultsSessionStorage)
 			{
 				//NSDictionary *sessionDefaults = [NSDictionary dictionaryWithObjectsAndKeys:[self sessionKey], @"sessionKey", [self sessionSecret], @"sessionSecret", nil];
 				//[[NSUserDefaults standardUserDefaults] setPersistentDomain:sessionDefaults forName:defaultsName];
@@ -551,6 +574,14 @@ NSString *MKFacebookResponseFormat = @"XML";
 				[[NSUserDefaults standardUserDefaults] setObject:[self sessionKey] forKey:@"sessionKey"];
 				[[NSUserDefaults standardUserDefaults] setObject:[self sessionSecret] forKey:@"sessionSecret"];
 			}
+			
+			
+			if(useInfiniteSessions && _useStandardDefaultsSessionStorage == NO)
+			{
+				NSLog(@"using non standard session storage, YOU are responsible for saving and restoring the session!");
+				_hasPersistentSession = YES;
+			}
+
 			
 			if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
 				[_delegate performSelector:@selector(userLoginSuccessful)];
@@ -686,6 +717,51 @@ NSString *MKFacebookResponseFormat = @"XML";
 	return _displayLoginAlerts;
 }
 
+
+
+
+-(void)setUseStandardDefaultsSessionStorage:(BOOL)aBool
+{
+	_useStandardDefaultsSessionStorage = aBool;
+}
+
+-(BOOL)useStandardDefaultsSessionStorage
+{
+	return _useStandardDefaultsSessionStorage;
+}
+
+-(BOOL)hasPersistentSession
+{
+	return _hasPersistentSession;
+}
+
+-(NSDictionary *)savePersistentSession
+{
+	//
+	if([self hasPersistentSession] && [self sessionKey] != nil && [self sessionSecret] != nil)
+	{
+		NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:[self sessionKey], @"sessionKey", [self sessionSecret], @"sessionSecret", nil];
+		
+		return [dictionary autorelease];
+	}
+	NSLog(@"persistent session requested, but incorrect storage type, session key, or session secret missing");
+	return nil;
+}
+
+-(BOOL)restorePersistentSession:(NSDictionary *)persistentSession
+{
+	if([persistentSession objectForKey:@"sessionSecret"] == nil || [persistentSession objectForKey:@"sessionKey"] == nil)
+	{
+		NSLog(@"restore failed: %@", [persistentSession description]);
+		return NO;
+	}
+		
+	//TODO: validaate values
+	[self setSessionSecret:[persistentSession valueForKey:@"sessionSecret"]];
+	[self setSessionKey:[persistentSession valueForKey:@"sessionKey"]];
+
+	return [self loadPersistentSession];
+}
 
 @end
 

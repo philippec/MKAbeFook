@@ -63,6 +63,8 @@ Available Delegate Methods
 	BOOL _alertMessagesEnabled;
 	BOOL _shouldUseSynchronousLogin;
 	BOOL _displayLoginAlerts;
+	BOOL _hasPersistentSession;
+	BOOL _useStandardDefaultsSessionStorage;
 }
 
 /*!
@@ -255,6 +257,41 @@ Available Delegate Methods
 -(BOOL)displayLoginAlerts;
 
 
+
+/*
+ Pass in NO if you don't want persistent sessions to be automatically stored in the applcation defaults plist.  If a persistent session is availble you can access it through savePersistentSession.
+ @version 0.8.1 and later
+ */
+-(void)setUseStandardDefaultsSessionStorage:(BOOL)aBool;
+
+/*
+ @result Returns YES if the persistent session will be stored in the application defaults plist.  Returns NO if it won't.
+ @version 0.8.1 and later
+ */
+-(BOOL)useStandardDefaultsSessionStorage;
+
+/*
+ @result Returns YES if a persistentSession is available.
+ @version 0.8.1 and later
+ */
+-(BOOL)hasPersistentSession;
+
+/*
+ @result Returns a NSDictionary with keys sessionSecret and sessionKey containing persistent session values that can be restored later.
+ @version 0.8.1 and later
+ */
+
+-(NSDictionary *)savePersistentSession;
+
+/*
+ @BOOL Returns YES if the session was successfully restored.  This will call loadPersistentSession.  The userLoginSuccessfull delegate method will also be called if the session was successfully restored (we might want to offer a way to skip this...)
+ @version 0.8.1 and later
+ */
+
+-(BOOL)restorePersistentSession:(NSDictionary *)persistentSession;
+
+
+
 @end
 
 /*!
@@ -274,6 +311,7 @@ Available Delegate Methods
  @version 0.8 and later
  */
 -(void)userLoginFailed;
+
 
 @end
 
