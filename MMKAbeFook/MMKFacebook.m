@@ -448,12 +448,23 @@ NSString *MMKFacebookFormat = @"XML";
 	//now sortedParameters is finally sorted correctly
 	NSMutableString *tempString = [[[NSMutableString alloc] init] autorelease]; 
 	NSEnumerator *enumerator =[sortedParameters objectEnumerator];
-	id anObject; //keys of sortedParameters
+	NSString *anObject; //keys of sortedParameters
 	while(anObject = [enumerator nextObject])
 	{
-		[tempString appendString:anObject];
-		[tempString appendString:@"="];
-		[tempString appendString:[parameters valueForKey:anObject]];
+		//prevents attempting to append nil strings.  Thanks Andrei Freeman. 0.4.1
+		if((anObject != nil) && ([anObject length] > 0))
+		{
+			[tempString appendString:anObject];
+			[tempString appendString:@"="];
+			[tempString appendString:[parameters valueForKey:anObject]];
+		}else
+		{
+			NSArray *objArray = [NSArray arrayWithObjects:parameters, sortedParameters, sortedParameters1, nil];
+			NSArray *keyArray = [NSArray arrayWithObjects:@"parameters", @"sortedParameters", @"sortedParameters1", nil];
+			NSDictionary *exceptDict = [NSDictionary dictionaryWithObjects:objArray forKeys:keyArray];
+			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"Bad Parameter Object" userInfo:exceptDict];
+			[e raise];
+		}	
 	}
 
 	//methods except these require we use the secretKey that was assigned during login, not our original one
