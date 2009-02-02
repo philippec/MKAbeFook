@@ -25,13 +25,33 @@
 	self = [super init];
 	_delegate = aDelegate;
 	_selector = aSelector;
-	
+	_loginWindowIsSheet = NO;
 	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
 	[super initWithWindowNibPath:path owner:self];
-	NSRect visibleArea =  NSMakeRect(0, 0, 626, 426);
-	[[[loginWebView mainFrame] webView] setFrame:visibleArea];
-	
+	//NSRect visibleArea =  NSMakeRect(0, 0, 626, 426);
+	//[[[loginWebView mainFrame] webView] setFrame:visibleArea];
 	return self;
+}
+
+
+-(id)initForSheetWithDelegate:(id)aDelegate withSelector:(SEL)aSelector
+{
+	_delegate = aDelegate;
+	_selector = aSelector;
+	_loginWindowIsSheet = YES;
+	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
+	[super initWithWindowNibPath:path owner:self];
+	//NSRect frame = [[self window] frame];
+	//frame.size.height = 480;
+	//[[self window] setFrame:frame display:YES animate:YES];
+	//NSRect visibleArea = NSMakeRect(0, 0, 626, 436);
+	//[[[loginWebView mainFrame] webView] setFrame:visibleArea];
+	return self;
+}
+
+-(void)awakeFromNib
+{
+	[loadingWebViewProgressIndicator bind:@"value" toObject:loginWebView withKeyPath:@"estimatedProgress" options:nil];
 }
 
 -(void)displayLoadingWindowIndicator
@@ -46,21 +66,6 @@
 	[loadingWindowProgressIndicator setHidden:YES];
 }
 
--(id)initForSheetWithDelegate:(id)aDelegate withSelector:(SEL)aSelector
-{
-	_delegate = aDelegate;
-	_selector = aSelector;
-	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
-	[super initWithWindowNibPath:path owner:self];
-	NSRect frame = [[self window] frame];
-	frame.size.height = 480;
-	[[self window] setFrame:frame display:YES animate:YES];
-	[closeSheetButton setHidden:NO];
-	
-	NSRect visibleArea = NSMakeRect(0, 0, 626, 436);
-	[[[loginWebView mainFrame] webView] setFrame:visibleArea];
-	return self;
-}
 -(void)loadURL:(NSURL *)loginURL
 {
 	[loginWebView setMaintainsBackForwardList:NO];
@@ -92,21 +97,27 @@
 }
 
 
--(IBAction)closeSheet:(id)sender 
+-(IBAction)closeWindow:(id)sender 
 {
-	[[self window] orderOut:sender];
-	[NSApp endSheet:[self window] returnCode:1];
-	[self windowWillClose:nil];
+	if(_loginWindowIsSheet == YES)
+	{
+		[[self window] orderOut:sender];
+		[NSApp endSheet:[self window] returnCode:1];
+		[self windowWillClose:nil];		
+	}else
+	{
+		[[self window] performClose:sender];
+	}
 }
 
 -(void)setWindowSize:(NSSize)windowSize
 {
 
 	NSRect screenRect = [[NSScreen mainScreen] frame];
-	NSRect rect = NSMakeRect(screenRect.size.width * .25, screenRect.size.height * .25, windowSize.width, windowSize.height);
+	NSRect rect = NSMakeRect(screenRect.size.width * .15, screenRect.size.height * .15, windowSize.width, windowSize.height);
 	//[[[loginWebView mainFrame] webView] setFrame:rect];
 	//[[[loginWebView mainFrame] webView] setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
-	[[self window] center];
+	//[[self window] center];
 	[[self window] setFrame:rect display:YES animate:YES];
 }
 
@@ -124,11 +135,16 @@
 	[super dealloc];
 }
 
+- (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame
+{
+	[loadingWebViewProgressIndicator setHidden:NO];
+}
 
 -(void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
 	//NSLog([[[loginWebView mainFrame] DOMDocument] description]);
 	//NSLog(@"source: %@", [[[[loginWebView mainFrame] dataSource] representation] documentSource]);
+	[loadingWebViewProgressIndicator setHidden:YES];
 }
 
 @end
