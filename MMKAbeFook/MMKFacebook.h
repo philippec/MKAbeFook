@@ -30,7 +30,7 @@ extern NSString *MMKFacebookAPIVersion;
 extern NSString *MMKFacebookFormat;
 
 
-@protocol MMKFacebook
+@protocol MMKFacebookDelegate
 -(UIView *)applicationView;
 -(void)userLoginSuccessful;
 @end
