@@ -22,11 +22,15 @@
 @interface MKLoginWindow : NSWindowController {
 	NSString *path;
 	IBOutlet WebView *loginWebView;
-	IBOutlet NSButton *closeSheetButton; 
+	IBOutlet NSButton *closeWindowButton; 
 	id _delegate;
 	SEL _selector;
 	
+	BOOL _loginWindowIsSheet;
+	
 	IBOutlet NSProgressIndicator *loadingWindowProgressIndicator; //used to display activity while setting up everything needed before facebook login page can even be requested.  auth token etc... added in 0.7.7
+	
+	IBOutlet NSProgressIndicator *loadingWebViewProgressIndicator;
 }
 
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
@@ -35,7 +39,7 @@
 -(void)hideLoadingWindowIndicator;
 
 -(void)loadURL:(NSURL *)loginURL;
--(IBAction)closeSheet:(id)sender;
+-(IBAction)closeWindow:(id)sender;
 -(void)setWindowSize:(NSSize)windowSize;
 
 @end

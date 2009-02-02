@@ -458,12 +458,23 @@ NSString *MKFacebookResponseFormat = @"XML";
 	//now sortedParameters is finally sorted correctly
 	NSMutableString *tempString = [[[NSMutableString alloc] init] autorelease]; 
 	NSEnumerator *enumerator =[sortedParameters objectEnumerator];
-	id anObject; //keys of sortedParameters
+	NSString *anObject; //keys of sortedParameters
 	while(anObject = [enumerator nextObject])
 	{
-		[tempString appendString:anObject];
-		[tempString appendString:@"="];
-		[tempString appendString:[parameters valueForKey:anObject]];
+		//prevents attempting to append nil strings.  Thanks Andrei Freeman. 0.8.1
+		if((anObject != nil) && ([anObject length] > 0))
+		{
+			[tempString appendString:anObject];
+			[tempString appendString:@"="];
+			[tempString appendString:[parameters valueForKey:anObject]];
+		}else
+		{
+			NSArray *objArray = [NSArray arrayWithObjects:parameters, sortedParameters, sortedParameters1, nil];
+			NSArray *keyArray = [NSArray arrayWithObjects:@"parameters", @"sortedParameters", @"sortedParameters1", nil];
+			NSDictionary *exceptDict = [NSDictionary dictionaryWithObjects:objArray forKeys:keyArray];
+			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"Bad Parameter Object" userInfo:exceptDict];
+			[e raise];
+		}
 	}
 	//NSLog(tempString);
 	//methods except these require we use the secretKey that was assigned during login, not our original one
@@ -673,7 +684,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:nil]; //will be released when closed			
 	[[loginWindow window] setTitle:@"Extended Permissions"];
 	[loginWindow showWindow:self];
-	[loginWindow setWindowSize:NSMakeSize(800, 600)];
+	[loginWindow setWindowSize:NSMakeSize(950, 600)];
 	
 	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@", [self apiKey], MKFacebookAPIVersion, aString]];
 	[loginWindow loadURL:url];
