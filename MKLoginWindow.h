@@ -31,12 +31,20 @@
 	IBOutlet NSProgressIndicator *loadingWindowProgressIndicator; //used to display activity while setting up everything needed before facebook login page can even be requested.  auth token etc... added in 0.7.7
 	
 	IBOutlet NSProgressIndicator *loadingWebViewProgressIndicator;
+	
+	BOOL _shouldAutoGrantOfflinePermissions;  //if set to YES user will be directed to grant offline permissions page after logging in.
 }
 
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
 -(id)initForSheetWithDelegate:aDelegate withSelector:(SEL)aSelector;
+
+
+
 -(void)displayLoadingWindowIndicator;
 -(void)hideLoadingWindowIndicator;
+
+-(void)setAutoGrantOfflinePermissions:(BOOL)aBool;
+-(BOOL)shouldAutoGrantOfflinePermissions;
 
 -(void)loadURL:(NSURL *)loginURL;
 -(IBAction)closeWindow:(id)sender;
