@@ -28,6 +28,7 @@
 	_loginWindowIsSheet = NO;
 	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
 	[super initWithWindowNibPath:path owner:self];
+	_shouldAutoGrantOfflinePermissions = NO;
 	//NSRect visibleArea =  NSMakeRect(0, 0, 626, 426);
 	//[[[loginWebView mainFrame] webView] setFrame:visibleArea];
 	return self;
@@ -41,6 +42,7 @@
 	_loginWindowIsSheet = YES;
 	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
 	[super initWithWindowNibPath:path owner:self];
+	_shouldAutoGrantOfflinePermissions = NO;
 	//NSRect frame = [[self window] frame];
 	//frame.size.height = 480;
 	//[[self window] setFrame:frame display:YES animate:YES];
@@ -123,8 +125,12 @@
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-	if(_selector != nil && [_delegate respondsToSelector:_selector])
-		[_delegate performSelector:_selector];
+	//if auto grant permissions is YES the auth token request SHOULD be handled by webview did finish loading delegate method in this class
+	if(_shouldAutoGrantOfflinePermissions == NO)
+	{
+		if(_selector != nil && [_delegate respondsToSelector:_selector])
+			[_delegate performSelector:_selector];		
+	}
 
 	[self autorelease];
 }
@@ -132,6 +138,16 @@
 -(void)dealloc
 {
 	[super dealloc];
+}
+
+
+-(void)setAutoGrantOfflinePermissions:(BOOL)aBool
+{
+	_shouldAutoGrantOfflinePermissions = aBool;
+}
+-(BOOL)shouldAutoGrantOfflinePermissions
+{
+	return _shouldAutoGrantOfflinePermissions;
 }
 
 
@@ -148,11 +164,26 @@
 
 	//TODO: this stuff...
 	//check the current url that comes back.  if it's the one that looks like it means the user logged in successfully then try to send a request to complete the authentication.
-	
+	//in this case we KNOW _delegate is the MKFacebook object, but this isn't a good way to do this.
+	NSString *loginSuccessfulString = [NSString stringWithFormat:@"https://ssl.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
+	if(_shouldAutoGrantOfflinePermissions == YES && [urlString isEqualToString:loginSuccessfulString])
+	{
+		//send auth token request
+		NSLog(@"login successful");
+		//[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://google.com"]]];
+		
+		//this redirect doesn't work
+		//[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@" http://www.facebook.com/authorize.php?api_key=%@&v=1.0&ext_perm=offline_access", [_delegate apiKey]]]]];	
+	}
 	//assuming the authentication finishes, send the user directly to the place to grant extended permisisons
 
 	//[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://google.com"]]];
 	[loadingWebViewProgressIndicator setHidden:YES];
+}
+
+-(void)handleAuthTokenRequest:(id)response
+{
+	
 }
 
 @end
