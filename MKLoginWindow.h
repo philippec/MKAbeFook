@@ -42,4 +42,7 @@
 -(IBAction)closeWindow:(id)sender;
 -(void)setWindowSize:(NSSize)windowSize;
 
+#pragma mark WebView Delegate Methods
+- (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame;
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame;
 @end

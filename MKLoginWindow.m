@@ -93,7 +93,6 @@
 	
 	[[[loginWebView mainFrame] frameView] setAllowsScrolling:NO];	
 	[[loginWebView mainFrame] loadRequest:request];
-	[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:loginURL]];
 }
 
 
@@ -135,6 +134,8 @@
 	[super dealloc];
 }
 
+
+#pragma mark WebView Delegate Methods
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame
 {
 	[loadingWebViewProgressIndicator setHidden:NO];
@@ -142,8 +143,15 @@
 
 -(void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
-	//NSLog([[[loginWebView mainFrame] DOMDocument] description]);
-	//NSLog(@"source: %@", [[[[loginWebView mainFrame] dataSource] representation] documentSource]);
+	NSString *urlString = [[[[frame dataSource] mainResource] URL] description];
+	NSLog(@"current URL: %@", urlString);
+
+	//TODO: this stuff...
+	//check the current url that comes back.  if it's the one that looks like it means the user logged in successfully then try to send a request to complete the authentication.
+	
+	//assuming the authentication finishes, send the user directly to the place to grant extended permisisons
+
+	//[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://google.com"]]];
 	[loadingWebViewProgressIndicator setHidden:YES];
 }
 
