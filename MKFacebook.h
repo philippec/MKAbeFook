@@ -202,7 +202,7 @@ Available Delegate Methods
  See showFacebookLogin window method for a description of the login process.
  @version 0.8.2
  */
--(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyExtendPermissions:(BOOL)extendPermissions;
+-(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyGrantOfflinePermissions:(BOOL)extendPermissions;
 
 //prepare url
 /*!
