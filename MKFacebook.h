@@ -172,19 +172,37 @@ Available Delegate Methods
 //Login Window
 -(void)getAuthSession;
 
+
 /*!
  Displays a login window for logging into the Facebook API.
-  
+ 
  While the login window is loading a MKFacebookRequest sends an asynchronous request to Facebook to obtain an auth token.  The auth token is used to create the URL that is loaded in the login window.  After a user logs in and closes the window another MKFacebookRequest is sent to obtain an auth session.  If a successful auth session is obtained the userLoggedIn: delegate method will be called.  If no auth session is received the userLoginFailed delegate method is called.
+ 
+ @deprecated Deprecated as of version 0.8.2 use -(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyExtendPermissions:(NSArray *)permissionsArray instead
  */
 -(void)showFacebookLoginWindow;
 
 /*!
  @result Returns a login window with a "Close" button that can be used as a sheet.
-  
+ 
  See showFacebookLogin window method for a description of the login process.
+ @deprecated Deprecated as of version 0.8.2 use -(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyExtendPermissions:(NSArray *)permissionsArray instead
  */
 -(NSWindow *)showFacebookLoginWindowForSheet;
+
+/*!
+ Displays a login window for logging into the Facebook API.
+ 
+ While the login window is loading a MKFacebookRequest sends an asynchronous request to Facebook to obtain an auth token.  The auth token is used to create the URL that is loaded in the login window.  After a user logs in and closes the window another MKFacebookRequest is sent to obtain an auth session.  If a successful auth session is obtained the userLoggedIn: delegate method will be called.  If no auth session is received the userLoginFailed delegate method is called.
+ 
+ @param forSheet If YES, a window suitable for a sheet will be returned. If NO a login window will be displayed.
+ @param extendPermissions If YES, once the user logs in they will automatically be directed to a page that will allow them to extend offline_access for the application.
+ @result Returns a login window with a "Close" button that can be used as a sheet or displays a stand alone login window.
+  
+ See showFacebookLogin window method for a description of the login process.
+ @version 0.8.2
+ */
+-(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyExtendPermissions:(BOOL)extendPermissions;
 
 //prepare url
 /*!

@@ -89,6 +89,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		_shouldUseSynchronousLogin = NO;
 		_displayLoginAlerts = YES;
 		_hasPersistentSession = NO;
+		_useStandardDefaultsSessionStorage = YES;
 	}
 	return self;
 }
@@ -131,6 +132,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		_shouldUseSynchronousLogin = NO;
 		_displayLoginAlerts = YES;
 		_hasPersistentSession = NO;
+		_useStandardDefaultsSessionStorage = YES;
 	}
 	return self;
 }
@@ -258,6 +260,23 @@ NSString *MKFacebookResponseFormat = @"XML";
 {
 	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 
 	[[loginWindow window] setTitle:@"Login"];
+	[self createAuthToken];
+	return [loginWindow window];
+}
+
+
+-(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyExtendPermissions:(BOOL)extendPermissions
+{
+	if(forSheet == YES)
+		loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 
+	else
+	{
+		loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed			
+
+	}
+	[[loginWindow window] setTitle:@"Login"];		
+	[loginWindow setAutoGrantOfflinePermissions:extendPermissions];
+	
 	[self createAuthToken];
 	return [loginWindow window];
 }
@@ -687,9 +706,9 @@ NSString *MKFacebookResponseFormat = @"XML";
 	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:nil]; //will be released when closed			
 	[[loginWindow window] setTitle:@"Extended Permissions"];
 	[loginWindow showWindow:self];
-	[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
+	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
 	
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@", [self apiKey], MKFacebookAPIVersion, aString]];
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [self apiKey], MKFacebookAPIVersion, aString]];
 	[loginWindow loadURL:url];
 	
 }
@@ -706,11 +725,11 @@ NSString *MKFacebookResponseFormat = @"XML";
 	}
 	
 	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:nil];
-	[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
-	
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@", [self apiKey], MKFacebookAPIVersion, aString]];
+	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [self apiKey], MKFacebookAPIVersion, aString]];
+	[[loginWindow window] setTitle:@"Extended Permissions"];
 	[loginWindow loadURL:url];
-	
+
 	return [loginWindow window];
 	
 }
