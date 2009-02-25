@@ -231,7 +231,7 @@ Available Delegate Methods
 -(BOOL)shouldUseSychronousLogin;
 
 /*!
- @param aString Name of extended permission to grant. (As of this writing Facebook allows status_update, photo_upload, and create_listing)
+ @param aString Name of extended permission to grant. See Facebook documentation for allowed extended permissions.
 
  This method will display a new window and load the Facebook URL  http://www.facebook.com/authorize.php?api_key=YOUR_API_KEY&v=1.0&ext_perm=PERMISSION_NAME
  with authentication information is filled in automatically.  If no user is logged in an alert message will be displayed unless they have been turned off.  Unfortunately the user will have to login again to grant the permissions.
@@ -239,6 +239,13 @@ Available Delegate Methods
 */
 -(void)grantExtendedPermission:(NSString *)aString;
 
+
+/*!
+ @param aString Name of extended permission to grant. See Facebook documentation for allowed extended permissions.
+ @result Returns NSWindow with WebView that loads the grant extended permissions request.
+ @version 0.8.2 and later
+ */
+-(NSWindow *)grandExtendedPermissionForSheet:(NSString *)aString;
 
 /*used internally, new in 0.7.7*/
 -(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle details:(NSString *)details;
