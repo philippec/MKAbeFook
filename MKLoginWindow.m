@@ -173,8 +173,14 @@
 
 	//TODO: this stuff...
 	//check the current url that comes back.  if it's the one that looks like it means the user logged in successfully then try to send a request to complete the authentication.
-	//in this case we KNOW _delegate is the MKFacebook object, but this isn't a good way to do this.
-	NSString *loginSuccessfulString = [NSString stringWithFormat:@"https://ssl.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
+	//in this case we KNOW _delegate is the MKFacebook object, but this isn't a good way to do this. compile warning is normal because apiKey is a private method
+	
+	//this is where the user goes if it is the FIRST time they login and authenticate to an application
+	NSString *loginSuccessfulString = [NSString stringWithFormat:@"http://www.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
+	
+	//this is where the user goes if they have already authorized the application
+	//NSString *loginSuccessfulString = [NSString stringWithFormat:@"https://ssl.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
+	
 	if(_shouldAutoGrantOfflinePermissions == YES && [urlString isEqualToString:loginSuccessfulString])
 	{
 		//send auth token request

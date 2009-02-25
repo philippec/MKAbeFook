@@ -265,7 +265,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 }
 
 
--(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyExtendPermissions:(BOOL)extendPermissions
+-(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyGrantOfflinePermissions:(BOOL)extendPermissions
 {
 	if(forSheet == YES)
 		loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 
