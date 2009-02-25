@@ -17,7 +17,7 @@
  */
 
 #import "MKLoginWindow.h"
-
+#import "MKFacebookRequest.h"
 
 @implementation MKLoginWindow
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector
@@ -29,6 +29,7 @@
 	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
 	[super initWithWindowNibPath:path owner:self];
 	_shouldAutoGrantOfflinePermissions = NO;
+	_authTokenRequired = YES;
 	//NSRect visibleArea =  NSMakeRect(0, 0, 626, 426);
 	//[[[loginWebView mainFrame] webView] setFrame:visibleArea];
 	return self;
@@ -43,6 +44,7 @@
 	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
 	[super initWithWindowNibPath:path owner:self];
 	_shouldAutoGrantOfflinePermissions = NO;
+	_authTokenRequired = YES;
 	//NSRect frame = [[self window] frame];
 	//frame.size.height = 480;
 	//[[self window] setFrame:frame display:YES animate:YES];
@@ -53,17 +55,24 @@
 
 -(void)awakeFromNib
 {
+	//TODO: the window won't load correctly when we try to grant permissions unless we do this... i don't understand why...
+	//NSRect frame = [[self window] frame];
+	//[[self window] setFrame:frame display:YES animate:YES];
+	
+	[loginWebView setPolicyDelegate:self];
 	[loadingWebViewProgressIndicator bind:@"value" toObject:loginWebView withKeyPath:@"estimatedProgress" options:nil];
 }
 
 -(void)displayLoadingWindowIndicator
 {
+	NSLog(@"got here...");
 	[loadingWindowProgressIndicator setHidden:NO];
 	[loadingWindowProgressIndicator startAnimation:nil];
 }
 
 -(void)hideLoadingWindowIndicator
 {
+	NSLog(@"then we got here...");
 	[loadingWindowProgressIndicator stopAnimation:nil];
 	[loadingWindowProgressIndicator setHidden:YES];
 }
@@ -86,7 +95,7 @@
 	[[[loginWebView mainFrame] webView] setFrame:visibleArea];
 	*/
 	
-	//NSLog(@"loading url: %@", [loginURL description]);
+	NSLog(@"loading url: %@", [loginURL description]);
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:loginURL];
 	//[request setMainDocumentURL:[NSURL URLWithString:@"http://www.facebook.com"]];
 
@@ -126,7 +135,7 @@
 - (void)windowWillClose:(NSNotification *)aNotification
 {
 	//if auto grant permissions is YES the auth token request SHOULD be handled by webview did finish loading delegate method in this class
-	if(_shouldAutoGrantOfflinePermissions == NO)
+	if(_authTokenRequired == YES)
 	{
 		if(_selector != nil && [_delegate respondsToSelector:_selector])
 			[_delegate performSelector:_selector];		
@@ -169,21 +178,41 @@
 	if(_shouldAutoGrantOfflinePermissions == YES && [urlString isEqualToString:loginSuccessfulString])
 	{
 		//send auth token request
-		NSLog(@"login successful");
-		//[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://google.com"]]];
-		
-		//this redirect doesn't work
-		//[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@" http://www.facebook.com/authorize.php?api_key=%@&v=1.0&ext_perm=offline_access", [_delegate apiKey]]]]];	
+		NSLog(@"facebook web login successful");
+		MKFacebookRequest *request = [MKFacebookRequest requestUsingFacebookConnection:_delegate delegate:self selector:@selector(handleAuthTokenRequest:)];
+		NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
+		[parameters setValue:@"facebook.auth.getSession" forKey:@"method"];
+		[parameters setValue:[_delegate authToken] forKey:@"auth_token"];
+		[request setParameters:parameters];
+		[request sendRequest];
 	}
-	//assuming the authentication finishes, send the user directly to the place to grant extended permisisons
-
-	//[[loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://google.com"]]];
+	
 	[loadingWebViewProgressIndicator setHidden:YES];
 }
 
+//we get here immediately after the user logs into facebook successfully
 -(void)handleAuthTokenRequest:(id)response
+{	
+	[_delegate facebookResponseReceived:response];
+	if([_delegate userLoggedIn] == YES && _shouldAutoGrantOfflinePermissions == YES)
+	{
+		_authTokenRequired = NO;
+		//start process of extending each permission....
+		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=offline_access&popup=1", [_delegate apiKey], MKFacebookAPIVersion]];
+		[self loadURL:url];
+	}	
+}
+
+
+
+- (void)webView:(WebView *)sender decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id < WebPolicyDecisionListener >)listener
 {
-	
+	if ([[actionInformation objectForKey:WebActionNavigationTypeKey] intValue] != WebNavigationTypeOther) {
+		[listener ignore];
+		[[NSWorkspace sharedWorkspace] openURL:[request URL]];
+	}
+	else
+		[listener use];
 }
 
 @end

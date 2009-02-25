@@ -19,7 +19,7 @@
 #import <Cocoa/Cocoa.h>
 //0.6 case sensitivity issue fixed.  Thanks Dale.
 #import <WebKit/WebKit.h>
-@interface MKLoginWindow : NSWindowController {
+@interface MKLoginWindow : NSWindowController  {
 	NSString *path;
 	IBOutlet WebView *loginWebView;
 	IBOutlet NSButton *closeWindowButton; 
@@ -32,7 +32,9 @@
 	
 	IBOutlet NSProgressIndicator *loadingWebViewProgressIndicator;
 	
-	BOOL _shouldAutoGrantOfflinePermissions;  //if set to YES user will be directed to grant offline permissions page after logging in.
+	
+	BOOL _shouldAutoGrantOfflinePermissions;  //if set to YES user will be directed to grant offline permissions page after logging in.	
+	BOOL _authTokenRequired; //if it's set to auto grant offline permission but the user doesn't log in at all nothing will be sent back to MKFacebook to call userLoginFailed.  that's what this is for.
 }
 
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
@@ -42,6 +44,7 @@
 
 -(void)displayLoadingWindowIndicator;
 -(void)hideLoadingWindowIndicator;
+
 
 -(void)setAutoGrantOfflinePermissions:(BOOL)aBool;
 -(BOOL)shouldAutoGrantOfflinePermissions;
