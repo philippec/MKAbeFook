@@ -40,7 +40,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 -(NSString *)sessionSecret;
 -(void)setUid:(NSString *)aUid;
 -(void)setAuthToken:(NSString *)aToken;
--(NSString *)authToken;
 -(void)createAuthToken;
 -(NSTimeInterval)timeoutInterval;
 -(void)facebookRequestFailed:(NSError *)error;

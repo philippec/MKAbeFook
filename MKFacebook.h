@@ -120,7 +120,7 @@ Available Delegate Methods
 
 
 
-
+-(NSString *)authToken;
 -(NSString *)apiKey;
 -(NSString *)sessionKey;
 -(NSString *)generateSigForParameters:(NSDictionary *)parameters;
