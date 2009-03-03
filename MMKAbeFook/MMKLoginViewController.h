@@ -19,13 +19,21 @@
 
 #import <UIKit/UIKit.h>
 
+
 @interface MMKLoginViewController : UIViewController <UIWebViewDelegate> {
 	UIWebView *_loginWebView;
 	id _delegate;
 	SEL _selector;
 	UIActivityIndicatorView *_activityIndicator;
+	BOOL _authTokenRequired;
+	BOOL _shouldAutoGrantOfflinePermissions;
 }
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
 -(void)loadURL:(NSURL *)loginURL;
 -(void)loadView;
+
+-(void)setAutoGrantOfflinePermissions:(BOOL)aBool;
+-(BOOL)shouldAutoGrantOfflinePermissions;
+
+
 @end

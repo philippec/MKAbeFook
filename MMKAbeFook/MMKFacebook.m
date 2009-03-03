@@ -223,7 +223,7 @@ NSString *MMKFacebookFormat = @"XML";
 #pragma mark Login Stuff
 
 //this method just flips the view and requests an auth token from facebook.  if a valid token is returned to facebookResponseReceived: it loads the login page.
--(void)showFacebookLoginWindow
+-(void)showFacebookLoginWindowWithExtendedPermissions:(BOOL)aBool
 {
 	if(![_delegate respondsToSelector:@selector(applicationView)])
 	{
@@ -237,6 +237,7 @@ NSString *MMKFacebookFormat = @"XML";
 	
 	//tell the login window to call getAuthSession: just as it is flipping back to the application view
 	_loginViewController = [[MMKLoginViewController alloc] initWithDelegate:self withSelector:@selector(getAuthSession)];	
+	[_loginViewController setAutoGrantOfflinePermissions:aBool];
 	_navigationController = [[UINavigationController alloc] initWithRootViewController:_loginViewController];
 	
 	[self createAuthToken];
@@ -278,6 +279,12 @@ NSString *MMKFacebookFormat = @"XML";
 //called when login window is closed, attempts to create and save a session
 -(void)getAuthSession
 {
+	if(_hasUid)
+	{
+		[self returnUserToApplication];
+		return;
+	}
+	
 	if(_hasAuthToken)
 	{
 		if(_shouldUseSynchronousLogin == YES)
@@ -299,10 +306,8 @@ NSString *MMKFacebookFormat = @"XML";
 			[request setParameters:parameters];
 			[request sendRequest];
 		}
-	}else
-	{
-		[self returnUserToApplication];
 	}
+	[self returnUserToApplication];
 }
 
 //originally written by Josh Wiseman (Facebook, Inc.) and distributed with the iPhoto plugin. modifications made by Mike Kinney 
@@ -542,6 +547,7 @@ NSString *MMKFacebookFormat = @"XML";
 
 -(void)returnUserToApplication
 {
+	
 	if([_delegate respondsToSelector:@selector(returningUserToApplication)])
 		[_delegate performSelector:@selector(returningUserToApplication)];
 
@@ -639,6 +645,7 @@ NSString *MMKFacebookFormat = @"XML";
 			if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
 				[_delegate performSelector:@selector(userLoginSuccessful)];
 			
+			return;
 		}
 		else
 		{

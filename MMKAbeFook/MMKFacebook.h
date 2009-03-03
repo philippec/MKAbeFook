@@ -195,7 +195,7 @@ Available Delegate Methods
 /*!
  While the login window is loading a MMKFacebookRequest sends an asynchronous request to Facebook to obtain an auth token.  The auth token is used to create the URL that is loaded in the login window.  After a user logs in and closes the window another MMKFacebookRequest is sent to obtain an auth session.  If a successful auth session is obtained the userLoggedIn: delegate method will be called.  If no auth session is received the userLoginFailed delegate method is called.
  */
--(void)showFacebookLoginWindow;
+-(void)showFacebookLoginWindowWithExtendedPermissions:(BOOL)aBool;
 
 
 

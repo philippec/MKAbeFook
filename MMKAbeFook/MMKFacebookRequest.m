@@ -149,8 +149,8 @@
 -(void)dealloc
 {
 	
-	if(_loadingSheet != nil)
-		[_loadingSheet release];
+	//if(_loadingSheet != nil)
+	//	[_loadingSheet release];
 	
 	[_requestURL release];
 	[_parameters release];
@@ -418,12 +418,6 @@
 	{
 		if(_displayLoadingSheet == YES)
 		{
-			/* this doesn't matter right now, for now just remove the _loadingSheet view
-			[UIView beginAnimations:nil context:NULL];
-			[UIView setAnimationDuration:LOADING_SCREEN_ANIMATION_DURATION];
-			[_loadingSheet setFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, 0)];
-			[UIView commitAnimations];
-			*/
 			[_loadingSheet removeFromSuperview];
 			
 		}
