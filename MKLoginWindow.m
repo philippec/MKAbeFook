@@ -156,7 +156,7 @@
 	//this is where the user goes if they have already authorized the application
 	NSString *loginSuccessfulAlreadyAuthorized = [NSString stringWithFormat:@"https://ssl.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
 	
-	if(_shouldAutoGrantOfflinePermissions == YES && [urlString isEqualToString:loginSuccessfulFirstAuthorized] || [urlString isEqualToString:loginSuccessfulAlreadyAuthorized])
+	if(_shouldAutoGrantOfflinePermissions == YES && ([urlString isEqualToString:loginSuccessfulFirstAuthorized] || [urlString isEqualToString:loginSuccessfulAlreadyAuthorized]))
 	{
 		
 		//send auth token request
@@ -189,13 +189,8 @@
 }
 
 #pragma mark MKFacebookRequest Delegate Methods
-
-
 -(void)handleAppPermissionRequest:(NSXMLDocument *)response
 {
-	NSDictionary *values = [[response rootElement] dictionaryFromXMLElement];
-	NSLog([values description]);
-	NSLog([response description]);
 	if([[[response rootElement] stringValue] isEqualToString:@"0"])
 	{
 		//if user has not already granted offline permission display the page to do so
