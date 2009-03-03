@@ -32,6 +32,8 @@
 	
 	IBOutlet NSProgressIndicator *loadingWebViewProgressIndicator;
 	
+	IBOutlet NSTextField *checkingPermissionsMessage;
+	IBOutlet NSProgressIndicator *loadingAuthTokenProgressIndicator;
 	
 	BOOL _shouldAutoGrantOfflinePermissions;  //if set to YES user will be directed to grant offline permissions page after logging in.	
 	BOOL _authTokenRequired; //if it's set to auto grant offline permission but the user doesn't log in at all nothing will be sent back to MKFacebook to call userLoginFailed.  that's what this is for.

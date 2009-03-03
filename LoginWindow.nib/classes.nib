@@ -5,6 +5,14 @@
 	<key>IBClasses</key>
 	<array>
 		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
 			<key>ACTIONS</key>
 			<dict>
 				<key>closeWindow</key>
@@ -16,8 +24,12 @@
 			<string>ObjC</string>
 			<key>OUTLETS</key>
 			<dict>
+				<key>checkingPermissionsMessage</key>
+				<string>NSTextField</string>
 				<key>closeWindowButton</key>
 				<string>NSButton</string>
+				<key>loadingAuthTokenProgressIndicator</key>
+				<string>NSProgressIndicator</string>
 				<key>loadingWebViewProgressIndicator</key>
 				<string>NSProgressIndicator</string>
 				<key>loadingWindowProgressIndicator</key>
@@ -27,14 +39,6 @@
 			</dict>
 			<key>SUPERCLASS</key>
 			<string>NSWindowController</string>
-		</dict>
-		<dict>
-			<key>CLASS</key>
-			<string>FirstResponder</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
 		</dict>
 	</array>
 	<key>IBVersion</key>

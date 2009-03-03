@@ -18,6 +18,7 @@
 
 #import "MKLoginWindow.h"
 #import "MKFacebookRequest.h"
+#import "NSXMLElementAdditions.h"
 
 @implementation MKLoginWindow
 -(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector
@@ -30,14 +31,12 @@
 	[super initWithWindowNibPath:path owner:self];
 	_shouldAutoGrantOfflinePermissions = NO;
 	_authTokenRequired = YES;
-	//NSRect visibleArea =  NSMakeRect(0, 0, 626, 426);
-	//[[[loginWebView mainFrame] webView] setFrame:visibleArea];
 	return self;
 }
 
-
 -(id)initForSheetWithDelegate:(id)aDelegate withSelector:(SEL)aSelector
 {
+	self = [super init];
 	_delegate = aDelegate;
 	_selector = aSelector;
 	_loginWindowIsSheet = YES;
@@ -45,13 +44,9 @@
 	[super initWithWindowNibPath:path owner:self];
 	_shouldAutoGrantOfflinePermissions = NO;
 	_authTokenRequired = YES;
-	//NSRect frame = [[self window] frame];
-	//frame.size.height = 480;
-	//[[self window] setFrame:frame display:YES animate:YES];
-	//NSRect visibleArea = NSMakeRect(0, 0, 626, 436);
-	//[[[loginWebView mainFrame] webView] setFrame:visibleArea];
 	return self;
 }
+
 
 -(void)awakeFromNib
 {
@@ -65,14 +60,12 @@
 
 -(void)displayLoadingWindowIndicator
 {
-	NSLog(@"got here...");
 	[loadingWindowProgressIndicator setHidden:NO];
 	[loadingWindowProgressIndicator startAnimation:nil];
 }
 
 -(void)hideLoadingWindowIndicator
 {
-	NSLog(@"then we got here...");
 	[loadingWindowProgressIndicator stopAnimation:nil];
 	[loadingWindowProgressIndicator setHidden:YES];
 }
@@ -81,26 +74,9 @@
 {
 	[loginWebView setMaintainsBackForwardList:NO];
 	[loginWebView setFrameLoadDelegate:self];
-	/*
-	NSRect visibleArea;
-	//make the view smaller so the close sheet button fits better
-	if(webViewForSheet)
-	{
-		visibleArea = NSMakeRect(0, 0, 626, 426);
-
-	}else
-	{
-		visibleArea = NSMakeRect(0, 0, 626, 436);	
-	}
-	[[[loginWebView mainFrame] webView] setFrame:visibleArea];
-	*/
 	
 	NSLog(@"loading url: %@", [loginURL description]);
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:loginURL];
-	//[request setMainDocumentURL:[NSURL URLWithString:@"http://www.facebook.com"]];
-
-	//NSHTTPCookieStorage *cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-	//NSLog(@"cookies: %@", [[cookies cookiesForURL:loginURL] description]);
 	
 	[[[loginWebView mainFrame] frameView] setAllowsScrolling:NO];	
 	[[loginWebView mainFrame] loadRequest:request];
@@ -125,9 +101,6 @@
 
 	NSRect screenRect = [[NSScreen mainScreen] frame];
 	NSRect rect = NSMakeRect(screenRect.size.width * .15, screenRect.size.height * .15, windowSize.width, windowSize.height);
-	//[[[loginWebView mainFrame] webView] setFrame:rect];
-	//[[[loginWebView mainFrame] webView] setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
-	//[[self window] center];
 	[[self window] setFrame:rect display:YES animate:YES];
 }
 
@@ -146,6 +119,8 @@
 
 -(void)dealloc
 {
+	[loginWebView stopLoading:nil];
+	[loadingWebViewProgressIndicator unbind:@"value"];
 	[super dealloc];
 }
 
@@ -176,13 +151,14 @@
 	//in this case we KNOW _delegate is the MKFacebook object, but this isn't a good way to do this. compile warning is normal because apiKey is a private method
 	
 	//this is where the user goes if it is the FIRST time they login and authenticate to an application
-	NSString *loginSuccessfulString = [NSString stringWithFormat:@"http://www.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
+	NSString *loginSuccessfulFirstAuthorized = [NSString stringWithFormat:@"http://www.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
 	
 	//this is where the user goes if they have already authorized the application
-	//NSString *loginSuccessfulString = [NSString stringWithFormat:@"https://ssl.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
+	NSString *loginSuccessfulAlreadyAuthorized = [NSString stringWithFormat:@"https://ssl.facebook.com/desktopapp.php?api_key=%@&popup", [_delegate apiKey]];
 	
-	if(_shouldAutoGrantOfflinePermissions == YES && [urlString isEqualToString:loginSuccessfulString])
+	if(_shouldAutoGrantOfflinePermissions == YES && [urlString isEqualToString:loginSuccessfulFirstAuthorized] || [urlString isEqualToString:loginSuccessfulAlreadyAuthorized])
 	{
+		
 		//send auth token request
 		NSLog(@"facebook web login successful");
 		MKFacebookRequest *request = [MKFacebookRequest requestUsingFacebookConnection:_delegate delegate:self selector:@selector(handleAuthTokenRequest:)];
@@ -191,24 +167,15 @@
 		[parameters setValue:[_delegate authToken] forKey:@"auth_token"];
 		[request setParameters:parameters];
 		[request sendRequest];
+
+		[checkingPermissionsMessage setHidden:NO];
+		[loadingAuthTokenProgressIndicator startAnimation:nil];	
+
+		
 	}
 	
 	[loadingWebViewProgressIndicator setHidden:YES];
 }
-
-//we get here immediately after the user logs into facebook successfully
--(void)handleAuthTokenRequest:(id)response
-{	
-	[_delegate facebookResponseReceived:response];
-	if([_delegate userLoggedIn] == YES && _shouldAutoGrantOfflinePermissions == YES)
-	{
-		_authTokenRequired = NO;
-		//start process of extending each permission....
-		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=offline_access&popup=1", [_delegate apiKey], MKFacebookAPIVersion]];
-		[self loadURL:url];
-	}	
-}
-
 
 
 - (void)webView:(WebView *)sender decidePolicyForNewWindowAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request newFrameName:(NSString *)frameName decisionListener:(id < WebPolicyDecisionListener >)listener
@@ -220,5 +187,71 @@
 	else
 		[listener use];
 }
+
+#pragma mark MKFacebookRequest Delegate Methods
+
+
+-(void)handleAppPermissionRequest:(NSXMLDocument *)response
+{
+	NSDictionary *values = [[response rootElement] dictionaryFromXMLElement];
+	NSLog([values description]);
+	NSLog([response description]);
+	if([[[response rootElement] stringValue] isEqualToString:@"0"])
+	{
+		//if user has not already granted offline permission display the page to do so
+		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=offline_access&popup=1", [_delegate apiKey], MKFacebookAPIVersion]];
+		[self loadURL:url];			
+	}
+	
+	[checkingPermissionsMessage setHidden:YES];
+	[loadingAuthTokenProgressIndicator stopAnimation:nil];	
+
+}
+
+
+//we get here immediately after the user logs into facebook successfully
+-(void)handleAuthTokenRequest:(id)response
+{
+	[checkingPermissionsMessage setHidden:YES];
+	[loadingAuthTokenProgressIndicator stopAnimation:nil];
+	//the MKFacebook class is already set up to verify token responses
+	[_delegate facebookResponseReceived:response];
+	if([_delegate userLoggedIn] == YES && _shouldAutoGrantOfflinePermissions == YES)
+	{
+		_authTokenRequired = NO;
+		
+		//send request to see if user already has granted offline access
+		NSLog(@"facebook web login successful");
+		MKFacebookRequest *request = [MKFacebookRequest requestUsingFacebookConnection:_delegate delegate:self selector:@selector(handleAppPermissionRequest:)];
+		NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
+		[parameters setValue:@"facebook.users.hasAppPermission" forKey:@"method"];
+		[parameters setValue:[_delegate uid] forKey:@"uid"];
+		[parameters setValue:@"offline_access" forKey:@"ext_perm"];
+		[request setParameters:parameters];
+		[request sendRequest];
+	
+		
+	}
+	//no token, what should we do?
+	
+}
+
+
+//if the auth token request receives an error from facebook do something ere
+-(void)facebookErrorResponseReceived:(id)errorResponse
+{
+	[checkingPermissionsMessage setHidden:YES];
+	[loadingAuthTokenProgressIndicator stopAnimation:nil];
+	
+}
+
+//if the auth token request encounters a network error do something here
+-(void)facebookRequestFailed:(id)error
+{
+	[checkingPermissionsMessage setHidden:YES];
+	[loadingAuthTokenProgressIndicator stopAnimation:nil];
+	
+}
+
 
 @end
