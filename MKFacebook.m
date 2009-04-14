@@ -469,46 +469,35 @@ NSString *MKFacebookResponseFormat = @"XML";
 }
 
 
+//sorts parameters keys, creates a string of values, returns md5 hash (cleaned up by Patrick Jayet)
 - (NSString *)generateSigForParameters:(NSDictionary *)parameters
 {
-	//sort our dictionary of arguments
-	//somehow the first array that comes from the dictionary doesn't get sorted! so we have to sort that array!
-	//6.23.07 this problem has been here since the beginning, when are we going to fix it?
-	NSArray *sortedParameters1 = [NSArray arrayWithArray:[parameters keysSortedByValueUsingSelector:@selector(caseInsensitiveCompare:)]];
-	NSArray *sortedParameters = [NSArray arrayWithArray:[sortedParameters1 sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]];
-	//now sortedParameters is finally sorted correctly
-	NSMutableString *tempString = [[[NSMutableString alloc] init] autorelease]; 
-	NSEnumerator *enumerator =[sortedParameters objectEnumerator];
-	NSString *anObject; //keys of sortedParameters
-	while(anObject = [enumerator nextObject])
+	// pat: fixed signature issue
+	// 1. get a sorted array with the keys
+	NSArray* sortedKeyArray = [[parameters allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+	
+	// 2. construct the concatenated string
+	NSMutableString* tempString = [[[NSMutableString alloc] init] autorelease];
+	NSEnumerator *enumerator =[sortedKeyArray objectEnumerator];
+	NSString *key; //keys of sortedParameters
+	while(key = [enumerator nextObject])
 	{
-		//prevents attempting to append nil strings.  Thanks Andrei Freeman. 0.8.1
-		if((anObject != nil) && ([anObject length] > 0))
-		{
-			[tempString appendString:anObject];
-			[tempString appendString:@"="];
-			[tempString appendString:[parameters valueForKey:anObject]];
-		}else
-		{
-			NSArray *objArray = [NSArray arrayWithObjects:parameters, sortedParameters, sortedParameters1, nil];
-			NSArray *keyArray = [NSArray arrayWithObjects:@"parameters", @"sortedParameters", @"sortedParameters1", nil];
-			NSDictionary *exceptDict = [NSDictionary dictionaryWithObjects:objArray forKeys:keyArray];
-			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"Bad Parameter Object" userInfo:exceptDict];
-			[e raise];
-		}
+		[tempString appendFormat:@"%@=%@", key, [parameters objectForKey:key]];
 	}
-	//NSLog(tempString);
+	
 	//methods except these require we use the secretKey that was assigned during login, not our original one
-	if([[parameters valueForKey:@"method"] isEqualTo:@"facebook.auth.getSession"] || [[parameters valueForKey:@"method"] isEqualTo:@"facebook.auth.createToken"])
+	if([[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || [[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
 	{
+		NSLog(@"secretKey");
 		[tempString appendString:[self secretKey]];
 	}else
 	{
+		NSLog(@"sessionSecret");
 		[tempString appendString:[self sessionSecret]];
 	}
+	
 	return [tempString md5HexHash];
 }
-
 
 -(id)fetchFacebookData:(NSURL *)theURL
 {
