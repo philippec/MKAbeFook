@@ -468,7 +468,7 @@ NSString *MMKFacebookFormat = @"XML";
 		[tempString appendString:[self sessionSecret]];
 	}
 	
-	return [tempString md5HexHash];
+	return [tempString md5Hash];
 }
 
 #pragma mark -
