@@ -469,7 +469,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 }
 
 
-//sorts parameters keys, creates a string of values, returns md5 hash (cleaned up by Patrick Jayet)
+//sorts parameters keys, creates a string of values, returns md5 hash (cleaned up by Patrick Jayet 0.8.2)
 - (NSString *)generateSigForParameters:(NSDictionary *)parameters
 {
 	// pat: fixed signature issue
@@ -482,23 +482,43 @@ NSString *MKFacebookResponseFormat = @"XML";
 	NSString *key; //keys of sortedParameters
 	while(key = [enumerator nextObject])
 	{
-		[tempString appendFormat:@"%@=%@", key, [parameters objectForKey:key]];
+		//prevents attempting to append nil strings.  Thanks Andrei Freeman. 0.8.1
+		if((key != nil) && ([key length] > 0))
+		{
+			[tempString appendFormat:@"%@=%@", key, [parameters objectForKey:key]];
+		}else
+		{
+			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"Bad Parameter Object" userInfo:parameters];
+			[e raise];
+		}
 	}
 	
 	//methods except these require we use the secretKey that was assigned during login, not our original one
 	if([[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || [[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
 	{
-		NSLog(@"secretKey");
-		[tempString appendString:[self secretKey]];
+		//NSLog(@"secretKey");
+		if([self secretKey] != nil)
+			[tempString appendString:[self secretKey]];
+		else
+		{			
+			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"nil secret key, is your application type set to Desktop?" userInfo:nil];
+			[e raise];
+		}
 	}else
 	{
-		NSLog(@"sessionSecret");
-		[tempString appendString:[self sessionSecret]];
+		//NSLog(@"sessionSecret");
+		if([self sessionSecret] != nil && [[self sessionSecret] length] > 0)
+			[tempString appendString:[self sessionSecret]];
+		else
+		{
+			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"nil session secret, is your application type set to Desktop?" userInfo:nil];
+			[e raise];
+			
+		}
 	}
 	
 	return [tempString md5HexHash];
 }
-
 -(id)fetchFacebookData:(NSURL *)theURL
 {
 	NSURLRequest *urlRequest = [NSURLRequest requestWithURL:theURL 
@@ -553,6 +573,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		return;
 	}
 	
+	//TODO: figure out what to do when either session_key, secret, or uid are missing.  chances are it means the application type isn't set to Desktop
 	if([[[xml rootElement] name] isEqualTo:@"auth_getSession_response"])
 	{
 
