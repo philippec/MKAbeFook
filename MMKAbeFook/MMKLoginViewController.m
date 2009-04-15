@@ -121,6 +121,7 @@
 #pragma mark MKFacebookRequest Delegate Methods
 -(void)handleAppPermissionRequest:(CXMLDocument *)response
 {
+	NSLog(@"received app permission response %@", [[response rootElement] description]);
 	if([[[response rootElement] stringValue] isEqualToString:@"0"])
 	{
 		//if user has not already granted offline permission display the page to do so
