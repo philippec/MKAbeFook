@@ -32,7 +32,8 @@ enum
 
 /*!
  @class MMKFacebookRequest
- @discussion MMKFacebookRequest handles all requests to the Facebook API.  It can send requests as either POST or GET and return the results to the specified delegate / selector.  This object requires a NSDictionary of parameters that contains the parameters for a request to the Facebook API.  Included in the dictionary must be a key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo".  Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id", do not need to be in the NSDictionary of parameters you pass into the object, they will be inserted automatically.
+ 
+ MMKFacebookRequest handles all requests to the Facebook API.  It can send requests as either POST or GET and return the results to the specified delegate / selector.  This object requires a NSDictionary of parameters that contains the parameters for a request to the Facebook API.  Included in the dictionary must be a key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo".  Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id", do not need to be in the NSDictionary of parameters you pass into the object, they will be inserted automatically.
  
  
  The MMKFacebookRequest class is be capable of handling most of the methods available by the Facebook API, including facebook.photos.upload.  To upload a photo using this class include a NSImage object in your NSDictionary of parameters you set and set the method key value to "facebook.photos.upload".  The name of the key for the NSImage object can be any string.
@@ -84,7 +85,8 @@ enum
  @param aFacebookConnection A MKFacebook object that has been used to log in a user.  This object must have a valid sessionKey. 
  @param delegate The object that will receive the information returned by Facebook.
  @param selector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument.
- @discussion This method returns a new MMKFacebookRequest object that can be used to retrieve data from Facebook.
+ 
+ This method returns a new MMKFacebookRequest object that can be used to retrieve data from Facebook.
  @version 0.1 and later
  */
 -(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
@@ -95,7 +97,8 @@ enum
  @param parameters NSDictionary containing parameters for requested method.  The dictionary must contain a the key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo". Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id" do not need to be included in this dictionary.
  @param delegate The object that will receive the information returned by Facebook.
  @param selector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument.
- @discussion This method returns a new MKFacebookRequest object that can be used to retrieve data from Facebook.
+ 
+ This method returns a new MKFacebookRequest object that can be used to retrieve data from Facebook.
   @version 0.1 and later
  */
 -(MMKFacebookRequest *)initWithFacebookConnection:(MMKFacebook *)aFacebookConnection parameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector;
@@ -137,14 +140,16 @@ enum
 
 /*!
  @method sendRequest
- @discussion Sends request to Facebook.  The result will be passed to the delegate / selector that were assigned to this object.
+ 
+ Sends request to Facebook.  The result will be passed to the delegate / selector that were assigned to this object.
   @version 0.1 and later
  */
 -(void)sendRequest;
 
 /*!
 @method cancelRequest
- @discussion Cancels the current request if one is in progress.
+ 
+ Cancels the current request if one is in progress.
   @version 0.1 and later
  */
 -(void)cancelRequest;
@@ -152,7 +157,9 @@ enum
 /*!
  @method setDisplayLoadingSheet:
  @param shouldDisplayLoadingSheet BOOL value, YES if you want to display the loading sheet.  NO if you don't.  Default is YES.
- @discussion Displays a sheet from top of screen with indeterminate progress indicator and cancel button while request is loading.  Automatically removed from screen when request completes.
+ 
+ Displays a sheet from top of screen with indeterminate progress indicator and cancel button while request is loading.  Automatically removed from screen when request completes.
+ @version 0.1 and later
  */
 -(void)displayLoadingSheet:(BOOL)shouldDisplayLoadingSheet;
 

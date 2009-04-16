@@ -685,7 +685,7 @@ NSString *MMKFacebookFormat = @"XML";
 	{
 		[self displayGeneralAPIError:nil message:@"Something went wrong during the login..." buttonTitle:nil];
 	}
-	[self returnUserToApplication];
+	//[self returnUserToApplication];
 }
 
 -(BOOL)userLoggedIn
