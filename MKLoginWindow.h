@@ -53,6 +53,7 @@
 
 -(void)loadURL:(NSURL *)loginURL;
 -(IBAction)closeWindow:(id)sender;
+-(void)windowWillClose:(NSNotification *)aNotification;
 -(void)setWindowSize:(NSSize)windowSize;
 
 #pragma mark WebView Delegate Methods

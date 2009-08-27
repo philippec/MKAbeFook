@@ -270,7 +270,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 		loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 
 	else
 	{
-		loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed			
+		loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed	
+		[loginWindow showWindow:self];
 
 	}
 	[[loginWindow window] setTitle:@"Login"];		
@@ -328,7 +329,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 {
 	//userHasLoggedInMultipleTimes, it's set to TRUE in resetFacebookConnection used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
 	if (userHasLoggedInMultipleTimes) {
-		//NSLog(@"persistent login failed, too many login attempts");
+		//DLog(@"persistent login failed, too many login attempts");
 		return NO;
 	}
 	
@@ -349,7 +350,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	
 	
 	if (!key || [key isEqualTo:@""] || !secret || [secret isEqualTo:@""]) {
-		NSLog(@"persistent login failed, invalid session info");
+		DLog(@"persistent login failed, invalid session info");
 		return NO;
 	}
 	
@@ -364,11 +365,11 @@ NSString *MKFacebookResponseFormat = @"XML";
 	
 	//0.7 we're leaving loading infinite sessions as a synchronous request for now... 
 	NSXMLDocument *user = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
-	//NSLog([user description]);
+	//DLog([user description]);
 	//0.6 this method shouldn't return true if there was a problem loading the infinite session.  now it won't.  Thanks Adam.
 	if([user validFacebookResponse] == NO)
 	{
-		//NSLog(@"persistent login failed, facebook error");
+		//DLog(@"persistent login failed, facebook error");
 		[self resetFacebookConnection];
 		return NO;
 	}
@@ -496,7 +497,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	//methods except these require we use the secretKey that was assigned during login, not our original one
 	if([[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || [[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
 	{
-		//NSLog(@"secretKey");
+		//DLog(@"secretKey");
 		if([self secretKey] != nil)
 			[tempString appendString:[self secretKey]];
 		else
@@ -506,7 +507,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		}
 	}else
 	{
-		//NSLog(@"sessionSecret");
+		//DLog(@"sessionSecret");
 		if([self sessionSecret] != nil && [[self sessionSecret] length] > 0)
 			[tempString appendString:[self sessionSecret]];
 		else
@@ -534,7 +535,12 @@ NSString *MKFacebookResponseFormat = @"XML";
 	if(fetchError != nil)
 	{
 		if(_displayLoginAlerts == YES)
-			[self displayGeneralAPIError:@"Network Problems?" message:@"I can't seem to talk to Facebook.com right now.  This is a problem." buttonTitle:@"Fine!" details:nil];
+		{
+			[self displayGeneralAPIError:@"Network Problems?" 
+								 message:@"I can't seem to talk to Facebook.com right now.  This is a problem." 
+							 buttonTitle:@"Fine!" details:nil];
+		}
+			
 		return nil;
 	}else
 	{
@@ -550,7 +556,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 
 -(void)facebookResponseReceived:(NSXMLDocument *)xml
 {
-	//NSLog([xml description]);
+	//DLog([xml description]);
 	//NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
 		
 	//we only get to the following methods if there was no error in the facebook response.  we "shouldn't" need to check for problems in the xml below...
@@ -581,7 +587,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		
 		
 		BOOL useInfiniteSessions = NO; //make iVar
-		//NSLog([response description]);
+		//DLog([response description]);
 		if([response valueForKey:@"session_key"] != @"")
 		{
 			[self setSessionKey:[response valueForKey:@"session_key"]];
@@ -620,7 +626,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 			
 			if(useInfiniteSessions && _useStandardDefaultsSessionStorage == NO)
 			{
-				NSLog(@"using non standard session storage, YOU are responsible for saving and restoring the session!");
+				DLog(@"using non standard session storage, YOU are responsible for saving and restoring the session!");
 				_hasPersistentSession = YES;
 			}
 
@@ -659,7 +665,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	
 	if(_displayLoginAlerts == YES)
 	{
-		//NSLog(@"got here");
+		//DLog(@"got here");
 		[self displayGeneralAPIError:@"API Problems?" message:@"Facebook didn't give us the token we needed.  You can try again if you want but consider this login attempt defeated." buttonTitle:@"Fine!" details:nil];
 	}	
 }
@@ -805,7 +811,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		
 		return [dictionary autorelease];
 	}
-	NSLog(@"persistent session requested, but incorrect storage type, session key, or session secret missing");
+	DLog(@"persistent session requested, but incorrect storage type, session key, or session secret missing");
 	return nil;
 }
 
@@ -813,7 +819,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 {
 	if([persistentSession objectForKey:@"sessionSecret"] == nil || [persistentSession objectForKey:@"sessionKey"] == nil)
 	{
-		NSLog(@"restore failed: %@", [persistentSession description]);
+		DLog(@"restore failed: %@", [persistentSession description]);
 		return NO;
 	}
 		

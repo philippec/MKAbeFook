@@ -75,7 +75,7 @@
 	[loginWebView setMaintainsBackForwardList:NO];
 	[loginWebView setFrameLoadDelegate:self];
 	
-	NSLog(@"loading url: %@", [loginURL description]);
+	DLog(@"loading url: %@", [loginURL description]);
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:loginURL];
 	
 	[[[loginWebView mainFrame] frameView] setAllowsScrolling:NO];	
@@ -107,6 +107,7 @@
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	DLog(@"windowWillClose: was called");
 	//if auto grant permissions is YES the auth token request SHOULD be handled by webview did finish loading delegate method in this class
 	if(_authTokenRequired == YES)
 	{
@@ -144,7 +145,7 @@
 -(void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
 	NSString *urlString = [[[[frame dataSource] mainResource] URL] description];
-	NSLog(@"current URL: %@", urlString);
+	DLog(@"current URL: %@", urlString);
 
 	//TODO: this stuff...
 	//check the current url that comes back.  if it's the one that looks like it means the user logged in successfully then try to send a request to complete the authentication.
@@ -160,7 +161,7 @@
 	{
 		
 		//send auth token request
-		NSLog(@"facebook web login successful");
+		DLog(@"facebook web login successful");
 		MKFacebookRequest *request = [MKFacebookRequest requestUsingFacebookConnection:_delegate delegate:self selector:@selector(handleAuthTokenRequest:)];
 		NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
 		[parameters setValue:@"facebook.auth.getSession" forKey:@"method"];
@@ -216,7 +217,7 @@
 		_authTokenRequired = NO;
 		
 		//send request to see if user already has granted offline access
-		NSLog(@"facebook web login successful");
+		DLog(@"facebook web login successful");
 		MKFacebookRequest *request = [MKFacebookRequest requestUsingFacebookConnection:_delegate delegate:self selector:@selector(handleAppPermissionRequest:)];
 		NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
 		[parameters setValue:@"facebook.users.hasAppPermission" forKey:@"method"];
