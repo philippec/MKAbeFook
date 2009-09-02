@@ -372,6 +372,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_DEVELOPER_DIR)/SDKs/MacOSX10.4u.sdk/usr/lib\"";
+				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = MKAbeFook;
 				WRAPPER_EXTENSION = framework;

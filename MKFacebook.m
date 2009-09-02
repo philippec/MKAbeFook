@@ -329,7 +329,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 {
 	//userHasLoggedInMultipleTimes, it's set to TRUE in resetFacebookConnection used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
 	if (userHasLoggedInMultipleTimes) {
-		//DLog(@"persistent login failed, too many login attempts");
+		DLog(@"persistent login failed, too many login attempts");
 		return NO;
 	}
 	
@@ -341,6 +341,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		NSDictionary *domain = [[NSUserDefaults standardUserDefaults] persistentDomainForName:defaultsName];
 		key = (NSString *)[domain objectForKey:@"sessionKey"];
 		secret = (NSString *)[domain objectForKey:@"sessionSecret"];
+		DLog(@"loading persistent session from default storage: key - %@ secret - %@", key, secret);
 	}else
 	{
 		//try to load a session using information the user should have set.  we don't know for sure what's there... but it will fail if it's not valid
@@ -369,7 +370,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 	//0.6 this method shouldn't return true if there was a problem loading the infinite session.  now it won't.  Thanks Adam.
 	if([user validFacebookResponse] == NO)
 	{
-		//DLog(@"persistent login failed, facebook error");
+		DLog(@"persistent login failed, here's why...");
+		DLog(@"%@", [user description]);
 		[self resetFacebookConnection];
 		return NO;
 	}
@@ -527,7 +529,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 											timeoutInterval:[self connectionTimeoutInterval]];
 	NSHTTPURLResponse *xmlResponse;  //not used right now
 	NSXMLDocument *returnXML = nil;
-	NSError *fetchError;
+	NSError *fetchError = nil;
 	NSData *responseData = [NSURLConnection sendSynchronousRequest:urlRequest
 												 returningResponse:&xmlResponse
 															 error:&fetchError];
@@ -538,7 +540,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 		{
 			[self displayGeneralAPIError:@"Network Problems?" 
 								 message:@"I can't seem to talk to Facebook.com right now.  This is a problem." 
-							 buttonTitle:@"Fine!" details:nil];
+							 buttonTitle:@"Fine!" details:[fetchError description]];
+			DLog(@"synchronous fetch error %@", [fetchError description]);
 		}
 			
 		return nil;
@@ -621,6 +624,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 				//this is safer than setpersistentDomain which can screw up other things.  0.7.4.
 				[[NSUserDefaults standardUserDefaults] setObject:[self sessionKey] forKey:@"sessionKey"];
 				[[NSUserDefaults standardUserDefaults] setObject:[self sessionSecret] forKey:@"sessionSecret"];
+				DLog(@"writing persistent session to disk");
 			}
 			
 			
