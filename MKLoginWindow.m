@@ -73,7 +73,7 @@
 	DLog(@"loading url: %@", [loginURL description]);
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:loginURL];
 	
-	[[[loginWebView mainFrame] frameView] setAllowsScrolling:NO];	
+	//[[[loginWebView mainFrame] frameView] setAllowsScrolling:NO];	
 	[[loginWebView mainFrame] loadRequest:request];
 	//[self hideLoadingWindowIndicator];
 }
@@ -161,6 +161,17 @@
 			[self._delegate performSelector:@selector(userLoginSuccessful)];
 	}
 	
+	
+	
+	if([urlString hasPrefix:@"http://www.facebook.com/connect/login_failure.html"])
+	{
+		//display a custom failed login message that doesn't require an external host
+		//TODO: let developers provide their own local success html file without modifying the framework default
+		NSString *fwp = [[NSBundle mainBundle] privateFrameworksPath];
+		NSString *next = [NSString stringWithFormat:@"%@/MKAbeFook.framework/Resources/login_failed.html", fwp];
+		[self loadURL:[NSURL URLWithString:next]];
+		
+	}
 	
 	[loadingWebViewProgressIndicator setHidden:YES];
 }

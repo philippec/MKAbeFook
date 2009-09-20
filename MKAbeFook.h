@@ -8,15 +8,11 @@
  */
 #import "MKFacebook.h"
 #import "MKFacebookRequest.h"
-#import "MKEventsRequest.h"
+//#import "MKEventsRequest.h"
 #import "MKFaceBookRequestQueue.h"
 #import "NSXMLDocumentAdditions.h"
 #import "NSXMLElementAdditions.h"
 #import "MKErrorWindow.h"
 
 
-//deprecated 0.7
-#import "MKParsingExtras.h"
-#import "MKPhotoUploader.h"
-#import "MKASyncRequest.h"
 

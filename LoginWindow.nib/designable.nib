@@ -11,7 +11,7 @@
 			<string key="com.apple.WebKitIBPlugin">732</string>
 		</dictionary>
 		<array class="NSMutableArray" key="IBDocument.EditedObjectIDs">
-			<integer value="6"/>
+			<integer value="5"/>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -31,7 +31,7 @@
 			<object class="NSWindowTemplate" id="668968531">
 				<int key="NSWindowStyleMask">259</int>
 				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{311, 168}, {514, 487}}</string>
+				<string key="NSWindowRect">{{311, 168}, {514, 489}}</string>
 				<int key="NSWTFlags">813171712</int>
 				<string key="NSWindowTitle">Login</string>
 				<string key="NSWindowClass">NSWindow</string>
@@ -64,7 +64,7 @@
 								<string>public.url</string>
 								<string>public.url-name</string>
 							</set>
-							<string key="NSFrame">{{0, 78}, {514, 409}}</string>
+							<string key="NSFrame">{{0, 78}, {514, 411}}</string>
 							<reference key="NSSuperview" ref="988280345"/>
 							<reference key="NSNextKeyView"/>
 							<string key="FrameName"/>
@@ -131,14 +131,14 @@
 							<reference key="NSNextResponder" ref="988280345"/>
 							<int key="NSvFlags">-2147482356</int>
 							<object class="NSPSMatrix" key="NSDrawMatrix"/>
-							<string key="NSFrame">{{241, 266}, {32, 32}}</string>
+							<string key="NSFrame">{{241, 268}, {32, 32}}</string>
 							<reference key="NSSuperview" ref="988280345"/>
 							<int key="NSpiFlags">20490</int>
 							<double key="NSMinValue">16</double>
 							<double key="NSMaxValue">100</double>
 						</object>
 					</array>
-					<string key="NSFrameSize">{514, 487}</string>
+					<string key="NSFrameSize">{514, 489}</string>
 					<reference key="NSSuperview"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1280, 778}}</string>
@@ -292,9 +292,9 @@
 				<boolean value="YES" key="30.ImportedFromIB2"/>
 				<string key="46.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<boolean value="YES" key="46.ImportedFromIB2"/>
-				<string key="5.IBEditorWindowLastContentRect">{{329, 508}, {514, 487}}</string>
+				<string key="5.IBEditorWindowLastContentRect">{{329, 506}, {514, 489}}</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
-				<string key="5.IBWindowTemplateEditedContentRect">{{329, 508}, {514, 487}}</string>
+				<string key="5.IBWindowTemplateEditedContentRect">{{329, 506}, {514, 489}}</string>
 				<boolean value="YES" key="5.ImportedFromIB2"/>
 				<boolean value="YES" key="5.windowTemplate.hasMinSize"/>
 				<string key="5.windowTemplate.minSize">{213, 107}</string>
