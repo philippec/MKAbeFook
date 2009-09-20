@@ -23,8 +23,6 @@
 	NSString *path;
 	IBOutlet WebView *loginWebView;
 	IBOutlet NSButton *closeWindowButton; 
-	id _delegate;
-	SEL _selector;
 	
 	BOOL _loginWindowIsSheet;
 	
@@ -32,29 +30,25 @@
 	
 	IBOutlet NSProgressIndicator *loadingWebViewProgressIndicator;
 	
-	IBOutlet NSTextField *checkingPermissionsMessage;
-	IBOutlet NSProgressIndicator *loadingAuthTokenProgressIndicator;
+	id _delegate; //the place where userLoginSuccessfull will be called
 	
-	BOOL _shouldAutoGrantOfflinePermissions;  //if set to YES user will be directed to grant offline permissions page after logging in.	
-	BOOL _authTokenRequired; //if it's set to auto grant offline permission but the user doesn't log in at all nothing will be sent back to MKFacebook to call userLoginFailed.  that's what this is for.
 }
 
--(id)initWithDelegate:(id)aDelegate withSelector:(SEL)aSelector;
--(id)initForSheetWithDelegate:aDelegate withSelector:(SEL)aSelector;
+@property BOOL _loginWindowIsSheet;
+@property (nonatomic, retain) id _delegate;
+
+-(id)init;
 
 
 
 -(void)displayLoadingWindowIndicator;
 -(void)hideLoadingWindowIndicator;
 
-
--(void)setAutoGrantOfflinePermissions:(BOOL)aBool;
--(BOOL)shouldAutoGrantOfflinePermissions;
-
 -(void)loadURL:(NSURL *)loginURL;
 -(IBAction)closeWindow:(id)sender;
 -(void)windowWillClose:(NSNotification *)aNotification;
 -(void)setWindowSize:(NSSize)windowSize;
+
 
 #pragma mark WebView Delegate Methods
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame;
