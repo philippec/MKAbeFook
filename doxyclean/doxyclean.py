@@ -192,8 +192,6 @@ def linkify(directory):
 			for node in refNodes:
 				refName = node.firstChild.data
 				
-				print refName
-				
 				# Search for the corresponding node in the index
 				for documentedObject in documentedObjects:
 					# We need to get rid of whitespace
@@ -352,7 +350,13 @@ def main(argv=None):
 			print "Copying CSS stylesheets"
 		# Copy the CSS files over to the new path
 		cssPath = sys.path[0] + '/css'
-		os.system("cp -R \"%s\" \"%s\"" % (cssPath, htmlOutputDirectory))
+		os.system("mkdir \"%s\"/css" % (htmlOutputDirectory))
+		os.system("cp \"%s\"/common.css \"%s\"/css/common.css" % (cssPath, htmlOutputDirectory))
+		os.system("cp \"%s\"/print.css \"%s\"/css/print.css" % (cssPath, htmlOutputDirectory))
+		os.system("cp \"%s\"/screen.css \"%s\"/css/screen.css" % (cssPath, htmlOutputDirectory))
+		
+		#original
+		#os.system("cp -R \"%s\" \"%s\"" % (cssPath, htmlOutputDirectory))
 			
 	# Set the project name where necessary
 	if verbose:

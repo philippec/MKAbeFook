@@ -41,6 +41,12 @@
 	NSString *_errorDetails;
 	
 }
+
+/*! @name Instantiate
+ *	
+ */
+//@{
+
 /*!
  @param title Error title (required)
  @param message Brief error message (required)
@@ -53,16 +59,26 @@
  */
 +(MKErrorWindow *)errorWindowWithTitle:(NSString *)title message:(NSString *)message details:(NSString *)details;
 
+//@}
+
+
 /*used internally*/
 -(MKErrorWindow *)initWithTitle:(NSString *)title message:(NSString *)message details:(NSString *)details;
 
-/*!
- 
+
+/*! @name Display Error Window
+ *
+ */
+//@{
+
+/*! 
  Displays error window in the center of the screen.
  
  @version 0.7.7 and later
  */
 -(void)display;
+//@}
+
 -(IBAction)okButton:(id)sender;
 -(IBAction)detailsButton:(id)sender;
 

@@ -196,7 +196,7 @@ ALIASES                =
 # For instance, some of the names that are used will be different. The list 
 # of all members will be omitted, etc.
 
-OPTIMIZE_OUTPUT_FOR_C  = NO
+OPTIMIZE_OUTPUT_FOR_C  = YES
 
 # Set the OPTIMIZE_OUTPUT_JAVA tag to YES if your project consists of Java 
 # sources only. Doxygen will then generate output that is more tailored for 
@@ -271,7 +271,7 @@ DISTRIBUTE_GROUP_DOC   = NO
 # NO to prevent subgrouping. Alternatively, this can be done per class using 
 # the \nosubgrouping command.
 
-SUBGROUPING            = YES
+SUBGROUPING            = NO
 
 # When TYPEDEF_HIDES_STRUCT is enabled, a typedef of a struct, union, or enum 
 # is documented as struct, union, or enum with the name of the typedef. So 
@@ -375,7 +375,7 @@ HIDE_IN_BODY_DOCS      = NO
 # to NO (the default) then the documentation will be excluded. 
 # Set it to YES to include the internal documentation.
 
-INTERNAL_DOCS          = NO
+INTERNAL_DOCS          = YES
 
 # If the CASE_SENSE_NAMES tag is set to NO then Doxygen will only generate 
 # file names in lower-case letters. If set to YES upper-case letters are also 
@@ -395,7 +395,7 @@ HIDE_SCOPE_NAMES       = NO
 # will put a list of the files that are included by a file in the documentation 
 # of that file.
 
-SHOW_INCLUDE_FILES     = YES
+SHOW_INCLUDE_FILES     = NO
 
 # If the INLINE_INFO tag is set to YES (the default) then a tag [inline] 
 # is inserted in the documentation for inline members.
@@ -1373,7 +1373,7 @@ PERL_PATH              = /usr/bin/perl
 # fallback. It is recommended to install and use dot, since it yields more 
 # powerful graphs.
 
-CLASS_DIAGRAMS         = YES
+CLASS_DIAGRAMS         = NO
 
 # You can define message sequence charts within doxygen comments using the \msc 
 # command. Doxygen will then run the mscgen tool (see 
