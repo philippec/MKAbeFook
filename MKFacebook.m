@@ -22,6 +22,7 @@
 #import "MKParsingExtras.h"
 #import "NSXMLElementAdditions.h"
 #import "MKErrorWindow.h"
+#import "MKFacebookSession.h"
 
 NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
@@ -39,11 +40,10 @@ NSString *MKFacebookResponseFormat = @"XML";
 -(void)setSessionSecret:(NSString *)aSessionSecret;
 -(NSString *)sessionSecret;
 -(void)setUid:(NSString *)aUid;
--(void)setAuthToken:(NSString *)aToken;
--(void)createAuthToken;
 -(NSTimeInterval)timeoutInterval;
 -(void)facebookRequestFailed:(NSError *)error;
 -(void)facebookResponseReceived:(NSXMLDocument *)xml;
+- (NSURL *)prepareLoginURLWithExtendedPermissions:(NSArray *)extendedPermissions;
 @end
 
 
@@ -74,12 +74,11 @@ NSString *MKFacebookResponseFormat = @"XML";
 		defaultsName = [[NSBundle mainBundle] bundleIdentifier];
 		[self setApiKey:anAPIKey];
 		[self setSecretKey:aSecret];
-		[self setAuthToken:nil];
 		[self setSessionKey:nil];
 		[self setSessionSecret:nil];
 		[self setUid:nil];
 		[self setConnectionTimeoutInterval:5.0];
-		hasAuthToken = FALSE;
+
 		hasSessionKey = FALSE;
 		hasSessionSecret = FALSE;
 		hasUid = FALSE;
@@ -117,12 +116,12 @@ NSString *MKFacebookResponseFormat = @"XML";
 		defaultsName = [aDefaultsName copy];
 		[self setApiKey:anApiKey];
 		[self setSecretKey:aSecretKey];
-		[self setAuthToken:nil];
+
 		[self setSessionKey:nil];
 		[self setSessionSecret:nil];
 		[self setUid:nil];
 		[self setConnectionTimeoutInterval:5.0];
-		hasAuthToken = FALSE;
+
 		hasSessionKey = FALSE;
 		hasSessionSecret = FALSE;
 		hasUid = FALSE;
@@ -140,7 +139,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 {
 	[apiKey release];
 	[secretKey release];
-	[authToken release];
 	[sessionKey release];
 	[sessionSecret release];
 	[uid release];
@@ -209,18 +207,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 	return uid;
 }
 
--(void)setAuthToken:(NSString *)aToken
-{
-	aToken = [aToken copy];
-	[authToken release];
-	authToken = aToken;
-	hasAuthToken = TRUE;
-	
-}
--(NSString *)authToken
-{
-	return authToken;
-}
 
 -(void)setConnectionTimeoutInterval:(NSTimeInterval)aConnectionTimeoutInterval
 {
@@ -246,158 +232,125 @@ NSString *MKFacebookResponseFormat = @"XML";
 
 #pragma mark Workers
 
--(void)showFacebookLoginWindow
-{
-	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed			
-	[[loginWindow window] center];
-	[[loginWindow window] setTitle:@"Login"];
-	[loginWindow showWindow:self];
-	[self createAuthToken];
-}
 
--(NSWindow *)showFacebookLoginWindowForSheet
-{
-	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 
-	[[loginWindow window] setTitle:@"Login"];
-	[self createAuthToken];
-	return [loginWindow window];
-}
-
-
--(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyGrantOfflinePermissions:(BOOL)extendPermissions
-{
-	if(forSheet == YES)
-		loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed 
-	else
-	{
-		loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:@selector(getAuthSession)]; //will be released when closed	
-		[loginWindow showWindow:self];
-
-	}
-	[[loginWindow window] setTitle:@"Login"];		
-	[loginWindow setAutoGrantOfflinePermissions:extendPermissions];
-	
-	[self createAuthToken];
-	return [loginWindow window];
-}
-
-//called when login window is created, if an authToken is generated the login window will display
--(void)createAuthToken
-{
-	if(_shouldUseSynchronousLogin == YES)
-	{
-		NSXMLDocument *xml = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.auth.createToken", @"method", nil]]];
-		[self facebookResponseReceived:xml];
-	}else
-	{
-		[loginWindow displayLoadingWindowIndicator];
-		MKFacebookRequest *request = [MKFacebookRequest requestUsingFacebookConnection:self delegate:self];
-		NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
-		[parameters setValue:@"facebook.auth.createToken" forKey:@"method"];
-		[request setParameters:parameters];
-		//[request setDisplayAPIErrorAlert:YES];
-		[request sendRequest];
-	}
-
-}
-
-//called when login window is closed, attempts create and save a session
--(void)getAuthSession
-{
-	if(hasAuthToken)
-	{
-		if(_shouldUseSynchronousLogin == YES)
+- (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet{
+	//try to use existing session
+	if ([self loadPersistentSession] == NO) {
+		
+		//prepare loginwindow
+		loginWindow = [[MKLoginWindow alloc] init]; //will be released when closed			
+		[[loginWindow window] setTitle:@"Login"];
+		
+		loginWindow._delegate = self; //loginWindow needs to know where to call userLoginSuccessful
+		
+		//prepare login url
+		NSURL *loginURL = [self prepareLoginURLWithExtendedPermissions:permissions];
+		
+		//begin loading login url
+		[loginWindow loadURL:loginURL];
+		
+		//if window will not be used for a sheet simply load the window
+		if(sheet == NO)
 		{
-			NSXMLDocument *xml = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.auth.getSession", @"method", [self authToken], @"auth_token", nil]]];
-			[self facebookResponseReceived:xml];
-		}else
+			[[loginWindow window] center];
+			[loginWindow showWindow:self];
+			return nil;
+		}
+		
+		if(sheet == YES)
 		{
-			MKFacebookRequest *request = [MKFacebookRequest requestUsingFacebookConnection:self delegate:self];			
-			NSMutableDictionary *parameters = [[[NSMutableDictionary alloc] init] autorelease];
-			[parameters setValue:@"facebook.auth.getSession" forKey:@"method"];
-			[parameters setValue:[self authToken] forKey:@"auth_token"];
-			
-			[request setParameters:parameters];
-			//[request setDisplayAPIErrorAlert:YES];
-			[request sendRequest];
+			loginWindow._loginWindowIsSheet = YES;
+			return [loginWindow window];
 		}
 	}
+	return nil;
 }
 
-//originally written by Josh Wiseman (Facebook, Inc.) and distributed with the iPhoto plugin. modifications made by Mike Kinney 
--(BOOL)loadPersistentSession
-{
-	//userHasLoggedInMultipleTimes, it's set to TRUE in resetFacebookConnection used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet
-	if (userHasLoggedInMultipleTimes) {
-		DLog(@"persistent login failed, too many login attempts");
-		return NO;
-	}
-	
-	NSString *key;
-	NSString *secret;
-	
-	if([self useStandardDefaultsSessionStorage])
-	{
-		NSDictionary *domain = [[NSUserDefaults standardUserDefaults] persistentDomainForName:defaultsName];
-		key = (NSString *)[domain objectForKey:@"sessionKey"];
-		secret = (NSString *)[domain objectForKey:@"sessionSecret"];
-		DLog(@"loading persistent session from default storage: key - %@ secret - %@", key, secret);
-	}else
-	{
-		//try to load a session using information the user should have set.  we don't know for sure what's there... but it will fail if it's not valid
-		key = [self sessionKey];
-		secret = [self sessionSecret];
-	}
-	
-	
-	if (!key || [key isEqualTo:@""] || !secret || [secret isEqualTo:@""]) {
-		DLog(@"persistent login failed, invalid session info");
-		return NO;
-	}
-	
 
-	[self setSessionKey:key];
-	[self setSessionSecret:secret];
-
-	//
-	//MKFacebookRequest *request = [[[MKFacebookRequest alloc] initWithFacebookConnection:self delegate:self selector:@selector(facebookResponseReceived:)] autorelease];
-	//[request setParameters:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]];
-	//[request sendRequest];
+- (NSURL *)prepareLoginURLWithExtendedPermissions:(NSArray *)extendedPermissions{
+	NSMutableString *loginString = [[[NSMutableString alloc] initWithString:MKLoginUrl] autorelease];
+	[loginString appendString:@"?api_key="];
+	[loginString appendString:[self apiKey]];
+	[loginString appendString:@"&v="];
+	[loginString appendString:MKFacebookAPIVersion];
 	
-	//0.7 we're leaving loading infinite sessions as a synchronous request for now... 
-	NSXMLDocument *user = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
-	//DLog([user description]);
-	//0.6 this method shouldn't return true if there was a problem loading the infinite session.  now it won't.  Thanks Adam.
-	if([user validFacebookResponse] == NO)
+	[loginString appendString:@"&connect_display=popup"];
+	
+	[loginString appendString:@"&next=http://www.facebook.com/connect/login_success.html"];
+	[loginString appendString:@"&fbconnect=true"];
+	[loginString appendString:@"&return_session=true"];
+
+	if(extendedPermissions != nil)
 	{
-		DLog(@"persistent login failed, here's why...");
-		DLog(@"%@", [user description]);
-		[self resetFacebookConnection];
-		return NO;
+		[loginString appendFormat:@"&req_perms=%@",[extendedPermissions componentsJoinedByString:@","]];
 	}
-	[self setUid:[[user rootElement] stringValue]];
+
+	
+	
+	
+	[loginString appendString:@"&skipcookie"];
+
+	return [NSURL URLWithString:loginString];
+	
+}
+
+- (void)logout{
+	//TODO: implement logout
+}
+
+
+- (void)userLoginSuccessful{
+	
+	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
+
+	[self setSessionKey:[session sessionKey]];
+	[self setSessionSecret:[session secret]];
+
+	[self setUid:[NSString stringWithFormat:@"%@", [session uid]]];
+	DLog(@"user id %@", [self uid]);
 	hasUid = YES;
 	hasSessionKey = YES;
 	hasSessionSecret = YES;
-	
 	// we don't really have a token, but it doesn't matter since we have a session
-	hasAuthToken = YES;
-
-	_hasPersistentSession = YES;
 	
+	_hasPersistentSession = YES;
 	if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
 		[_delegate performSelector:@selector(userLoginSuccessful)];
 	
+}
 
-	
-	return YES;
+-(BOOL)loadPersistentSession
+{
+	//load any existing sessions
+	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
+	if ([session loadSession]) {
+		
+		[self setSessionKey:[session sessionKey]];
+		[self setSessionSecret:[session secret]];
+		
+		NSXMLDocument *user = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
+
+		if([user validFacebookResponse] == NO)
+		{
+			DLog(@"persistent login failed, here's why...");
+			DLog(@"%@", [user description]);
+			[self resetFacebookConnection];
+			return NO;
+		}
+		
+		//check to see if the uid returned is the same as our existing session
+		if ([[[user rootElement] stringValue] isEqualToString:[session uid]] ) {
+			[self userLoginSuccessful];
+			return YES;
+		}
+		
+	}
+	return NO;
 }
 
 -(void)clearInfiniteSession
 {
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"sessionKey"];
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"secretKey"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[[MKFacebookSession sharedMKFacebookSession] destroySession];
 	[self resetFacebookConnection];
 }
 
@@ -560,102 +513,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 -(void)facebookResponseReceived:(NSXMLDocument *)xml
 {
 	//DLog([xml description]);
-	//NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
-		
-	//we only get to the following methods if there was no error in the facebook response.  we "shouldn't" need to check for problems in the xml below...
-	if([[[xml rootElement] name] isEqualTo:@"auth_createToken_response"])
-	{
-		[self setAuthToken:[[xml rootElement] stringValue]];
-		hasAuthToken = TRUE;
-		NSMutableString *loginString = [[NSMutableString alloc] initWithString:MKLoginUrl];
-		[loginString appendString:@"?api_key="];
-		[loginString appendString:[self apiKey]];
-		[loginString appendString:@"&auth_token="];
-		[loginString appendString:[self authToken]];
-		[loginString appendString:@"&v="];
-		[loginString appendString:MKFacebookAPIVersion];
-		[loginString appendString:@"&popup"];
-		[loginString appendString:@"&skipcookie"];
-		[loginWindow hideLoadingWindowIndicator];
-		[loginWindow loadURL:[NSURL URLWithString:loginString]];
-		[loginString release];
-		return;
-	}
-	
-	//TODO: figure out what to do when either session_key, secret, or uid are missing.  chances are it means the application type isn't set to Desktop
-	if([[[xml rootElement] name] isEqualTo:@"auth_getSession_response"])
-	{
-
-		NSDictionary *response = [[xml rootElement] dictionaryFromXMLElement];
-		
-		
-		BOOL useInfiniteSessions = NO; //make iVar
-		//DLog([response description]);
-		if([response valueForKey:@"session_key"] != @"")
-		{
-			[self setSessionKey:[response valueForKey:@"session_key"]];
-			hasSessionKey = YES;			
-		}
-		
-		if([response valueForKey:@"secret"] != @"")
-		{
-			[self setSessionSecret:[response valueForKey:@"secret"]];
-			hasSessionSecret = YES;			
-		}
-		
-		if([response valueForKey:@"uid"] != @"")
-		{
-			[self setUid:[response valueForKey:@"uid"]];
-			hasUid = YES;						
-		}
-		
-		//this seems to return zero sparatically, did facebook change something or is something broken?
-		if([[response valueForKey:@"expires"] intValue] == 0)
-			useInfiniteSessions = YES;
-		
-		if([self userLoggedIn])
-		{
-			//store persistent session information in the application defaults
-			if([defaultsName isNotEqualTo:@""] && useInfiniteSessions && _useStandardDefaultsSessionStorage)
-			{
-				//NSDictionary *sessionDefaults = [NSDictionary dictionaryWithObjectsAndKeys:[self sessionKey], @"sessionKey", [self sessionSecret], @"sessionSecret", nil];
-				//[[NSUserDefaults standardUserDefaults] setPersistentDomain:sessionDefaults forName:defaultsName];
-				
-				//this is safer than setpersistentDomain which can screw up other things.  0.7.4.
-				[[NSUserDefaults standardUserDefaults] setObject:[self sessionKey] forKey:@"sessionKey"];
-				[[NSUserDefaults standardUserDefaults] setObject:[self sessionSecret] forKey:@"sessionSecret"];
-				DLog(@"writing persistent session to disk");
-			}
-			
-			
-			if(useInfiniteSessions && _useStandardDefaultsSessionStorage == NO)
-			{
-				DLog(@"using non standard session storage, YOU are responsible for saving and restoring the session!");
-				_hasPersistentSession = YES;
-			}
-
-			
-			if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
-				[_delegate performSelector:@selector(userLoginSuccessful)];
-			
-		}
-		else
-		{
-
-			[self resetFacebookConnection];
-			
-			if([_delegate respondsToSelector:@selector(userLoginFailed)])
-				[_delegate performSelector:@selector(userLoginFailed)];
-			
-			if(_displayLoginAlerts == YES)
-			{
-				[self displayGeneralAPIError:@"Whoa there, what happened?" message:@"Something went wrong trying to obtain a session from Facebook.  You will need to try to login again." buttonTitle:@"Fine!" details:nil];
-			}
-			
-		}
-		return;
-	
-	}
+	NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
+	DLog(@"received response: %@", [xmlResponse description]);
 }
 
 -(void)facebookErrorResponseReceived:(NSXMLDocument *)xml
@@ -687,7 +546,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 #pragma mark Misc
 -(BOOL)userLoggedIn
 {
-	if(hasAuthToken && hasSessionKey && hasSessionSecret && hasUid) //then it's kinda safe to assume we're logged in.....
+	if(hasSessionKey && hasSessionSecret && hasUid) //then it's kinda safe to assume we're logged in.....
 	{
 		return TRUE;
 	}else
@@ -699,11 +558,9 @@ NSString *MKFacebookResponseFormat = @"XML";
 
 -(void)resetFacebookConnection
 {
-	[self setAuthToken:nil];
 	[self setSessionKey:nil];
 	[self setSessionSecret:nil];
 	[self setUid:nil];
-	hasAuthToken = FALSE;
 	hasSessionKey = FALSE;
 	hasSessionSecret = FALSE;
 	hasUid = FALSE;
@@ -722,7 +579,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		return;
 	}
 	
-	loginWindow = [[MKLoginWindow alloc] initWithDelegate:self withSelector:nil]; //will be released when closed			
+	loginWindow = [[MKLoginWindow alloc] init]; //will be released when closed			
 	[[loginWindow window] setTitle:@"Extended Permissions"];
 	[loginWindow showWindow:self];
 	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
@@ -743,7 +600,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 		return nil;
 	}
 	
-	loginWindow = [[MKLoginWindow alloc] initForSheetWithDelegate:self withSelector:nil];
+	loginWindow = [[MKLoginWindow alloc] init];
+	loginWindow._loginWindowIsSheet = YES;
 	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
 	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [self apiKey], MKFacebookAPIVersion, aString]];
 	[[loginWindow window] setTitle:@"Extended Permissions"];

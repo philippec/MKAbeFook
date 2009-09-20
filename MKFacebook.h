@@ -53,7 +53,6 @@ Available Delegate Methods
 	NSString *sessionSecret;
 	NSString *uid;
 	NSString *defaultsName;
-	BOOL hasAuthToken;
 	BOOL hasSessionKey;
 	BOOL hasSessionSecret;
 	BOOL hasUid;
@@ -120,7 +119,7 @@ Available Delegate Methods
 
 
 
--(NSString *)authToken;
+
 -(NSString *)apiKey;
 -(NSString *)sessionKey;
 -(NSString *)generateSigForParameters:(NSDictionary *)parameters;
@@ -166,43 +165,29 @@ Available Delegate Methods
 /*!
   Removes sessionKey and sessionSecret keys from application NSUserDefaults.  This method also calls resetFacebookConnection.
  @version 0.7 and later
+ @deprecated Deprecated as of version 0.9 use MKFacebookSession instead.
  */
 -(void)clearInfiniteSession;
 
-//Login Window
--(void)getAuthSession;
 
 
 /*!
- Displays a login window for logging into the Facebook API.
- 
- While the login window is loading a MKFacebookRequest sends an asynchronous request to Facebook to obtain an auth token.  The auth token is used to create the URL that is loaded in the login window.  After a user logs in and closes the window another MKFacebookRequest is sent to obtain an auth session.  If a successful auth session is obtained the userLoggedIn: delegate method will be called.  If no auth session is received the userLoginFailed delegate method is called.
- 
- @deprecated Deprecated as of version 0.8.2 use -(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyExtendPermissions:(NSArray *)permissionsArray instead
+ Tries to load existing session.  If no session is available a login window will be displayed.
+ @param permissions List of permisisons to offer the user.
+ @param sheet If YES is passed in a NSWindow will be returned, otherwise a login window will appear and nil will be returned.
+ @return Either a NSWindow to be attached as a sheet or nil.
  */
--(void)showFacebookLoginWindow;
+- (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet;
 
 /*!
- @result Returns a login window with a "Close" button that can be used as a sheet.
- 
- See showFacebookLogin window method for a description of the login process.
- @deprecated Deprecated as of version 0.8.2 use -(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyExtendPermissions:(NSArray *)permissionsArray instead
+ Removes any saved sessions and invalidates any future requests until a user logs in again.
+ @version 0.9.0
  */
--(NSWindow *)showFacebookLoginWindowForSheet;
+- (void)logout;
 
-/*!
- Displays a login window for logging into the Facebook API.
- 
- While the login window is loading a MKFacebookRequest sends an asynchronous request to Facebook to obtain an auth token.  The auth token is used to create the URL that is loaded in the login window.  After a user logs in and closes the window another MKFacebookRequest is sent to obtain an auth session.  If a successful auth session is obtained the userLoggedIn: delegate method will be called.  If no auth session is received the userLoginFailed delegate method is called.
- 
- @param forSheet If YES, a window suitable for a sheet will be returned. If NO a login window will be displayed.
- @param extendPermissions If YES, once the user logs in they will automatically be directed to a page that will allow them to extend offline_access for the application.
- @result Returns a login window with a "Close" button that can be used as a sheet or displays a stand alone login window.
-  
- See showFacebookLogin window method for a description of the login process.
- @version 0.8.2
- */
--(id)showFacebookLoginWindowForSheet:(BOOL)forSheet automaticallyGrantOfflinePermissions:(BOOL)extendPermissions;
+
+//called from MKLoginWindow after a successful login
+- (void)userLoginSuccessful;
 
 //prepare url
 /*!
