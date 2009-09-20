@@ -11,10 +11,7 @@
 
 extern NSString *MKFacebookSessionKey;
 
-/*!
- @brief Handles saving session information to disk and loading existing sessions.
- */
-
+//Handles saving session information to disk and loading existing sessions.
 @interface MKFacebookSession : NSObject {
 	
 	NSDictionary *session;
@@ -29,26 +26,19 @@ extern NSString *MKFacebookSessionKey;
 
 + (MKFacebookSession *)sharedMKFacebookSession;
 
-/*!
- Accepts a new session dictionary.  Saves the session to the application defaults.
- @param aSession New session to be saved.
- */
+// Accepts a new session dictionary.  Saves the session to the application defaults.
 - (void)saveSession:(NSDictionary *)aSession;
 
 
-/*!
- Loads any saved session from application defaults.  Returns false if no session could be loaded.
- */
+// Loads any saved session from application defaults.  Returns false if no session could be loaded.
 - (BOOL)loadSession;
 
-/*!
- Destroys any saved session.
- */
+
+// Destroys any saved session.
 - (void)destroySession;
 
-/*!
- Checks to see if session looks valid.
- */
+
+// Checks to see if session looks valid.
 - (BOOL)validSession;
 
 

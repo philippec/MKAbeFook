@@ -48,12 +48,13 @@
 	BOOL _shouldPauseBetweenRequests;
 }
 
-
-/*!
-  Creates a new MKFacebookRequestQueue object.  You will also need to set the set the delegate and selectors.
-  @version 0.7 and later
- */
 -(id)init;
+
+/*! @name Instantiate
+ *
+ */
+//@{
+
 
 /*!
  @param requests NSArray of MKFacebookRequest objects ready to be requested.
@@ -65,6 +66,8 @@
   @version 0.7 and later
  */
 -(id)initWithRequests:(NSArray *)requests delegate:(id)aDelegate currentlySendingSelector:(SEL)currentlySendingSelector lastRequestResponseSelector:(SEL)lastRequestResponseSelector allRequestsFinishedSelector:(SEL)allRequestsFinishedSelector;
+//@}
+
 
 /*!
  @param delegate
@@ -72,6 +75,12 @@
   @version 0.7 and later
  */
 -(void)setDelegate:(id)delegate;
+
+
+/*! @name Set Selectors
+ *
+ */
+//@{
 
 /*!
  @param selector Method to be called and passed information about request currently being sent. 
@@ -90,6 +99,13 @@
   @version 0.7 and later
  */
 -(void)setAllRequestsFinishedSelector:(SEL)selector;
+//@}
+
+
+/*! @name Manage the queue
+ *
+ */
+//@{
 
 /*!
  @param request MKFacebookRequest object that is ready to be sent.
@@ -123,6 +139,7 @@
  @version 0.8 and later
  */
 -(void)setTimeBetweenRequests:(float)waitTime;
+//@}
 
 /*!
   Attempts to stop the current request being processed and prevents any further requests from starting.

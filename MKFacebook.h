@@ -54,7 +54,13 @@ Available Delegate Methods
 
 }
 
-#pragma mark init methods
+#pragma mark Instantiate
+/*! @name Instantiate
+ *	Create a new MKFacebook object.
+ */
+//@{
+
+
 /*!
  @param anAPIKey Your API key issued by Facebook.
  @param aSecret Your secret key issued by Facebook.
@@ -80,16 +86,25 @@ Available Delegate Methods
   @version 0.7 and later
  */
 - (MKFacebook *)initUsingAPIKey:(NSString *)anAPIKey delegate:(id)aDelegate;
+
+
+//@}	//ENDS Instantiate group
 #pragma mark -
 
 
 
-#pragma mark Instance Methods
+#pragma mark Manage User Login
+/*! @name Manage User Login
+ *	Display login window, get information about user login status.
+ */
+//@{
+
+
 /*!
+ @brief Returns TRUE if valid session exists.
  @result Checks to see if auth token, session key, session secret and uid are set.  Returns true if everything is set and it's safe to assume a user has logged in.  
  */
 - (BOOL)userLoggedIn;
-
 
 
 /*!
@@ -121,7 +136,6 @@ Available Delegate Methods
 - (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet;
 
 
-
 /*!
  Removes any saved sessions and invalidates any future requests until a user logs in again.
  @version 0.9.0
@@ -129,10 +143,20 @@ Available Delegate Methods
 - (void)logout;
 
 
-
 //called from MKLoginWindow after a successful login
 - (void)userLoginSuccessful;
 
+
+//@}	//ENDS Manage User Login group
+#pragma mark -
+
+
+
+#pragma mark Extend Permisisons
+/*! @name Extend Permissions
+ *	Display a window to allow user to extent application permissions.
+ */
+//@{
 
 
 /*!
@@ -154,6 +178,16 @@ Available Delegate Methods
 - (NSWindow *)grantExtendedPermissionForSheet:(NSString *)aString;
 
 
+//@}	//ENDS Extend Permissions group
+#pragma mark -
+
+
+#pragma mark Handle Login Alerts
+/*! @name Handle Login Alerts
+ *	
+ */
+//@{
+
 
 /*!
  Set whether or not alert windows should be displayed if Facebook returns an error during the login process.  Default is YES.
@@ -170,6 +204,8 @@ Available Delegate Methods
  */
 - (BOOL)displayLoginAlerts;
 
+
+//@}	//ENDS Handle Login Alerts group
 #pragma mark -
 
 @end
@@ -185,6 +221,10 @@ Available Delegate Methods
 @protocol MKFacebookDelegate
 
 
+/*! @name Receive Login Information
+ *
+ */
+//@{
 
 /*!
  Called after authentication process has finished and it has been established that a use has successfully logged in.
@@ -199,7 +239,7 @@ Available Delegate Methods
  @version 0.8 and later
  */
 -(void)userLoginFailed;
-
+//@}
 
 @end
 

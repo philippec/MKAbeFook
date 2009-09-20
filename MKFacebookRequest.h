@@ -283,11 +283,18 @@ typedef int MKFacebookRequestType;
 @end
 
 
+
+
 /*!
  @version 0.8 and later
  */
 @protocol MKFacebookRequestDelegate
 
+
+/*! @name Receive Valid Response
+ *
+ */
+//@{
 
 
 /*!
@@ -296,7 +303,14 @@ typedef int MKFacebookRequestType;
  @version 0.8 and later
  */
 - (void)facebookResponseReceived:(id)response;
+//@}
 
+
+
+/*! @name Reveive Error Responses
+ *
+ */
+//@{
 
 
 /*!
@@ -314,6 +328,7 @@ Called when an error is returned by Facebook.  Passes XML returned by Facebook.
  @version 0.8 and later
  */
 - (void)facebookRequestFailed:(id)error;
+//@}
 
 
 @end
