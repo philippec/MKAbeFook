@@ -18,10 +18,16 @@ extern NSString *MKFacebookSessionKey;
 @interface MKFacebookSession : NSObject {
 	
 	NSDictionary *session;
+	BOOL validSession;
+	NSString *apiKey;
+	NSString *secretKey;
 
 }
 
-@property(nonatomic, retain) NSDictionary *session;
+@property (nonatomic, retain) NSDictionary *session;
+@property BOOL validSession;
+@property (nonatomic, retain) NSString *apiKey;
+@property (nonatomic, retain) NSString *secretKey;
 
 + (MKFacebookSession *)sharedMKFacebookSession;
 
@@ -45,7 +51,7 @@ extern NSString *MKFacebookSessionKey;
 
 //accessors to session information
 - (NSString *)sessionKey;
-- (NSString *)secret;
+- (NSString *)sessionSecret;
 - (NSString *)expirationDate;
 - (NSString *)uid;
 - (NSString *)sig;

@@ -18,7 +18,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MKFacebook.h"
-
+#import "MKFacebookSession.h"
 
 /*!
  @enum MKFacebookRequestType
@@ -59,7 +59,7 @@ typedef int MKFacebookRequestType;
  */
 @interface MKFacebookRequest : NSObject {
 	NSURLConnection *dasConnection; //internal connection used if object is used multiple times.  blame the beer.
-	MKFacebook *_facebookConnection;
+	NSTimeInterval connectionTimeoutInterval;
 	id _delegate;
 	SEL _selector;
 	NSMutableData *_responseData;
@@ -70,25 +70,25 @@ typedef int MKFacebookRequestType;
 	BOOL _displayAPIErrorAlert;
 	int _numberOfRequestAttempts;
 	int _requestAttemptCount;
+	MKFacebookSession *_session;
 }
-
+@property NSTimeInterval connectionTimeoutInterval;
 
 
 /*!
- @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
  @param aDelegate The object that will receive the information returned by Facebook.  This should implement -(void)facebookResponseReceived:(id)response to handle data returned from Facebook.  Set a selector to have responses sent elsewhere.
- @version 0.8 and later
+ @version 0.9 and later
  */
-+(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate;
++(id)requestWithDelegate:(id)aDelegate;
 
 
 /*!
  @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
  @param aDelegate The object that will receive the response returned by Facebook.
  @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument. 
- @version 0.8 and later
+ @version 0.9 and later
  */
-+(id)requestUsingFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
++(id)requestWithDelegate:(id)aDelegate selector:(SEL)aSelector;
 
 
 
@@ -96,30 +96,23 @@ typedef int MKFacebookRequestType;
 -(id)init;
 
 /*!
- @param aFacebookConnection A MKFacebook object that has been used to log in a user.  This object must have a valid sessionKey. 
  @param aDelegate The object that will receive the information returned by Facebook.
  @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument.
   This method returns a new MKFacebookRequest object that can be used to retrieve data from Facebook.
- @version 0.7 and later
+ @version 0.9 and later
  */
--(id)initWithFacebookConnection:(MKFacebook *)aFacebookConnection delegate:(id)aDelegate selector:(SEL)aSelector;
+-(id)initWithDelegate:(id)aDelegate selector:(SEL)aSelector;
 
 /*!
- @param aFacebookConnection A MKFacebook object that has been used to log in a user.
  @param parameters NSDictionary containing parameters for requested method.  The dictionary must contain a the key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo". Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id" do not need to be included in this dictionary.
  @param aDelegate The object that will receive the information returned by Facebook.
  @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument.
   This method returns a new MKFacebookRequest object that can be used to retrieve data from Facebook.
-  @version 0.7 and later
+  @version 0.9 and later
  */
--(id)initWithFacebookConnection:(MKFacebook *)aFacebookConnection parameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector;
+-(id)initWithParameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector;
 
 
-/*!
-@param aFacebookConnection A MKFacebook object that has been used to log in a user.  This object must have a valid sessionKey.
-  @version 0.7 and later
- */
--(void)setFacebookConnection:(MKFacebook *)aFacebookConnection;
 
 /*!
  @param delegate The object that will receive the inforamtion returned by Facebook.
@@ -182,15 +175,85 @@ typedef int MKFacebookRequestType;
  */
 -(void)setNumberOfRequestAttempts:(int)requestAttempts;
 
+
+
+
+
+
+#pragma mark Moved from MKFacebook Class
+
+
+
+-(NSString *)generateSigForParameters:(NSDictionary *)parameters;
+
+
+
+
+-(NSString *)generateTimeStamp;
+
+
+
+//prepare url
+/*!
+ @param aMethodName Full Facebook method name to be called.  Example: facebook.users.getInfo
+ @param parameters NSDictionary containing parameters and values for the method being called.  They keys are the parameter names and the values are the arguments.
+ 
+ This method will automatically include all parameters required by every Facebook method.  Parameters you do not need to include are "v", "api_key", "format", "session_key", and "call_id".  See official Facebook documentation for all other parameters available depending on the method you are calling.  As of 0.7 this method is considered deprecated, use generateFacebookURL: instead.
+ 
+ @result Returns complete NSURL ready to be sent to the Facebook API.
+ */
+-(NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters;
+
+
+
+
+/*!
+ @param parameters NSDictionary containing parameters and values for a desired method.  The dictionary must include a key "method" that has the value of the desired method to be called, i.e. "facebook.users.getInfo".  They keys are the parameter names and the values are the arguments.
+ 
+ This method will automatically include all parameters required by every Facebook method.  Parameters you do not need to include are "v", "api_key", "format", "session_key", "sig", and "call_id".  See official Facebook documentation for all other parameters available depending on the method you are calling.
+ @result Returns complete NSURL ready to be sent to the Facebook API.
+ */
+-(NSURL *)generateFacebookURL:(NSDictionary *)parameters;
+
+
+
+
+
+//synchronous request
+/*!
+ @param theURL URL generated by generateFacebokURL:parameters: or generateFacebookURL:
+ 
+ Initiates a synchronous request to Facebook.  See MKFacebookRequest for sending asynchronous requests. 
+ 
+ @result Returns NSXMLDocument that was returned from Facebook.  Returns nil if a network error was encountered.
+ @version 0.7 and later
+ */
+-(id)fetchFacebookData:(NSURL *)theURL;
+
+
+
+
+
+
+
+
+
+
+#pragma mark -
+
+
+
+
+
 @end
 
 
 //meh, some random thoughts for request subclasses.  needs some more thought.  subclassing needs structure.
 @protocol MKFacebookRequestProtocol
-+(id)requestUsingFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
--(id)initWithFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
-//response handling
--(void)receivedFacebookResponse:(NSXMLDocument *)xmlResponse;
+//+(id)requestUsingFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
+//-(id)initWithFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
+////response handling
+//-(void)receivedFacebookResponse:(NSXMLDocument *)xmlResponse;
 @end
 
 

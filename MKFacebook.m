@@ -19,10 +19,12 @@
 #import "MKFacebook.h"
 #import "MKLoginWindow.h"
 #import "CocoaCryptoHashing.h"
-#import "MKParsingExtras.h"
+//#import "MKParsingExtras.h"
 #import "NSXMLElementAdditions.h"
+#import "NSXMLDocumentAdditions.h"
 #import "MKErrorWindow.h"
 #import "MKFacebookSession.h"
+#import "MKFacebookRequest.h"
 
 NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
@@ -72,22 +74,23 @@ NSString *MKFacebookResponseFormat = @"XML";
 	{
 		//defaultsName = [aDefaultsName copy];
 		defaultsName = [[NSBundle mainBundle] bundleIdentifier];
-		[self setApiKey:anAPIKey];
-		[self setSecretKey:aSecret];
+		[[MKFacebookSession sharedMKFacebookSession] setApiKey:anAPIKey];
+		[[MKFacebookSession sharedMKFacebookSession] setSecretKey:aSecret];
+	
 		[self setSessionKey:nil];
 		[self setSessionSecret:nil];
 		[self setUid:nil];
-		[self setConnectionTimeoutInterval:5.0];
+
 
 		hasSessionKey = FALSE;
 		hasSessionSecret = FALSE;
 		hasUid = FALSE;
-		userHasLoggedInMultipleTimes = FALSE;
+
 		_delegate = aDelegate;
 		_shouldUseSynchronousLogin = NO;
 		_displayLoginAlerts = YES;
-		_hasPersistentSession = NO;
-		_useStandardDefaultsSessionStorage = YES;
+
+
 	}
 	return self;
 }
@@ -114,31 +117,29 @@ NSString *MKFacebookResponseFormat = @"XML";
 	if(self != nil)
 	{
 		defaultsName = [aDefaultsName copy];
-		[self setApiKey:anApiKey];
-		[self setSecretKey:aSecretKey];
+		[[MKFacebookSession sharedMKFacebookSession] setApiKey:anApiKey];
+		[[MKFacebookSession sharedMKFacebookSession] setSecretKey:aSecretKey];
+
 
 		[self setSessionKey:nil];
 		[self setSessionSecret:nil];
 		[self setUid:nil];
-		[self setConnectionTimeoutInterval:5.0];
 
 		hasSessionKey = FALSE;
 		hasSessionSecret = FALSE;
 		hasUid = FALSE;
-		userHasLoggedInMultipleTimes = FALSE;
+
 		_delegate = aDelegate;
 		_shouldUseSynchronousLogin = NO;
 		_displayLoginAlerts = YES;
-		_hasPersistentSession = NO;
-		_useStandardDefaultsSessionStorage = YES;
+
+
 	}
 	return self;
 }
 
 -(void)dealloc
 {
-	[apiKey release];
-	[secretKey release];
 	[sessionKey release];
 	[sessionSecret release];
 	[uid release];
@@ -147,29 +148,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 #pragma mark -
 
 #pragma mark Accessors and Mutators
--(void)setSecretKey:(NSString *)aSecretKey
-{
-	aSecretKey = [aSecretKey copy];
-	[secretKey release];
-	secretKey = aSecretKey;
-}
 
--(NSString *)secretKey
-{
-	return secretKey;
-}
-
--(void)setApiKey:(NSString *)anApiKey
-{
-	anApiKey = [anApiKey copy];
-	[apiKey release];
-	apiKey = anApiKey;
-}
-
--(NSString *)apiKey
-{
-	return apiKey;
-}
 
 -(void)setSessionKey:(NSString *)aSessionKey
 {
@@ -207,15 +186,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 	return uid;
 }
 
-
--(void)setConnectionTimeoutInterval:(NSTimeInterval)aConnectionTimeoutInterval
-{
-	connectionTimeoutInterval = aConnectionTimeoutInterval;
-}
--(NSTimeInterval)connectionTimeoutInterval
-{
-	return connectionTimeoutInterval;
-}
 
 
 -(void)setShouldUseSynchronousLogin:(BOOL)aBool
@@ -270,13 +240,15 @@ NSString *MKFacebookResponseFormat = @"XML";
 - (NSURL *)prepareLoginURLWithExtendedPermissions:(NSArray *)extendedPermissions{
 	NSMutableString *loginString = [[[NSMutableString alloc] initWithString:MKLoginUrl] autorelease];
 	[loginString appendString:@"?api_key="];
-	[loginString appendString:[self apiKey]];
+	[loginString appendString:[[MKFacebookSession sharedMKFacebookSession] apiKey]];
 	[loginString appendString:@"&v="];
 	[loginString appendString:MKFacebookAPIVersion];
 	
 	[loginString appendString:@"&connect_display=popup"];
 	
 	[loginString appendString:@"&next=http://www.facebook.com/connect/login_success.html"];
+	//[loginString appendString:@"&cancel_url=http://www.facebook.com/connect/login_failure.html"];
+	
 	[loginString appendString:@"&fbconnect=true"];
 	[loginString appendString:@"&return_session=true"];
 
@@ -285,9 +257,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 		[loginString appendFormat:@"&req_perms=%@",[extendedPermissions componentsJoinedByString:@","]];
 	}
 
-	
-	
-	
 	[loginString appendString:@"&skipcookie"];
 
 	return [NSURL URLWithString:loginString];
@@ -304,7 +273,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
 
 	[self setSessionKey:[session sessionKey]];
-	[self setSessionSecret:[session secret]];
+	[self setSessionSecret:[session sessionSecret]];
 
 	[self setUid:[NSString stringWithFormat:@"%@", [session uid]]];
 	DLog(@"user id %@", [self uid]);
@@ -313,7 +282,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	hasSessionSecret = YES;
 	// we don't really have a token, but it doesn't matter since we have a session
 	
-	_hasPersistentSession = YES;
+
 	if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
 		[_delegate performSelector:@selector(userLoginSuccessful)];
 	
@@ -326,10 +295,13 @@ NSString *MKFacebookResponseFormat = @"XML";
 	if ([session loadSession]) {
 		
 		[self setSessionKey:[session sessionKey]];
-		[self setSessionSecret:[session secret]];
+		[self setSessionSecret:[session sessionSecret]];
 		
-		NSXMLDocument *user = [self fetchFacebookData:[self generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
-
+		MKFacebookRequest *request = [[MKFacebookRequest alloc] init];
+		
+		//TODO: use MKFacebookRequest
+		NSXMLDocument *user = [request fetchFacebookData:[request generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
+		[request release];
 		if([user validFacebookResponse] == NO)
 		{
 			DLog(@"persistent login failed, here's why...");
@@ -355,160 +327,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 }
 
 
-//generateFacebookURL, generateTimeStamp, and generateSigForParameters used in MKFacebook.m, MKAsyncRequest.m and MKPhotoUploader.m to prepare urls that are sent to facebook.com
--(NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters
-{
-	NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:parameters];
-	//these will be here for all requests.  we could make the user supply the method in the parameters but i like it as a string
-	[mutableDictionary setValue:aMethodName forKey:@"method"];
-	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
-	[mutableDictionary setValue:[self apiKey] forKey:@"api_key"];
-	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
-	
-	//all other methods require call_id and session_key
-	if(![aMethodName isEqualToString:@"facebook.auth.getSession"] || ![aMethodName isEqualToString:@"facebook.auth.createToken"])
-	{
-		[mutableDictionary setValue:[self sessionKey] forKey:@"session_key"];
-		[mutableDictionary setValue:[self generateTimeStamp] forKey:@"call_id"];
-	}
-	
-	NSMutableString *urlString = [[NSMutableString alloc] initWithString:MKAPIServerURL];
-	[urlString appendFormat:@"?method=%@", aMethodName]; 	//we'll do one outside the loop because we need to start with a ? anyway.  method is a good one to start with
-	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
-	id key;
-	while ((key = [enumerator nextObject])) {
-		if([key isNotEqualTo:@"method"]) //remember we already did this one
-			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
-	}			
-	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
-	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
-}
-
-
-
--(NSURL *)generateFacebookURL:(NSDictionary *)parameters
-{
-	NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:parameters];
-	//these will be here for all requests. 
-	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
-	[mutableDictionary setValue:[self apiKey] forKey:@"api_key"];
-	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
-	
-	//all other methods require call_id and session_key
-	if(![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
-	{
-		[mutableDictionary setValue:[self sessionKey] forKey:@"session_key"];
-		[mutableDictionary setValue:[self generateTimeStamp] forKey:@"call_id"];
-	}
-	
-	NSMutableString *urlString = [[NSMutableString alloc] initWithString:MKAPIServerURL];
-	[urlString appendFormat:@"?method=%@", [mutableDictionary valueForKey:@"method"]]; 	//we'll do one outside the loop because we need to start with a ? anyway.  method is a good one to start with
-	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
-	id key;
-	while ((key = [enumerator nextObject])) {
-		
-		//just in case someone tries to upload a photo via GET we'll trow away the image and they'll get the error back from facebook
-		if([[mutableDictionary objectForKey:key] isKindOfClass:[NSImage class]])
-			[mutableDictionary removeObjectForKey:key];
-		
-		if([key isNotEqualTo:@"method"]) //remember we already did this one
-			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
-	}			
-	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
-	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
-}
-
-
--(NSString *)generateTimeStamp
-{
-	return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
-}
-
-
-//sorts parameters keys, creates a string of values, returns md5 hash (cleaned up by Patrick Jayet 0.8.2)
-- (NSString *)generateSigForParameters:(NSDictionary *)parameters
-{
-	// pat: fixed signature issue
-	// 1. get a sorted array with the keys
-	NSArray* sortedKeyArray = [[parameters allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-	
-	// 2. construct the concatenated string
-	NSMutableString* tempString = [[[NSMutableString alloc] init] autorelease];
-	NSEnumerator *enumerator =[sortedKeyArray objectEnumerator];
-	NSString *key; //keys of sortedParameters
-	while(key = [enumerator nextObject])
-	{
-		//prevents attempting to append nil strings.  Thanks Andrei Freeman. 0.8.1
-		if((key != nil) && ([key length] > 0))
-		{
-			[tempString appendFormat:@"%@=%@", key, [parameters objectForKey:key]];
-		}else
-		{
-			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"Bad Parameter Object" userInfo:parameters];
-			[e raise];
-		}
-	}
-	
-	//methods except these require we use the secretKey that was assigned during login, not our original one
-	if([[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || [[parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
-	{
-		//DLog(@"secretKey");
-		if([self secretKey] != nil)
-			[tempString appendString:[self secretKey]];
-		else
-		{			
-			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"nil secret key, is your application type set to Desktop?" userInfo:nil];
-			[e raise];
-		}
-	}else
-	{
-		//DLog(@"sessionSecret");
-		if([self sessionSecret] != nil && [[self sessionSecret] length] > 0)
-			[tempString appendString:[self sessionSecret]];
-		else
-		{
-			NSException *e = [NSException exceptionWithName:@"genSigForParm" reason:@"nil session secret, is your application type set to Desktop?" userInfo:nil];
-			[e raise];
-			
-		}
-	}
-	
-	return [tempString md5HexHash];
-}
--(id)fetchFacebookData:(NSURL *)theURL
-{
-	NSURLRequest *urlRequest = [NSURLRequest requestWithURL:theURL 
-												cachePolicy:NSURLRequestReloadIgnoringCacheData
-											timeoutInterval:[self connectionTimeoutInterval]];
-	NSHTTPURLResponse *xmlResponse;  //not used right now
-	NSXMLDocument *returnXML = nil;
-	NSError *fetchError = nil;
-	NSData *responseData = [NSURLConnection sendSynchronousRequest:urlRequest
-												 returningResponse:&xmlResponse
-															 error:&fetchError];
-
-	if(fetchError != nil)
-	{
-		if(_displayLoginAlerts == YES)
-		{
-			[self displayGeneralAPIError:@"Network Problems?" 
-								 message:@"I can't seem to talk to Facebook.com right now.  This is a problem." 
-							 buttonTitle:@"Fine!" details:[fetchError description]];
-			DLog(@"synchronous fetch error %@", [fetchError description]);
-		}
-			
-		return nil;
-	}else
-	{
-		returnXML = [[[NSXMLDocument alloc] initWithData:responseData
-												options:0
-												  error:nil] autorelease];
-	}
-	
-	return returnXML;
-
-
-}
 
 -(void)facebookResponseReceived:(NSXMLDocument *)xml
 {
@@ -524,13 +342,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	
 	if([_delegate respondsToSelector:@selector(facebookAuthenticationError:)])
 		[_delegate performSelector:@selector(facebookAuthenticationError:) withObject:[[xml rootElement] dictionaryFromXMLElement]];
-	
-	
-	if(_displayLoginAlerts == YES)
-	{
-		//DLog(@"got here");
-		[self displayGeneralAPIError:@"API Problems?" message:@"Facebook didn't give us the token we needed.  You can try again if you want but consider this login attempt defeated." buttonTitle:@"Fine!" details:nil];
-	}	
+		
 }
 
 //this will be called if asynchronous requests fail.
@@ -564,7 +376,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	hasSessionKey = FALSE;
 	hasSessionSecret = FALSE;
 	hasUid = FALSE;
-	userHasLoggedInMultipleTimes = TRUE; //used to prevent persistent session from loading if a user as logged out but the application hasn't written the NSUserDefaults yet.  this doesn't make sense, we can write the NSUserDefaults to disk anytime we wish, what's the logic behind this?  TODO: review logic behind the purpose of this.
+
 }
 #pragma mark -
 
@@ -574,7 +386,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 	{
 		if(_displayLoginAlerts == YES)
 		{
-			[self displayGeneralAPIError:@"No user logged in!" message:@"Permissions cannnot be extended if no one is logged in." buttonTitle:@"OK Fine!" details:nil];			
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"No user logged in!" message:@"Permissions cannot be extended if no one is logged in." details:nil];
+			[errorWindow display];
 		}
 		return;
 	}
@@ -584,7 +397,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	[loginWindow showWindow:self];
 	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
 	
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [self apiKey], MKFacebookAPIVersion, aString]];
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
 	[loginWindow loadURL:url];
 	
 }
@@ -595,7 +408,8 @@ NSString *MKFacebookResponseFormat = @"XML";
 	{
 		if(_displayLoginAlerts == YES)
 		{
-			[self displayGeneralAPIError:@"No user logged in!" message:@"Permissions cannnot be extended if no one is logged in." buttonTitle:@"OK Fine!" details:nil];			
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"No user logged in!" message:@"Permissions cannot be extended if no one is logged in." details:nil];
+			[errorWindow display];
 		}
 		return nil;
 	}
@@ -603,7 +417,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 	loginWindow = [[MKLoginWindow alloc] init];
 	loginWindow._loginWindowIsSheet = YES;
 	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [self apiKey], MKFacebookAPIVersion, aString]];
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
 	[[loginWindow window] setTitle:@"Extended Permissions"];
 	[loginWindow loadURL:url];
 
@@ -611,30 +425,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 	
 }
 
--(void)displayGeneralAPIError:(NSString *)title message:(NSString *)message buttonTitle:(NSString *)buttonTitle details:(NSString *)details
-{
-	NSString *errorTitle;
-	NSString *errorMessage;
-	NSString *errorButtonTitle;
-	
-	if(!title)
-		errorTitle = @"API Error";
-	else
-		errorTitle = [NSString stringWithString:title];
-	
-	if(!message)
-		errorMessage = @"Something done gone exploded.";
-	else
-		errorMessage = [NSString stringWithString:message];
-	
-	if(!buttonTitle)
-		errorButtonTitle = @"Fine!";
-	else
-		errorButtonTitle = [NSString stringWithString:buttonTitle];
-	
-	MKErrorWindow *error = [MKErrorWindow errorWindowWithTitle:errorTitle message:errorMessage details:details];
-	[error display];
-}
 
 -(void)setDisplayLoginAlerts:(BOOL)aBool
 {
@@ -646,51 +436,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 	return _displayLoginAlerts;
 }
 
-
-
-
--(void)setUseStandardDefaultsSessionStorage:(BOOL)aBool
-{
-	_useStandardDefaultsSessionStorage = aBool;
-}
-
--(BOOL)useStandardDefaultsSessionStorage
-{
-	return _useStandardDefaultsSessionStorage;
-}
-
--(BOOL)hasPersistentSession
-{
-	return _hasPersistentSession;
-}
-
--(NSDictionary *)savePersistentSession
-{
-	//
-	if([self hasPersistentSession] && [self sessionKey] != nil && [self sessionSecret] != nil)
-	{
-		NSDictionary *dictionary = [[NSDictionary alloc] initWithObjectsAndKeys:[self sessionKey], @"sessionKey", [self sessionSecret], @"sessionSecret", nil];
-		
-		return [dictionary autorelease];
-	}
-	DLog(@"persistent session requested, but incorrect storage type, session key, or session secret missing");
-	return nil;
-}
-
--(BOOL)restorePersistentSession:(NSDictionary *)persistentSession
-{
-	if([persistentSession objectForKey:@"sessionSecret"] == nil || [persistentSession objectForKey:@"sessionKey"] == nil)
-	{
-		DLog(@"restore failed: %@", [persistentSession description]);
-		return NO;
-	}
-		
-	//TODO: validaate values
-	[self setSessionSecret:[persistentSession valueForKey:@"sessionSecret"]];
-	[self setSessionKey:[persistentSession valueForKey:@"sessionKey"]];
-
-	return [self loadPersistentSession];
-}
 
 @end
 

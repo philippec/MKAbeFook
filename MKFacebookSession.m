@@ -13,6 +13,9 @@ NSString *MKFacebookSessionKey = @"MKFacebookSession";
 @implementation MKFacebookSession
 
 @synthesize session;
+@synthesize validSession;
+@synthesize apiKey;
+@synthesize secretKey;
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 
@@ -21,6 +24,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 	if(self != nil)
 	{
 		session = nil;
+		validSession = NO;
 	}
 	return self;
 }
@@ -33,6 +37,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[defaults setObject:aSession forKey:MKFacebookSessionKey];
 		self.session = aSession;
+		self.validSession = YES;
 	}
 }
 
@@ -43,6 +48,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 	if(savedSession != nil)
 	{
 		self.session = savedSession;
+		self.validSession = YES;
 		return YES;
 	}else {
 		self.session = nil;
@@ -52,13 +58,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 
 - (void)destroySession{
 	self.session = nil;
+	self.validSession = NO;
 }
 
 - (NSString *)sessionKey{
 	return [self.session valueForKey:@"session_key"];
 }
 
-- (NSString *)secret{
+- (NSString *)sessionSecret{
 	return [self.session valueForKey:@"secret"];
 }
 
@@ -74,5 +81,12 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 	return [self.session valueForKey:@"sig"];
 }
 
+
+- (void)dealoc{
+	[session release];
+	[apiKey release];
+	[secretKey release];
+	[super dealloc];
+}
 
 @end

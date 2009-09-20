@@ -9,13 +9,11 @@
 /* Begin PBXBuildFile section */
 		2721EFFF10659ADA003A8EDE /* login_failed.html in Resources */ = {isa = PBXBuildFile; fileRef = 2721EFFD10659ADA003A8EDE /* login_failed.html */; };
 		2721F00010659ADA003A8EDE /* login_success.html in Resources */ = {isa = PBXBuildFile; fileRef = 2721EFFE10659ADA003A8EDE /* login_success.html */; };
-		2721F03B1065A443003A8EDE /* SynthesizeSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = 2721F03A1065A443003A8EDE /* SynthesizeSingleton.h */; };
-		2721F0411065A4B2003A8EDE /* MKFacebookSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 2721F03F1065A4B2003A8EDE /* MKFacebookSession.h */; };
+		2721F03B1065A443003A8EDE /* SynthesizeSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = 2721F03A1065A443003A8EDE /* SynthesizeSingleton.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2721F0411065A4B2003A8EDE /* MKFacebookSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 2721F03F1065A4B2003A8EDE /* MKFacebookSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2721F0421065A4B2003A8EDE /* MKFacebookSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 2721F0401065A4B2003A8EDE /* MKFacebookSession.m */; };
 		274BC9E00B36BF620080F786 /* CocoaCryptoHashing.h in Headers */ = {isa = PBXBuildFile; fileRef = 274BC9DE0B36BF620080F786 /* CocoaCryptoHashing.h */; };
 		274BC9E10B36BF620080F786 /* CocoaCryptoHashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 274BC9DF0B36BF620080F786 /* CocoaCryptoHashing.m */; };
-		2761C0080EBFEB0800EE443D /* MKPhotosRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */; };
-		2761C0090EBFEB0800EE443D /* MKPhotosRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */; };
 		277BC3CA0D14566F00B9EFFE /* MKFacebookRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */; };
 		277BC3CB0D14566F00B9EFFE /* MKFacebookRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		277BC3CE0D14577200B9EFFE /* NSXMLElementAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */; };
@@ -40,8 +38,6 @@
 		279544681065945C00E6E8DE /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2795445B1065945C00E6E8DE /* SBJsonParser.m */; };
 		279544691065945C00E6E8DE /* SBJsonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2795445C1065945C00E6E8DE /* SBJsonWriter.h */; };
 		2795446A1065945C00E6E8DE /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2795445D1065945C00E6E8DE /* SBJsonWriter.m */; };
-		27CF35830EAADF4300399FF9 /* MKEventsRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27CF35810EAADF4300399FF9 /* MKEventsRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		27CF35840EAADF4300399FF9 /* MKEventsRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27CF35820EAADF4300399FF9 /* MKEventsRequest.m */; };
 		27D8B08D0AE6FF57007941CF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8B08C0AE6FF57007941CF /* WebKit.framework */; };
 		27D8B0A60AE6FFA7007941CF /* MKLoginWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D8B0A40AE6FFA7007941CF /* MKLoginWindow.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		27D8B0A70AE6FFA7007941CF /* MKLoginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D8B0A50AE6FFA7007941CF /* MKLoginWindow.m */; };
@@ -49,12 +45,6 @@
 		27D8B0AB0AE6FFB2007941CF /* MKFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D8B0A90AE6FFB2007941CF /* MKFacebook.m */; };
 		27D8B0AD0AE6FFBC007941CF /* LoginWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 27D8B0AC0AE6FFBC007941CF /* LoginWindow.nib */; };
 		27D8B0AF0AE7000C007941CF /* MKAbeFook.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D8B0AE0AE7000C007941CF /* MKAbeFook.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3506D7450C2E0F0100C84BBD /* MKAsyncRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 27E6536F0BA0F592000AF21D /* MKAsyncRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3506D7460C2E0F0400C84BBD /* MKAsyncRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 27E653700BA0F592000AF21D /* MKAsyncRequest.m */; };
-		3506D99E0C2EDA4A00C84BBD /* MKParsingExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 3506D99C0C2EDA4900C84BBD /* MKParsingExtras.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3506D99F0C2EDA4A00C84BBD /* MKParsingExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 3506D99D0C2EDA4A00C84BBD /* MKParsingExtras.m */; };
-		3506D9F50C2EE2ED00C84BBD /* MKPhotoUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 27B41A240B9B4C150040374E /* MKPhotoUploader.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3506D9F60C2EE2ED00C84BBD /* MKPhotoUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B41A250B9B4C150040374E /* MKPhotoUploader.m */; };
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -97,8 +87,6 @@
 		2795445B1065945C00E6E8DE /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
 		2795445C1065945C00E6E8DE /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		2795445D1065945C00E6E8DE /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
-		27B41A240B9B4C150040374E /* MKPhotoUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKPhotoUploader.h; sourceTree = "<group>"; };
-		27B41A250B9B4C150040374E /* MKPhotoUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKPhotoUploader.m; sourceTree = "<group>"; };
 		27CF35810EAADF4300399FF9 /* MKEventsRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKEventsRequest.h; sourceTree = "<group>"; };
 		27CF35820EAADF4300399FF9 /* MKEventsRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKEventsRequest.m; sourceTree = "<group>"; };
 		27D8B08C0AE6FF57007941CF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
@@ -108,11 +96,7 @@
 		27D8B0A90AE6FFB2007941CF /* MKFacebook.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = MKFacebook.m; sourceTree = "<group>"; };
 		27D8B0AC0AE6FFBC007941CF /* LoginWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = LoginWindow.nib; sourceTree = "<group>"; };
 		27D8B0AE0AE7000C007941CF /* MKAbeFook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKAbeFook.h; sourceTree = "<group>"; };
-		27E6536F0BA0F592000AF21D /* MKAsyncRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKAsyncRequest.h; sourceTree = "<group>"; };
-		27E653700BA0F592000AF21D /* MKAsyncRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKAsyncRequest.m; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* MKAbeFook_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKAbeFook_Prefix.pch; sourceTree = "<group>"; };
-		3506D99C0C2EDA4900C84BBD /* MKParsingExtras.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MKParsingExtras.h; sourceTree = "<group>"; };
-		3506D99D0C2EDA4A00C84BBD /* MKParsingExtras.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = MKParsingExtras.m; sourceTree = "<group>"; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* MKAbeFook.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MKAbeFook.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -143,7 +127,6 @@
 			children = (
 				2795444B1065943000E6E8DE /* JSON */,
 				2784C1670E34D7A300AD28B1 /* Error Window */,
-				277BC4CE0D14816300B9EFFE /* Deprecated */,
 				27D8B0A30AE6FFA7007941CF /* Login Window */,
 				08FB77AEFE84172EC02AAC07 /* Classes */,
 				27886E7C0B2248A1006F913E /* Categories */,
@@ -221,19 +204,6 @@
 			name = "Request Subclasses";
 			sourceTree = "<group>";
 		};
-		277BC4CE0D14816300B9EFFE /* Deprecated */ = {
-			isa = PBXGroup;
-			children = (
-				27E6536F0BA0F592000AF21D /* MKAsyncRequest.h */,
-				27E653700BA0F592000AF21D /* MKAsyncRequest.m */,
-				27B41A240B9B4C150040374E /* MKPhotoUploader.h */,
-				27B41A250B9B4C150040374E /* MKPhotoUploader.m */,
-				3506D99C0C2EDA4900C84BBD /* MKParsingExtras.h */,
-				3506D99D0C2EDA4A00C84BBD /* MKParsingExtras.m */,
-			);
-			name = Deprecated;
-			sourceTree = "<group>";
-		};
 		2784C1670E34D7A300AD28B1 /* Error Window */ = {
 			isa = PBXGroup;
 			children = (
@@ -307,16 +277,11 @@
 				27D8B0AA0AE6FFB2007941CF /* MKFacebook.h in Headers */,
 				27D8B0AF0AE7000C007941CF /* MKAbeFook.h in Headers */,
 				274BC9E00B36BF620080F786 /* CocoaCryptoHashing.h in Headers */,
-				3506D7450C2E0F0100C84BBD /* MKAsyncRequest.h in Headers */,
-				3506D99E0C2EDA4A00C84BBD /* MKParsingExtras.h in Headers */,
-				3506D9F50C2EE2ED00C84BBD /* MKPhotoUploader.h in Headers */,
 				277BC3CB0D14566F00B9EFFE /* MKFacebookRequest.h in Headers */,
 				277BC3CF0D14577200B9EFFE /* NSXMLElementAdditions.h in Headers */,
 				277BC3FC0D14691600B9EFFE /* NSXMLDocumentAdditions.h in Headers */,
 				277BC4CD0D14815E00B9EFFE /* MKFacebookRequestQueue.h in Headers */,
 				2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */,
-				27CF35830EAADF4300399FF9 /* MKEventsRequest.h in Headers */,
-				2761C0080EBFEB0800EE443D /* MKPhotosRequest.h in Headers */,
 				2795445E1065945C00E6E8DE /* JSON.h in Headers */,
 				2795445F1065945C00E6E8DE /* NSObject+SBJSON.h in Headers */,
 				279544611065945C00E6E8DE /* NSString+SBJSON.h in Headers */,
@@ -392,16 +357,11 @@
 				27D8B0A70AE6FFA7007941CF /* MKLoginWindow.m in Sources */,
 				27D8B0AB0AE6FFB2007941CF /* MKFacebook.m in Sources */,
 				274BC9E10B36BF620080F786 /* CocoaCryptoHashing.m in Sources */,
-				3506D7460C2E0F0400C84BBD /* MKAsyncRequest.m in Sources */,
-				3506D99F0C2EDA4A00C84BBD /* MKParsingExtras.m in Sources */,
-				3506D9F60C2EE2ED00C84BBD /* MKPhotoUploader.m in Sources */,
 				277BC3CA0D14566F00B9EFFE /* MKFacebookRequest.m in Sources */,
 				277BC3CE0D14577200B9EFFE /* NSXMLElementAdditions.m in Sources */,
 				277BC3FD0D14691600B9EFFE /* NSXMLDocumentAdditions.m in Sources */,
 				277BC4CC0D14815E00B9EFFE /* MKFacebookRequestQueue.m in Sources */,
 				2784C16B0E34D7CB00AD28B1 /* MKErrorWindow.m in Sources */,
-				27CF35840EAADF4300399FF9 /* MKEventsRequest.m in Sources */,
-				2761C0090EBFEB0800EE443D /* MKPhotosRequest.m in Sources */,
 				279544601065945C00E6E8DE /* NSObject+SBJSON.m in Sources */,
 				279544621065945C00E6E8DE /* NSString+SBJSON.m in Sources */,
 				279544641065945C00E6E8DE /* SBJSON.m in Sources */,
