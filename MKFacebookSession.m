@@ -3,7 +3,7 @@
 //  MKAbeFook
 //
 //  Created by Mike Kinney on 9/19/09.
-//  Copyright 2009 UNDRF. All rights reserved.
+//  Copyright 2009 Mike Kinney. All rights reserved.
 //
 
 #import "MKFacebookSession.h"
@@ -13,7 +13,6 @@ NSString *MKFacebookSessionKey = @"MKFacebookSession";
 @implementation MKFacebookSession
 
 @synthesize session;
-@synthesize validSession;
 @synthesize apiKey;
 @synthesize secretKey;
 
@@ -24,7 +23,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 	if(self != nil)
 	{
 		session = nil;
-		validSession = NO;
 	}
 	return self;
 }
@@ -37,7 +35,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[defaults setObject:aSession forKey:MKFacebookSessionKey];
 		self.session = aSession;
-		self.validSession = YES;
 	}
 }
 
@@ -48,7 +45,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 	if(savedSession != nil)
 	{
 		self.session = savedSession;
-		self.validSession = YES;
 		return YES;
 	}else {
 		self.session = nil;
@@ -56,9 +52,16 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 	}
 }
 
+- (BOOL)validSession{
+	if([[NSUserDefaults standardUserDefaults] objectForKey:MKFacebookSessionKey] != nil)
+		return YES;
+	return NO;
+}
+
 - (void)destroySession{
+	DLog(@"session was destroyed");
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:MKFacebookSessionKey];
 	self.session = nil;
-	self.validSession = NO;
 }
 
 - (NSString *)sessionKey{

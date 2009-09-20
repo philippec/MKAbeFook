@@ -3,7 +3,7 @@
 //  MKAbeFook
 //
 //  Created by Mike Kinney on 9/19/09.
-//  Copyright 2009 UNDRF. All rights reserved.
+//  Copyright 2009 Mike Kinney. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
@@ -18,14 +18,12 @@ extern NSString *MKFacebookSessionKey;
 @interface MKFacebookSession : NSObject {
 	
 	NSDictionary *session;
-	BOOL validSession;
 	NSString *apiKey;
 	NSString *secretKey;
 
 }
 
 @property (nonatomic, retain) NSDictionary *session;
-@property BOOL validSession;
 @property (nonatomic, retain) NSString *apiKey;
 @property (nonatomic, retain) NSString *secretKey;
 
@@ -47,6 +45,11 @@ extern NSString *MKFacebookSessionKey;
  Destroys any saved session.
  */
 - (void)destroySession;
+
+/*!
+ Checks to see if session looks valid.
+ */
+- (BOOL)validSession;
 
 
 //accessors to session information

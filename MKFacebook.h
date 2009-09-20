@@ -47,22 +47,14 @@ Available Delegate Methods
 	
 	MKLoginWindow *loginWindow;
 
-	NSString *sessionKey;
-	NSString *sessionSecret;
-	NSString *uid;
-	NSString *defaultsName;
-	BOOL hasSessionKey;
-	BOOL hasSessionSecret;
-	BOOL hasUid;
-	
 
 	id _delegate;
 	BOOL _alertMessagesEnabled;
-	BOOL _shouldUseSynchronousLogin;
 	BOOL _displayLoginAlerts;
 
 }
 
+#pragma mark init methods
 /*!
  @param anAPIKey Your API key issued by Facebook.
  @param aSecret Your secret key issued by Facebook.
@@ -73,7 +65,9 @@ Available Delegate Methods
  @result Returns allocated and initiated MKFacebook object ready to be used to log into the Facebook API.
 @version 0.7 and later
  */
-+(MKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey withSecret:(NSString *)aSecret delegate:(id)aDelegate;
++ (MKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey delegate:(id)aDelegate;
+
+
 
 /*!
  @param anAPIKey Your API key issued by Facebook.
@@ -85,57 +79,25 @@ Available Delegate Methods
  @result Returns initiated MKFacebook object ready to be used to log into the Facebook API.
   @version 0.7 and later
  */
--(MKFacebook *)initUsingAPIKey:(NSString *)anAPIKey usingSecret:(NSString *)aSecret delegate:(id)aDelegate;
+- (MKFacebook *)initUsingAPIKey:(NSString *)anAPIKey delegate:(id)aDelegate;
+#pragma mark -
 
 
+
+#pragma mark Instance Methods
 /*!
- @param anAPIKey Your API key issued by Facebook.
- @param aSecret Your secret key issued by Facebook.
- @param aDelegate A delegate object that will receive calls from the MKFacebook object.
- @param aDefaultsName Name defaults identifier.  [[NSBundle mainBundle] bundleIdentifier] is usually appropriate.
-  
- The delegate object must implement a userLoggedIn: method that is called after a user has logged in and closed the login window.  It may optionally implement a userLoginFaild method that will be called if the login fails.  This method is considered deprecated as of version 0.7.
- 
- @result Returns allocated and initiated MKFacebook object ready to be used to log into the Facebook API.
- @deprecated Deprecated as of version 0.7
+ @result Checks to see if auth token, session key, session secret and uid are set.  Returns true if everything is set and it's safe to assume a user has logged in.  
  */
-+(MKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey withSecret:(NSString *)aSecret delegate:(id)aDelegate withDefaultsName:(NSString *)aDefaultsName;
-
-/*!
- @param anAPIKey Your API key issued by Facebook.
- @param aSecret Your secret key issued by Facebook.
- @param aDelegate A delegate object that will receive calls from the MKFacebook object.
- @param aDefaultsName Name defaults identifier.  [[NSBundle mainBundle] bundleIdentifier] is usually appropriate.
-  
- The delegate object must implement a userLoggedIn: method that is called after a user has logged in and closed the login window.  It may optionally implement a userLoginFaild method that will be called if the login fails.  This method is considered deprecated as of version 0.7.
- 
- @result Returns initiated MKFacebook object ready to be used to log into the Facebook API.
- @deprecated Deprecated as of version 0.7
- */
--(MKFacebook *)initUsingAPIKey:(NSString *)anAPIKey usingSecret:(NSString *)aSecret delegate:(id)aDelegate withDefaultsName:(NSString *)aDefaultsName;
-
-
-
-
-
--(NSString *)sessionKey;
+- (BOOL)userLoggedIn;
 
 
 
 /*!
  @result Returns uid of user currently logged in.
  */
--(NSString *)uid;
+- (NSString *)uid;
 
-/*!
- @result Checks to see if auth token, session key, session secret and uid are set.  Returns true if everything is set and it's safe to assume a user has logged in.  
- */
--(BOOL)userLoggedIn;
 
-/*!
- Sets auth token, session key, session secret and uid to nil.  Use clearInfiniteSession to also remove any stored infinite sessions.
- */
--(void)resetFacebookConnection;
 
 /*!
   Attempts to load a stored infinte session for the application.  This method checks NSUserDefaults for a stored sessionKey and sessionSecret.  It uses a synchronous request to try to authenticate the stored session.  Note: The MKFacebook class only allows a persistent session to be loaded once per instance.  For example, if a persistent session is successfully loaded then the resetFacebookConnection method is called that instance of MKFacebook will return false for every call to loadPersistentSession for the remainder of its existence.  This behavior may change in the future.
@@ -146,14 +108,7 @@ Available Delegate Methods
  
  @result Returns true if stored session information is valid and a user id is successfully returned from Facebook otherwise it returns false.
  */
--(BOOL)loadPersistentSession;
-
-/*!
-  Removes sessionKey and sessionSecret keys from application NSUserDefaults.  This method also calls resetFacebookConnection.
- @version 0.7 and later
- @deprecated Deprecated as of version 0.9 use MKFacebookSession instead.
- */
--(void)clearInfiniteSession;
+- (BOOL)loadPersistentSession;
 
 
 
@@ -165,11 +120,14 @@ Available Delegate Methods
  */
 - (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet;
 
+
+
 /*!
  Removes any saved sessions and invalidates any future requests until a user logs in again.
  @version 0.9.0
  */
 - (void)logout;
+
 
 
 //called from MKLoginWindow after a successful login
@@ -178,18 +136,14 @@ Available Delegate Methods
 
 
 /*!
-  Default is NO.
- */
--(BOOL)shouldUseSychronousLogin;
-
-/*!
  @param aString Name of extended permission to grant. See Facebook documentation for allowed extended permissions.
 
  This method will display a new window and load the Facebook URL  http://www.facebook.com/authorize.php?api_key=YOUR_API_KEY&v=1.0&ext_perm=PERMISSION_NAME
  with authentication information is filled in automatically.  If no user is logged in an alert message will be displayed unless they have been turned off.  Unfortunately the user will have to login again to grant the permissions.
  @version 0.7.4 and later
 */
--(void)grantExtendedPermission:(NSString *)aString;
+- (void)grantExtendedPermission:(NSString *)aString;
+
 
 
 /*!
@@ -197,7 +151,8 @@ Available Delegate Methods
  @result Returns NSWindow with WebView that loads the grant extended permissions request.
  @version 0.8.2 and later
  */
--(NSWindow *)grandExtendedPermissionForSheet:(NSString *)aString;
+- (NSWindow *)grantExtendedPermissionForSheet:(NSString *)aString;
+
 
 
 /*!
@@ -205,16 +160,23 @@ Available Delegate Methods
  @param aBool Should we display the error or should we not?
  @version 0.8 and later
  */
--(void)setDisplayLoginAlerts:(BOOL)aBool;
+- (void)setDisplayLoginAlerts:(BOOL)aBool;
+
+
 
 /*!
  @result Returns YES if login alerts are enabled, maybe so (but actually NO) if they are not.
  @version 0.8 and later
  */
--(BOOL)displayLoginAlerts;
+- (BOOL)displayLoginAlerts;
 
+#pragma mark -
 
 @end
+
+
+
+
 
 /*!
  Some methods you should implement.
@@ -222,11 +184,15 @@ Available Delegate Methods
  */
 @protocol MKFacebookDelegate
 
+
+
 /*!
  Called after authentication process has finished and it has been established that a use has successfully logged in.
  @version 0.8 and later
  */
 -(void)userLoginSuccessful;
+
+
 
 /*!
  You have three guesses as to why this gets called.
@@ -239,16 +205,5 @@ Available Delegate Methods
 
 
 
-/*
- \category StringExtras(NSString)
-  Extra string methods.
- */
-@interface NSString (StringExtras)
-
-/*
-  Prepares string so it can be passed in a URL.
- */
-- (NSString *) encodeURLLegally;
-@end
 
 
