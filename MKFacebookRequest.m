@@ -17,7 +17,7 @@
  */
 
 #import "MKFacebookRequest.h"
-#import "MKFacebook.h"
+#import "NSStringExtras.h"
 #import "NSXMLDocumentAdditions.h"
 #import "NSXMLElementAdditions.h"
 #import "MKErrorWindow.h"
@@ -27,21 +27,22 @@
 
 @synthesize connectionTimeoutInterval;
 
-+(id)requestWithDelegate:(id)aDelegate
+#pragma mark init methods
++ (id)requestWithDelegate:(id)aDelegate
 {
 	MKFacebookRequest *theRequest = [[[MKFacebookRequest alloc] initWithDelegate:aDelegate selector:nil] autorelease];
 	return theRequest;	
 }
 
-+(id)requestWithDelegate:(id)aDelegate selector:(SEL)aSelector
+
++ (id)requestWithDelegate:(id)aDelegate selector:(SEL)aSelector
 {
 	MKFacebookRequest *theRequest = [[[MKFacebookRequest alloc] initWithDelegate:aDelegate selector:aSelector] autorelease];
 	return theRequest;
 }
 
 
-
--(id)init
+- (id)init
 {
 	self = [super init];
 	if(self != nil)
@@ -62,7 +63,9 @@
 	return self;
 }
 
--(id)initWithDelegate:(id)aDelegate selector:(SEL)aSelector{
+
+- (id)initWithDelegate:(id)aDelegate selector:(SEL)aSelector
+{
 
 	self = [self init];
 	if(self != nil)
@@ -77,7 +80,7 @@
 }
 
 
--(id)initWithParameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector{
+- (id)initWithParameters:(NSDictionary *)parameters delegate:(id)aDelegate selector:(SEL)aSelector{
 	
 	self = [self initWithDelegate:aDelegate selector:aSelector];
 	if(self != nil)
@@ -88,49 +91,6 @@
 }
 
 
-
--(void)setDelegate:(id)delegate
-{
-	_delegate = delegate;
-}
-
--(id)delegate
-{
-	return _delegate;
-}
-
--(void)setSelector:(SEL)selector
-{
-	_selector = selector;
-}
-
--(void)setURLRequestType:(MKFacebookRequestType)urlRequestType
-{
-	_urlRequestType = urlRequestType;
-}
-
--(int)urlRequestType
-{
-	return _urlRequestType;
-}
-
--(void)setParameters:(NSDictionary *)parameters
-{
-	[_parameters addEntriesFromDictionary:parameters]; //fixes memory leak 0.7.4 - mike
-}
-
-
--(void)setDisplayAPIErrorAlert:(BOOL)aBool
-{
-	_displayAPIErrorAlert = aBool;
-}
-
--(BOOL)displayAPIErrorAlert
-{
-	return _displayAPIErrorAlert;
-}
-
-
 -(void)dealloc
 {
 	[_requestURL release];
@@ -138,8 +98,47 @@
 	[_responseData release];
 	[super dealloc];
 }
+#pragma mark -
 
--(void)sendRequest
+
+#pragma mark Instance Methods
+- (void)setDelegate:(id)delegate
+{
+	_delegate = delegate;
+}
+
+
+- (id)delegate
+{
+	return _delegate;
+}
+
+
+- (void)setSelector:(SEL)selector
+{
+	_selector = selector;
+}
+
+
+- (void)setParameters:(NSDictionary *)parameters
+{
+	[_parameters addEntriesFromDictionary:parameters]; //fixes memory leak 0.7.4 - mike
+}
+
+
+- (void)setURLRequestType:(MKFacebookRequestType)urlRequestType
+{
+	_urlRequestType = urlRequestType;
+}
+
+
+- (MKFacebookRequestType)urlRequestType
+{
+	return _urlRequestType;
+}
+
+
+- (void)sendRequest
 {
 	//if no user is logged in and they're trying to send a request OTHER than something required for logging in a user abort the request
 	if(!_session.validSession && (![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] && ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"]))
@@ -269,66 +268,7 @@
 }
 
 
--(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-	[_responseData appendData:data];
-}
-
-//responses are ONLY passed back if they do not contain any errors
--(void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
-	
-	NSError *error;
-	NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData
-														   options:0
-															 error:&error] autorelease];
-	if(error != nil)
-	{
-		MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"API Error" message:@"Facebook returned puke, the API might be down." details:[[error userInfo] description]];
-		[errorWindow display];
-	}else if([returnXML validFacebookResponse] == NO)
-	{
-		NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
-		//4 is a magic number that represents "The application has reached the maximum number of requests allowed. More requests are allowed once the time window has completed."
-		//luckily for us Facebook doesn't define "the time window".  fuckers.
-		//we will also try the request again if we see a 1 (unknown) or 2 (service unavailable) error
-		int errorInt = [[errorDictionary valueForKey:@"error_code"] intValue];
-		if((errorInt == 4 || errorInt == 1 || errorInt == 2 ) && _numberOfRequestAttempts <= _requestAttemptCount)
-		{
-			NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:2.0];
-			[NSThread sleepUntilDate:sleepUntilDate];
-			[_responseData setData:[NSData data]];
-			_requestAttemptCount++;
-			NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
-			[self sendRequest];
-			return;
-		}
-		NSLog(@"I GAVE UP!!! throw it away...");
-		//we've tried the request a few times, now we're giving up.
-		if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
-			[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnXML];
-
-		NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
-		if([self displayAPIErrorAlert])
-		{
-			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:errorTitle message:[errorDictionary valueForKey:@"error_msg"] details:[errorDictionary description]];
-			[errorWindow display];
-		}
-	}else
-	{
-		if([_delegate respondsToSelector:_selector])
-			[_delegate performSelector:_selector withObject:returnXML];		
-	}
-	
-
-	
-	[_responseData setData:[NSData data]];
-	_requestIsDone = YES;
-	
-}
-
--(void)cancelRequest
+- (void)cancelRequest
 {
 	if(_requestIsDone == NO)
 	{
@@ -339,97 +279,22 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
 }
 
-//0.6 suggestion to pass connection error.  Thanks Adam.
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{	
-	
-	if([self displayAPIErrorAlert])
-	{
-		MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"Connection Error" message:@"Are you connected to the internet?" details:[[error userInfo] description]];
-		[errorWindow display];
-	}
-	
-	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
-		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:self];
+
+- (void)setDisplayAPIErrorAlert:(BOOL)aBool
+{
+	_displayAPIErrorAlert = aBool;
 }
 
--(void)setNumberOfRequestAttempts:(int)requestAttempts
+
+- (BOOL)displayAPIErrorAlert
+{
+	return _displayAPIErrorAlert;
+}
+
+
+- (void)setNumberOfRequestAttempts:(int)requestAttempts
 {
 	_numberOfRequestAttempts = requestAttempts;
-}
-
-
-#pragma mark Moved From MKFacebook Class
-
-//generateFacebookURL, generateTimeStamp, and generateSigForParameters used in MKFacebook.m, MKAsyncRequest.m and MKPhotoUploader.m to prepare urls that are sent to facebook.com
--(NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters
-{
-	NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:parameters];
-	//these will be here for all requests.  we could make the user supply the method in the parameters but i like it as a string
-	[mutableDictionary setValue:aMethodName forKey:@"method"];
-	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
-	[mutableDictionary setValue:[_session apiKey] forKey:@"api_key"];
-	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
-	
-	//all other methods require call_id and session_key
-	if(![aMethodName isEqualToString:@"facebook.auth.getSession"] || ![aMethodName isEqualToString:@"facebook.auth.createToken"])
-	{
-		[mutableDictionary setValue:[_session sessionKey] forKey:@"session_key"];
-		[mutableDictionary setValue:[self generateTimeStamp] forKey:@"call_id"];
-	}
-	
-	NSMutableString *urlString = [[NSMutableString alloc] initWithString:MKAPIServerURL];
-	[urlString appendFormat:@"?method=%@", aMethodName]; 	//we'll do one outside the loop because we need to start with a ? anyway.  method is a good one to start with
-	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
-	id key;
-	while ((key = [enumerator nextObject])) {
-		if([key isNotEqualTo:@"method"]) //remember we already did this one
-			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
-	}			
-	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
-	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
-}
-
-
-
--(NSURL *)generateFacebookURL:(NSDictionary *)parameters
-{
-	NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:parameters];
-	//these will be here for all requests. 
-	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
-	[mutableDictionary setValue:[_session apiKey] forKey:@"api_key"];
-	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
-	
-	//all other methods require call_id and session_key
-	if(![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
-	{
-		[mutableDictionary setValue:[_session sessionKey] forKey:@"session_key"];
-		[mutableDictionary setValue:[self generateTimeStamp] forKey:@"call_id"];
-	}
-	
-	NSMutableString *urlString = [[NSMutableString alloc] initWithString:MKAPIServerURL];
-	[urlString appendFormat:@"?method=%@", [mutableDictionary valueForKey:@"method"]]; 	//we'll do one outside the loop because we need to start with a ? anyway.  method is a good one to start with
-	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
-	id key;
-	while ((key = [enumerator nextObject])) {
-		
-		//just in case someone tries to upload a photo via GET we'll trow away the image and they'll get the error back from facebook
-		if([[mutableDictionary objectForKey:key] isKindOfClass:[NSImage class]])
-			[mutableDictionary removeObjectForKey:key];
-		
-		if([key isNotEqualTo:@"method"]) //remember we already did this one
-			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
-	}			
-	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
-	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
-}
-
-
--(NSString *)generateTimeStamp
-{
-	return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
 }
 
 
@@ -483,7 +348,77 @@
 	
 	return [tempString md5HexHash];
 }
--(id)fetchFacebookData:(NSURL *)theURL
+
+
+- (NSString *)generateTimeStamp
+{
+	return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
+}
+
+
+- (NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters
+{
+	NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:parameters];
+	//these will be here for all requests.  we could make the user supply the method in the parameters but i like it as a string
+	[mutableDictionary setValue:aMethodName forKey:@"method"];
+	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
+	[mutableDictionary setValue:[_session apiKey] forKey:@"api_key"];
+	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
+	
+	//all other methods require call_id and session_key
+	if(![aMethodName isEqualToString:@"facebook.auth.getSession"] || ![aMethodName isEqualToString:@"facebook.auth.createToken"])
+	{
+		[mutableDictionary setValue:[_session sessionKey] forKey:@"session_key"];
+		[mutableDictionary setValue:[self generateTimeStamp] forKey:@"call_id"];
+	}
+	
+	NSMutableString *urlString = [[NSMutableString alloc] initWithString:MKAPIServerURL];
+	[urlString appendFormat:@"?method=%@", aMethodName]; 	//we'll do one outside the loop because we need to start with a ? anyway.  method is a good one to start with
+	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
+	id key;
+	while ((key = [enumerator nextObject])) {
+		if([key isNotEqualTo:@"method"]) //remember we already did this one
+			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
+	}			
+	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
+	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
+}
+
+
+- (NSURL *)generateFacebookURL:(NSDictionary *)parameters
+{
+	NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:parameters];
+	//these will be here for all requests. 
+	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
+	[mutableDictionary setValue:[_session apiKey] forKey:@"api_key"];
+	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
+	
+	//all other methods require call_id and session_key
+	if(![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
+	{
+		[mutableDictionary setValue:[_session sessionKey] forKey:@"session_key"];
+		[mutableDictionary setValue:[self generateTimeStamp] forKey:@"call_id"];
+	}
+	
+	NSMutableString *urlString = [[NSMutableString alloc] initWithString:MKAPIServerURL];
+	[urlString appendFormat:@"?method=%@", [mutableDictionary valueForKey:@"method"]]; 	//we'll do one outside the loop because we need to start with a ? anyway.  method is a good one to start with
+	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
+	id key;
+	while ((key = [enumerator nextObject])) {
+		
+		//just in case someone tries to upload a photo via GET we'll trow away the image and they'll get the error back from facebook
+		if([[mutableDictionary objectForKey:key] isKindOfClass:[NSImage class]])
+			[mutableDictionary removeObjectForKey:key];
+		
+		if([key isNotEqualTo:@"method"]) //remember we already did this one
+			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
+	}			
+	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
+	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
+}
+
+
+- (id)fetchFacebookData:(NSURL *)theURL
 {
 	NSURLRequest *urlRequest = [NSURLRequest requestWithURL:theURL 
 												cachePolicy:NSURLRequestReloadIgnoringCacheData
@@ -516,8 +451,85 @@
 	
 	
 }
-
-
 #pragma mark -
+
+
+#pragma mark NSURLConnection Delegate Methods
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+	[_responseData appendData:data];
+}
+
+//responses are ONLY passed back if they do not contain any errors
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
+	
+	NSError *error;
+	NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData
+															options:0
+															  error:&error] autorelease];
+	if(error != nil)
+	{
+		MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"API Error" message:@"Facebook returned puke, the API might be down." details:[[error userInfo] description]];
+		[errorWindow display];
+	}else if([returnXML validFacebookResponse] == NO)
+	{
+		NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
+		//4 is a magic number that represents "The application has reached the maximum number of requests allowed. More requests are allowed once the time window has completed."
+		//luckily for us Facebook doesn't define "the time window".  fuckers.
+		//we will also try the request again if we see a 1 (unknown) or 2 (service unavailable) error
+		int errorInt = [[errorDictionary valueForKey:@"error_code"] intValue];
+		if((errorInt == 4 || errorInt == 1 || errorInt == 2 ) && _numberOfRequestAttempts <= _requestAttemptCount)
+		{
+			NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:2.0];
+			[NSThread sleepUntilDate:sleepUntilDate];
+			[_responseData setData:[NSData data]];
+			_requestAttemptCount++;
+			NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
+			[self sendRequest];
+			return;
+		}
+		NSLog(@"I GAVE UP!!! throw it away...");
+		//we've tried the request a few times, now we're giving up.
+		if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
+			[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnXML];
+		
+		NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
+		if([self displayAPIErrorAlert])
+		{
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:errorTitle message:[errorDictionary valueForKey:@"error_msg"] details:[errorDictionary description]];
+			[errorWindow display];
+		}
+	}else
+	{
+		if([_delegate respondsToSelector:_selector])
+			[_delegate performSelector:_selector withObject:returnXML];		
+	}
+	
+	
+	
+	[_responseData setData:[NSData data]];
+	_requestIsDone = YES;
+	
+}
+
+//0.6 suggestion to pass connection error.  Thanks Adam.
+-  (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{	
+	
+	if([self displayAPIErrorAlert])
+	{
+		MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"Connection Error" message:@"Are you connected to the internet?" details:[[error userInfo] description]];
+		[errorWindow display];
+	}
+	
+	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
+		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:self];
+}
+#pragma mark -
+
 
 @end

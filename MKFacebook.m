@@ -19,7 +19,6 @@
 #import "MKFacebook.h"
 #import "MKLoginWindow.h"
 #import "CocoaCryptoHashing.h"
-//#import "MKParsingExtras.h"
 #import "NSXMLElementAdditions.h"
 #import "NSXMLDocumentAdditions.h"
 #import "MKErrorWindow.h"
@@ -31,33 +30,22 @@ NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
 NSString *MKFacebookAPIVersion = @"1.0";
 NSString *MKFacebookResponseFormat = @"XML";
 
-#define GRANT_PERMISSIONS_WINDOW_WIDTH 970
-#define GRANT_PERMISSIONS_WINDOW_HEIGHT 600
 
 @interface MKFacebook (Private)
--(void)setApiKey:(NSString *)anApiKey;
--(void)setSecretKey:(NSString *)aSecretKey;
--(NSString *)secretKey;				
--(void)setSessionKey:(NSString *)aSessionKey;
--(void)setSessionSecret:(NSString *)aSessionSecret;
--(NSString *)sessionSecret;
--(void)setUid:(NSString *)aUid;
--(NSTimeInterval)timeoutInterval;
--(void)facebookRequestFailed:(NSError *)error;
--(void)facebookResponseReceived:(NSXMLDocument *)xml;
+- (void)setApiKey:(NSString *)anApiKey;
 - (NSURL *)prepareLoginURLWithExtendedPermissions:(NSArray *)extendedPermissions;
 @end
 
 
 @implementation MKFacebook
-#pragma mark Intialization
-+(MKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey withSecret:(NSString *)aSecret delegate:(id)aDelegate
+#pragma mark init methods
++ (MKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey delegate:(id)aDelegate
 {
-	return [[[MKFacebook alloc] initUsingAPIKey:anAPIKey usingSecret:aSecret delegate:(id)aDelegate] autorelease];
+	return [[[MKFacebook alloc] initUsingAPIKey:anAPIKey delegate:(id)aDelegate] autorelease];
 }
 
 
--(MKFacebook *)initUsingAPIKey:(NSString *)anAPIKey usingSecret:(NSString *)aSecret delegate:(id)aDelegate
+- (MKFacebook *)initUsingAPIKey:(NSString *)anAPIKey delegate:(id)aDelegate
 {
 	if(![aDelegate respondsToSelector:@selector(userLoginSuccessful)])
 	{
@@ -72,138 +60,70 @@ NSString *MKFacebookResponseFormat = @"XML";
 	self = [super init];
 	if(self != nil)
 	{
-		//defaultsName = [aDefaultsName copy];
-		defaultsName = [[NSBundle mainBundle] bundleIdentifier];
 		[[MKFacebookSession sharedMKFacebookSession] setApiKey:anAPIKey];
-		[[MKFacebookSession sharedMKFacebookSession] setSecretKey:aSecret];
 	
-		[self setSessionKey:nil];
-		[self setSessionSecret:nil];
-		[self setUid:nil];
-
-
-		hasSessionKey = FALSE;
-		hasSessionSecret = FALSE;
-		hasUid = FALSE;
 
 		_delegate = aDelegate;
-		_shouldUseSynchronousLogin = NO;
 		_displayLoginAlerts = YES;
-
 
 	}
 	return self;
 }
 
 
-+(MKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey withSecret:(NSString *)aSecret delegate:(id)aDelegate withDefaultsName:(NSString *)aDefaultsName
+- (void)dealloc
 {
-	return [[[MKFacebook alloc] initUsingAPIKey:anAPIKey usingSecret:aSecret delegate:(id)aDelegate withDefaultsName:aDefaultsName] autorelease];
-}
-
--(MKFacebook *)initUsingAPIKey:(NSString *)anApiKey usingSecret:(NSString *)aSecretKey delegate:(id)aDelegate withDefaultsName:(NSString *)aDefaultsName
-{
-	if(![aDelegate respondsToSelector:@selector(userLoginSuccessful)])
-	{
-		NSException *exception = [NSException exceptionWithName:@"InvalidDelegate"
-														 reason:@"Delegate requires -(void)userLoginSuccessful method" 
-													   userInfo:nil];
-		
-		[exception raise];	
-		return nil;
-	}
-	
-	self = [super init];
-	if(self != nil)
-	{
-		defaultsName = [aDefaultsName copy];
-		[[MKFacebookSession sharedMKFacebookSession] setApiKey:anApiKey];
-		[[MKFacebookSession sharedMKFacebookSession] setSecretKey:aSecretKey];
-
-
-		[self setSessionKey:nil];
-		[self setSessionSecret:nil];
-		[self setUid:nil];
-
-		hasSessionKey = FALSE;
-		hasSessionSecret = FALSE;
-		hasUid = FALSE;
-
-		_delegate = aDelegate;
-		_shouldUseSynchronousLogin = NO;
-		_displayLoginAlerts = YES;
-
-
-	}
-	return self;
-}
-
--(void)dealloc
-{
-	[sessionKey release];
-	[sessionSecret release];
-	[uid release];
 	[super dealloc];
 }
 #pragma mark -
 
-#pragma mark Accessors and Mutators
 
-
--(void)setSessionKey:(NSString *)aSessionKey
+#pragma mark Instance Methods
+- (BOOL)userLoggedIn
 {
-	aSessionKey = [aSessionKey copy];
-	[sessionKey release];
-	sessionKey = aSessionKey;
-}
-
--(NSString *)sessionKey
-{
-	return sessionKey;
-}
-
--(void)setSessionSecret:(NSString *)aSessionSecret
-{
-	aSessionSecret = [aSessionSecret copy];
-	[sessionSecret release];
-	sessionSecret = aSessionSecret;
-}
-
--(NSString *)sessionSecret
-{
-	return sessionSecret;
-}
-
--(void)setUid:(NSString *)aUid
-{
-	aUid = [aUid copy];
-	[uid release];
-	uid = aUid;
-}
-
--(NSString *)uid
-{
-	return uid;
+	return [[MKFacebookSession sharedMKFacebookSession] validSession];
+	
 }
 
 
-
--(void)setShouldUseSynchronousLogin:(BOOL)aBool
+- (NSString *)uid
 {
-	_shouldUseSynchronousLogin = aBool;
+	return [[MKFacebookSession sharedMKFacebookSession] uid];
 }
 
--(BOOL)shouldUseSychronousLogin
+
+- (BOOL)loadPersistentSession
 {
-	return _shouldUseSynchronousLogin;
+	//load any existing sessions
+	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
+	if ([session loadSession]) {
+		
+		MKFacebookRequest *request = [[MKFacebookRequest alloc] init];
+		
+		NSXMLDocument *user = [request fetchFacebookData:[request generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
+		[request release];
+		
+		if([user validFacebookResponse] == NO)
+		{
+			DLog(@"persistent login failed, here's why...");
+			DLog(@"%@", [user description]);
+			[self logout];
+			return NO;
+		}
+		
+		//check to see if the uid returned is the same as our existing session
+		if ([[[user rootElement] stringValue] isEqualToString:[session uid]] ) {
+			[self userLoginSuccessful];
+			return YES;
+		}
+		
+	}
+	return NO;
 }
 
-#pragma mark -
 
-#pragma mark Workers
-
-
-- (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet{
+- (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet
+{
 	//try to use existing session
 	if ([self loadPersistentSession] == NO) {
 		
@@ -237,7 +157,85 @@ NSString *MKFacebookResponseFormat = @"XML";
 }
 
 
-- (NSURL *)prepareLoginURLWithExtendedPermissions:(NSArray *)extendedPermissions{
+- (void)logout
+{
+	//TODO: implement logout
+	[[MKFacebookSession sharedMKFacebookSession] destroySession];
+}
+
+
+- (void)userLoginSuccessful
+{
+	
+	if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
+		[_delegate performSelector:@selector(userLoginSuccessful)];
+	
+}
+
+
+- (void)grantExtendedPermission:(NSString *)aString
+{
+	if([self userLoggedIn] == NO)
+	{
+		if(_displayLoginAlerts == YES)
+		{
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"No user logged in!" message:@"Permissions cannot be extended if no one is logged in." details:nil];
+			[errorWindow display];
+		}
+		return;
+	}
+	
+	loginWindow = [[MKLoginWindow alloc] init]; //will be released when closed			
+	[[loginWindow window] setTitle:@"Extended Permissions"];
+	[loginWindow showWindow:self];
+	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
+	
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
+	[loginWindow loadURL:url];
+	
+}
+
+
+- (NSWindow *)grantExtendedPermissionForSheet:(NSString *)aString
+{
+	if([self userLoggedIn] == NO)
+	{
+		if(_displayLoginAlerts == YES)
+		{
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"No user logged in!" message:@"Permissions cannot be extended if no one is logged in." details:nil];
+			[errorWindow display];
+		}
+		return nil;
+	}
+	
+	loginWindow = [[MKLoginWindow alloc] init];
+	loginWindow._loginWindowIsSheet = YES;
+	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
+	[[loginWindow window] setTitle:@"Extended Permissions"];
+	[loginWindow loadURL:url];
+	
+	return [loginWindow window];
+	
+}
+
+
+- (void)setDisplayLoginAlerts:(BOOL)aBool
+{
+	_displayLoginAlerts = aBool;
+}
+
+
+- (BOOL)displayLoginAlerts
+{
+	return _displayLoginAlerts;
+}
+
+
+
+//private
+- (NSURL *)prepareLoginURLWithExtendedPermissions:(NSArray *)extendedPermissions
+{
 	NSMutableString *loginString = [[[NSMutableString alloc] initWithString:MKLoginUrl] autorelease];
 	[loginString appendString:@"?api_key="];
 	[loginString appendString:[[MKFacebookSession sharedMKFacebookSession] apiKey]];
@@ -263,202 +261,5 @@ NSString *MKFacebookResponseFormat = @"XML";
 	
 }
 
-- (void)logout{
-	//TODO: implement logout
-}
-
-
-- (void)userLoginSuccessful{
-	
-	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
-
-	[self setSessionKey:[session sessionKey]];
-	[self setSessionSecret:[session sessionSecret]];
-
-	[self setUid:[NSString stringWithFormat:@"%@", [session uid]]];
-	DLog(@"user id %@", [self uid]);
-	hasUid = YES;
-	hasSessionKey = YES;
-	hasSessionSecret = YES;
-	// we don't really have a token, but it doesn't matter since we have a session
-	
-
-	if([_delegate respondsToSelector:@selector(userLoginSuccessful)])
-		[_delegate performSelector:@selector(userLoginSuccessful)];
-	
-}
-
--(BOOL)loadPersistentSession
-{
-	//load any existing sessions
-	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
-	if ([session loadSession]) {
-		
-		[self setSessionKey:[session sessionKey]];
-		[self setSessionSecret:[session sessionSecret]];
-		
-		MKFacebookRequest *request = [[MKFacebookRequest alloc] init];
-		
-		//TODO: use MKFacebookRequest
-		NSXMLDocument *user = [request fetchFacebookData:[request generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
-		[request release];
-		if([user validFacebookResponse] == NO)
-		{
-			DLog(@"persistent login failed, here's why...");
-			DLog(@"%@", [user description]);
-			[self resetFacebookConnection];
-			return NO;
-		}
-		
-		//check to see if the uid returned is the same as our existing session
-		if ([[[user rootElement] stringValue] isEqualToString:[session uid]] ) {
-			[self userLoginSuccessful];
-			return YES;
-		}
-		
-	}
-	return NO;
-}
-
--(void)clearInfiniteSession
-{
-	[[MKFacebookSession sharedMKFacebookSession] destroySession];
-	[self resetFacebookConnection];
-}
-
-
-
--(void)facebookResponseReceived:(NSXMLDocument *)xml
-{
-	//DLog([xml description]);
-	NSDictionary *xmlResponse = [[xml rootElement] dictionaryFromXMLElement];
-	DLog(@"received response: %@", [xmlResponse description]);
-}
-
--(void)facebookErrorResponseReceived:(NSXMLDocument *)xml
-{
-	if([_delegate respondsToSelector:@selector(userLoginFailed)])
-		[_delegate performSelector:@selector(userLoginFailed)];
-	
-	if([_delegate respondsToSelector:@selector(facebookAuthenticationError:)])
-		[_delegate performSelector:@selector(facebookAuthenticationError:) withObject:[[xml rootElement] dictionaryFromXMLElement]];
-		
-}
-
-//this will be called if asynchronous requests fail.
-//all asynchronous requests this class is a delegate of are related to logging in so it's safe to put the stuff needed to clean up the login window here
--(void)facebookRequestFailed:(NSError *)error
-{
-	if(loginWindow != nil)
-	{
-		[loginWindow hideLoadingWindowIndicator];
-	}
-}
-
-#pragma mark Misc
--(BOOL)userLoggedIn
-{
-	if(hasSessionKey && hasSessionSecret && hasUid) //then it's kinda safe to assume we're logged in.....
-	{
-		return TRUE;
-	}else
-	{
-		return FALSE;
-	}
-	
-}
-
--(void)resetFacebookConnection
-{
-	[self setSessionKey:nil];
-	[self setSessionSecret:nil];
-	[self setUid:nil];
-	hasSessionKey = FALSE;
-	hasSessionSecret = FALSE;
-	hasUid = FALSE;
-
-}
-#pragma mark -
-
--(void)grantExtendedPermission:(NSString *)aString
-{
-	if([self userLoggedIn] == NO)
-	{
-		if(_displayLoginAlerts == YES)
-		{
-			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"No user logged in!" message:@"Permissions cannot be extended if no one is logged in." details:nil];
-			[errorWindow display];
-		}
-		return;
-	}
-	
-	loginWindow = [[MKLoginWindow alloc] init]; //will be released when closed			
-	[[loginWindow window] setTitle:@"Extended Permissions"];
-	[loginWindow showWindow:self];
-	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
-	
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
-	[loginWindow loadURL:url];
-	
-}
-
--(NSWindow *)grandExtendedPermissionForSheet:(NSString *)aString
-{
-	if([self userLoggedIn] == NO)
-	{
-		if(_displayLoginAlerts == YES)
-		{
-			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"No user logged in!" message:@"Permissions cannot be extended if no one is logged in." details:nil];
-			[errorWindow display];
-		}
-		return nil;
-	}
-	
-	loginWindow = [[MKLoginWindow alloc] init];
-	loginWindow._loginWindowIsSheet = YES;
-	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
-	[[loginWindow window] setTitle:@"Extended Permissions"];
-	[loginWindow loadURL:url];
-
-	return [loginWindow window];
-	
-}
-
-
--(void)setDisplayLoginAlerts:(BOOL)aBool
-{
-	_displayLoginAlerts = aBool;
-}
-
--(BOOL)displayLoginAlerts
-{
-	return _displayLoginAlerts;
-}
-
 
 @end
-
-
-
-@implementation NSString(NSStringExtras)
-/*
-	Encode a string legally so it can be turned into an NSURL
-	Original Source: <http://cocoa.karelia.com/Foundation_Categories/NSString/Encode_a_string_leg.m>
-	(See copyright notice at <http://cocoa.karelia.com>)
-	 */
-
-/*"	Fix a URL-encoded string that may have some characters that makes NSURL barf.
-It basicaly re-encodes the string, but ignores escape characters + and %, and also #.
-"*/
-- (NSString *) encodeURLLegally
-{
-	NSString *result = (NSString *) CFURLCreateStringByAddingPercentEscapes(
-																			NULL, (CFStringRef) self, (CFStringRef) @"%+#", NULL,
-																			CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding));
-	return result;
-}
-@end
-
-
-
