@@ -48,6 +48,7 @@
 //@{
 
 /*!
+ @brief Create new MKErrorWindow
  @param title Error title (required)
  @param message Brief error message (required)
  @param details Extended details about the error, pass nill if you have no details to display. (optional)
@@ -72,6 +73,8 @@
 //@{
 
 /*! 
+ @brief Display error window.
+ 
  Displays error window in the center of the screen.
  
  @version 0.7.7 and later
