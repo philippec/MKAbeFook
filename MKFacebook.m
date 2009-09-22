@@ -79,46 +79,10 @@ NSString *MKFacebookResponseFormat = @"XML";
 
 
 #pragma mark Instance Methods
-- (BOOL)userLoggedIn
+
+- (void)login
 {
-	return [[MKFacebookSession sharedMKFacebookSession] validSession];
-	
-}
-
-
-- (NSString *)uid
-{
-	return [[MKFacebookSession sharedMKFacebookSession] uid];
-}
-
-
-- (BOOL)loadPersistentSession
-{
-	//load any existing sessions
-	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
-	if ([session loadSession]) {
-		
-		MKFacebookRequest *request = [[MKFacebookRequest alloc] init];
-		
-		NSXMLDocument *user = [request fetchFacebookData:[request generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
-		[request release];
-		
-		if([user validFacebookResponse] == NO)
-		{
-			DLog(@"persistent login failed, here's why...");
-			DLog(@"%@", [user description]);
-			[self logout];
-			return NO;
-		}
-		
-		//check to see if the uid returned is the same as our existing session
-		if ([[[user rootElement] stringValue] isEqualToString:[session uid]] ) {
-			[self userLoginSuccessful];
-			return YES;
-		}
-		
-	}
-	return NO;
+	[self loginWithPermissions:nil forSheet:NO];
 }
 
 
@@ -155,6 +119,53 @@ NSString *MKFacebookResponseFormat = @"XML";
 	}
 	return nil;
 }
+
+
+
+- (BOOL)loadPersistentSession
+{
+	//load any existing sessions
+	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
+	if ([session loadSession]) {
+		
+		MKFacebookRequest *request = [[MKFacebookRequest alloc] init];
+		
+		NSXMLDocument *user = [request fetchFacebookData:[request generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
+		[request release];
+		
+		if([user validFacebookResponse] == NO)
+		{
+			DLog(@"persistent login failed, here's why...");
+			DLog(@"%@", [user description]);
+			[self logout];
+			return NO;
+		}
+		
+		//check to see if the uid returned is the same as our existing session
+		if ([[[user rootElement] stringValue] isEqualToString:[session uid]] ) {
+			[self userLoginSuccessful];
+			return YES;
+		}
+		
+	}
+	return NO;
+}
+
+
+
+
+- (BOOL)userLoggedIn
+{
+	return [[MKFacebookSession sharedMKFacebookSession] validSession];
+	
+}
+
+
+- (NSString *)uid
+{
+	return [[MKFacebookSession sharedMKFacebookSession] uid];
+}
+
 
 
 - (void)logout

@@ -21,12 +21,38 @@
 
 @implementation MKFacebookRequestQueue
 
--(id)init
++ (MKFacebookRequestQueue *)newQueue
+{
+	MKFacebookRequestQueue *queue = [[[MKFacebookRequestQueue alloc] initWithRequests:nil] autorelease];
+	return queue;
+}
+
+
++ (MKFacebookRequestQueue *)newQueueWithRequests:(NSArray *)requests
+{
+	MKFacebookRequestQueue *queue = [[[MKFacebookRequestQueue alloc] initWithRequests:nil] autorelease];
+	return queue;	
+}
+
+- (id)init
+{
+	self = [super init];
+	if (self != nil) {
+		_requestsArray = nil;
+		_cancelRequestQueue = NO;
+		_currentRequest = 0;
+		_timeBetweenRequests = 1.0;
+	}
+	return self;
+}
+
+
+- (id)initWithRequests:(NSArray *)requests
 {
 	self = [super init];
 	if(self != nil)
 	{
-		_requestsArray = [[NSMutableArray alloc] init];
+		_requestsArray = [[NSMutableArray arrayWithArray:requests] retain];
 		_cancelRequestQueue = NO;
 		_currentRequest = 0;
 		_timeBetweenRequests = 1.0;
@@ -34,62 +60,52 @@
 	return self;
 }
 
--(id)initWithRequests:(NSArray *)requests delegate:(id)aDelegate currentlySendingSelector:(SEL)currentlySendingSelector lastRequestResponseSelector:(SEL)lastRequestResponseSelector allRequestsFinishedSelector:(SEL)allRequestsFinishedSelector;
-{
-	self = [super init];
-	if(self !=nil)
-	{
-		_delegate = aDelegate;
-		_currentlySendingSelector = currentlySendingSelector;
-		_lastRequestResponseSelector = lastRequestResponseSelector;
-		_allRequestsFinishedSelector = allRequestsFinishedSelector;
-		_requestsArray = [[NSMutableArray alloc] init];
-		_requestsArray = (NSMutableArray *)requests;
-		_currentRequest = 0;
-		_cancelRequestQueue = NO;
-		_timeBetweenRequests = 1.0;
-		_shouldPauseBetweenRequests = NO;
-	}
-	return self;
-}
 
--(void)dealloc
+- (void)dealloc
 {
 	[_requestsArray release];
 	[super dealloc];
 }
 
--(void)setDelegate:(id)delegate
+
+- (void)setRequests:(NSArray *)requests
+{
+	[_requestsArray release];
+	_requestsArray = [[NSMutableArray arrayWithArray:requests] retain];
+}
+
+
+- (void)setDelegate:(id)delegate
 {
 	_delegate = delegate;
 }
 
--(void)setCurrentlySendingSelector:(SEL)selector
+- (void)setCurrentlySendingSelector:(SEL)selector
 {
 	_currentlySendingSelector = selector;
 }
 
--(void)setLastRequestResponseSelector:(SEL)selector
+- (void)setLastRequestResponseSelector:(SEL)selector
 {
 	_lastRequestResponseSelector = selector;
 }
 
--(void)setAllRequestsFinishedSelector:(SEL)selector
+- (void)setAllRequestsFinishedSelector:(SEL)selector
 {
 	_allRequestsFinishedSelector = selector;
 }
 
--(void)addRequest:(MKFacebookRequest *)request
+- (void)addRequest:(MKFacebookRequest *)request
 {
 	[_requestsArray addObject:request];
 }
 
--(void)startRequestQueue
+- (void)startRequestQueue
 {
 	[self startNextRequest];	
 }
 
--(void)startNextRequest
+- (void)startNextRequest
 {
 	if(_currentRequest <= [_requestsArray count] && _cancelRequestQueue == NO && [_requestsArray count] != 0 )
 	{
@@ -107,7 +123,7 @@
 }
 
 
--(void)httpRequestFinished:(id)data
+- (void)httpRequestFinished:(id)data
 {
 	NSLog(@"requst completed");
 	if([_delegate respondsToSelector:_lastRequestResponseSelector])
@@ -132,22 +148,22 @@
 		
 }
 
--(void)setShouldPauseBetweenRequests:(BOOL)aBool
+- (void)setShouldPauseBetweenRequests:(BOOL)aBool
 {
 	_shouldPauseBetweenRequests = aBool;
 }
 
--(float)timeBetweenRequests
+- (float)timeBetweenRequests
 {
 	return _timeBetweenRequests;
 }
 
--(void)setTimeBetweenRequests:(float)waitTime
+- (void)setTimeBetweenRequests:(float)waitTime
 {
 	_timeBetweenRequests = waitTime;
 }
 
--(void)cancelRequestQueue
+- (void)cancelRequestQueue
 {
 	if(_currentRequest < [_requestsArray count])
 	{
@@ -156,7 +172,7 @@
 	}
 }
 
--(void)facebookRequestFailed:(id)data
+- (void)facebookRequestFailed:(id)data
 {	
 	/*
 	if([_delegate respondsToSelector:@selector(queueRequestFailed:)])

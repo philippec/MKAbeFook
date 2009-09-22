@@ -27,21 +27,21 @@ extern NSString *MKLoginUrl;
 extern NSString *MKFacebookAPIVersion;
 extern NSString *MKFacebookResponseFormat;
 /*!
- @brief Login and commuincate with Facebook.com
  
  @class MKFacebook
- MKFacebook is used to set up a connection to the Facebook API.  It handles creating an auth token, generating an auth session and logging a in a user.  MKFacebook stores the session secret and session key that are used in all requests to the Facebook API.
+ MKFacebook is the starting point for logging in and communicating with Facebook.  It handles displaying a login window for the user and notifying your application when a login has been successful.  
 
-Available Delegate Methods
+ To provide a user with a login window for you application do the following:
  
--(void)userLoginSuccessful; (required)<br/>
-&nbsp;&nbsp; Called when login window is closed and valid authToken, authSession, and uid have been verified.
+ 1. initialize a new MKFacebook object with your API key and a delegate object
  
--(void)userLoginFailed; (optional)<br/>
-&nbsp;&nbsp; Called when login window is closed and either authToken, authSession or uid cannot be verified.
+ 2. call login or loginWithPermissions:forSheet:
  
--(void)facebookAuthenticationError:(NSDictionary *)error; (optional)<br/>
- &nbsp;&nbsp; Called when an error is encountered attempting to obtain an authToken or authSession.  Passes parsed XML response from Facebook as NSDictionary object.
+ 
+ Delegate Methods
+ 
+ -(void)userLoginSuccessful; (required) Called when a session has been successfully retrieved from Facebook.  Your MKFacebook delegate must implement this method, an exception will be raised if it doesn't.
+  
  */
 @interface MKFacebook : NSObject {
 	
@@ -55,7 +55,7 @@ Available Delegate Methods
 }
 
 #pragma mark Instantiate
-/*! @name Instantiate
+/*! @name Creating and Initializing
  *	Create a new MKFacebook object.
  */
 //@{
@@ -97,11 +97,43 @@ Available Delegate Methods
 
 
 
-#pragma mark Manage User Login
-/*! @name Manage User Login
+#pragma mark Login and Logout
+/*! @name Login and Logout
  *	Display login window, get information about user login status.
  */
 //@{
+
+/*!
+ @brief Load existing session if available or display a login window.
+ 
+ This is the same as calling loginWithPermisisons:nil forSheet:NO.
+ */
+- (void)login;
+
+/*!
+ @brief Attempts to log a user in using existing session.  If no session is available a login window is diplayed.
+ 
+ Tries to load existing session.  If no session is available a login window will be displayed.
+ @param permissions List of permisisons to offer the user.
+ @param sheet If YES is passed in a NSWindow will be returned, otherwise a login window will appear and nil will be returned.
+ @return Either a NSWindow to be attached as a sheet or nil.
+ */
+- (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet;
+
+
+/*!
+ @brief Logs in a user from a saved session.
+ 
+ Attempts to load a stored infinte session for the application.  This method checks NSUserDefaults for a stored sessionKey and sessionSecret.  It uses a synchronous request to try to authenticate the stored session.  Note: The MKFacebook class only allows a persistent session to be loaded once per instance.  For example, if a persistent session is successfully loaded then the resetFacebookConnection method is called that instance of MKFacebook will return false for every call to loadPersistentSession for the remainder of its existence.  This behavior may change in the future.
+ 
+ In order for a user to receive what appears to be an infinite session they must grant the application "offline_access" using -(void)grantExtendedPermisison:(NSString *)aString;.  Unfortunately the user will have to login one more time after this is called before -(void)loadPersistentSession; will work.
+ 
+ Trying to load a persistent session will use a synchronous request, your application might hang if the connectionTimeoutInterval is set to a high number of seconds.
+ 
+ @result Returns true if stored session information is valid and a user id is successfully returned from Facebook otherwise it returns false.
+ */
+- (BOOL)loadPersistentSession;
+
 
 
 /*!
@@ -119,32 +151,6 @@ Available Delegate Methods
  */
 - (NSString *)uid;
 
-
-
-/*!
- @brief Logs in a user from a saved session.
- 
-  Attempts to load a stored infinte session for the application.  This method checks NSUserDefaults for a stored sessionKey and sessionSecret.  It uses a synchronous request to try to authenticate the stored session.  Note: The MKFacebook class only allows a persistent session to be loaded once per instance.  For example, if a persistent session is successfully loaded then the resetFacebookConnection method is called that instance of MKFacebook will return false for every call to loadPersistentSession for the remainder of its existence.  This behavior may change in the future.
- 
- In order for a user to receive what appears to be an infinite session they must grant the application "offline_access" using -(void)grantExtendedPermisison:(NSString *)aString;.  Unfortunately the user will have to login one more time after this is called before -(void)loadPersistentSession; will work.
- 
- Trying to load a persistent session will use a synchronous request, your application might hang if the connectionTimeoutInterval is set to a high number of seconds.
- 
- @result Returns true if stored session information is valid and a user id is successfully returned from Facebook otherwise it returns false.
- */
-- (BOOL)loadPersistentSession;
-
-
-
-/*!
- @brief Attempts to log a user in using existing session.  If no session is available a login window is diplayed.
- 
- Tries to load existing session.  If no session is available a login window will be displayed.
- @param permissions List of permisisons to offer the user.
- @param sheet If YES is passed in a NSWindow will be returned, otherwise a login window will appear and nil will be returned.
- @return Either a NSWindow to be attached as a sheet or nil.
- */
-- (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet;
 
 
 /*!
@@ -232,30 +238,25 @@ Available Delegate Methods
 
 
 /*!
- Some methods you should implement.
+ Your MKFacebook delegate must implement the userLoginSuccessful method to receive a message when a user has successfully logged in.
+ 
  @version 0.8 and later
  */
 @protocol MKFacebookDelegate
 
 
-/*! @name Receive Login Information
+/*! @name Receive Login Notification
  *
  */
 //@{
 
 /*!
- Called after authentication process has finished and it has been established that a use has successfully logged in.
+ Called when a session has been successfully retrieved from Facebook.  You may now start sending requests using MKFacebookRequest.
  @version 0.8 and later
  */
 -(void)userLoginSuccessful;
 
 
-
-/*!
- You have three guesses as to why this gets called.
- @version 0.8 and later
- */
--(void)userLoginFailed;
 //@}
 
 @end

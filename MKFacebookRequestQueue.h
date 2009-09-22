@@ -23,7 +23,7 @@
  @brief Sends series of requests to Facebook
  
  @class MKFacebookRequestQueue
-  This class is used to send a series of requests to the Facebook API.  Requests are sent incrementally and do not begin until the previous request has been completed.  This class is useful for sending multiple photo uploads or when you need to ensure you have information from one request before processing another.
+  This class is used to send a series of requests to the Facebook API.  Requests are sent sequentially and do not begin until the previous request has been completed.  This class is useful for sending multiple photo uploads or when you need to ensure you have information from one request before processing another.
  
  Optional selectors can be specified to receive information regarding the progress of the uploads in the queue.  The currentlySendingSelector will pass a NSDictionary object containing a "current" key and a "total" key indicating the current index of the request being sent out of the total number of requests.  The lastRequestResponseSelector passes the last NSXMLDocument response from Facebook.  Finally the allRequestsFinishedSelector is called when all the requests in the queue have been sent and their responses have been received.
  
@@ -48,24 +48,26 @@
 	BOOL _shouldPauseBetweenRequests;
 }
 
--(id)init;
 
-/*! @name Instantiate
+/*! @name Creating and Initializing
  *
  */
 //@{
 
+/*!
+ Creates a new queue that will be automatically released when it's done.
+ */
++ (MKFacebookRequestQueue *)newQueue;
+
 
 /*!
- @param requests NSArray of MKFacebookRequest objects ready to be requested.
- @param aDelegate Delegate object that implements selectors.
- @param currentlySendingSelector Method to be called and passed information about request currently being sent.
- @param lastRequestResponseSelector Method to be called and passed last response received. Should accept (id) as argument.
- @param allRequestsFinishedSelector Method to be called when all requests have been completed.
-  Creates a new MKFacebookRequestQueue object that is ready to start requesting items in the queue.
-  @version 0.7 and later
+ Creates a new queue with requests.
  */
--(id)initWithRequests:(NSArray *)requests delegate:(id)aDelegate currentlySendingSelector:(SEL)currentlySendingSelector lastRequestResponseSelector:(SEL)lastRequestResponseSelector allRequestsFinishedSelector:(SEL)allRequestsFinishedSelector;
++ (MKFacebookRequestQueue *)newQueueWithRequests:(NSArray *)requests;
+
+- (id)init;
+
+- (id)initWithRequests:(NSArray *)requests;
 //@}
 
 
@@ -74,8 +76,12 @@
   Set delegate object.
   @version 0.7 and later
  */
--(void)setDelegate:(id)delegate;
+- (void)setDelegate:(id)delegate;
 
+/*
+ Sets the array of MKFacebookRequests to send to Facebook.
+ */
+- (void)setRequests:(NSArray *)requests;
 
 /*! @name Set Selectors
  *
@@ -86,19 +92,19 @@
  @param selector Method to be called and passed information about request currently being sent. 
   @version 0.7 and later
  */
--(void)setCurrentlySendingSelector:(SEL)selector;
+- (void)setCurrentlySendingSelector:(SEL)selector;
 
 /*!
  @param selector Method to be called and passed last response received. Should accept (NSDictionary *) as argument.  NSDictionary will contain two keys, "current" and "total".
   @version 0.7 and later
  */
--(void)setLastRequestResponseSelector:(SEL)selector;
+- (void)setLastRequestResponseSelector:(SEL)selector;
 
 /*!
  @param selector Method to be called when all requests have been completed.
   @version 0.7 and later
  */
--(void)setAllRequestsFinishedSelector:(SEL)selector;
+- (void)setAllRequestsFinishedSelector:(SEL)selector;
 //@}
 
 
@@ -111,20 +117,20 @@
  @param request MKFacebookRequest object that is ready to be sent.
   @version 0.7 and later
  */
--(void)addRequest:(MKFacebookRequest *)request;
+- (void)addRequest:(MKFacebookRequest *)request;
 
 /*!
   Starts processing the request queue.
   @version 0.7 and later
  */
--(void)startRequestQueue;
+- (void)startRequestQueue;
 
 /*!
  Set whether or not queue should automatically pause between requests in order to try to prevent the too many requests error.  Default is NO.
  @param aBool Should we wait or should we go now?
  @version 0.8 and later
  */
--(void)setShouldPauseBetweenRequests:(BOOL)aBool;
+- (void)setShouldPauseBetweenRequests:(BOOL)aBool;
 
 
 /*!
@@ -132,23 +138,23 @@
  @result time in seconds
  @version 0.8 and later
  */
--(float)timeBetweenRequests;
+- (float)timeBetweenRequests;
 
 /*!
  @param waitTime Number of seconds to wait between requests. Default is 1.0
  @version 0.8 and later
  */
--(void)setTimeBetweenRequests:(float)waitTime;
+- (void)setTimeBetweenRequests:(float)waitTime;
 //@}
 
 /*!
   Attempts to stop the current request being processed and prevents any further requests from starting.
   @version 0.7 and later
  */
--(void)cancelRequestQueue;
+- (void)cancelRequestQueue;
 
--(void)startNextRequest;
+- (void)startNextRequest;
 
--(void)httpRequestFinished:(id)data;
+- (void)httpRequestFinished:(id)data;
 
 @end

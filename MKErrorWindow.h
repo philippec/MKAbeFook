@@ -19,11 +19,11 @@
 #import <Cocoa/Cocoa.h>
 
 /*!
- @brief Display simple error messages with option of providing more details
  
  @class MKErrorWindow
- MKErrorWindow is used to display error messages that may or may not contain additional information useful for debugging the error.
+ Display a simple alert window containing information about an error.  Optionally a Details button can be display that will smoothly enlarge the alert window revealing additional information about the error.
  
+ MKErrorWindow is used internally to display errors related to network or parsing issues.  Feel free to use it for other things if you wish.
  
  */
 
@@ -42,13 +42,14 @@
 	
 }
 
-/*! @name Instantiate
+/*! @name Creating and Initializing
  *	
  */
 //@{
 
 /*!
  @brief Create new MKErrorWindow
+ 
  @param title Error title (required)
  @param message Brief error message (required)
  @param details Extended details about the error, pass nill if you have no details to display. (optional)
