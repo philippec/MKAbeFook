@@ -62,6 +62,8 @@ Available Delegate Methods
 
 
 /*!
+ @brief Setup new MKFacebook object.
+ 
  @param anAPIKey Your API key issued by Facebook.
  @param aSecret Your secret key issued by Facebook.
  @param aDelegate A delegate object that will receive calls from the MKFacebook object.
@@ -76,6 +78,8 @@ Available Delegate Methods
 
 
 /*!
+ @brief Setup new MKFacebook object.
+ 
  @param anAPIKey Your API key issued by Facebook.
  @param aSecret Your secret key issued by Facebook.
  @param aDelegate A delegate object that will receive calls from the MKFacebook object.
@@ -102,12 +106,15 @@ Available Delegate Methods
 
 /*!
  @brief Returns TRUE if valid session exists.
+ 
  @result Checks to see if auth token, session key, session secret and uid are set.  Returns true if everything is set and it's safe to assume a user has logged in.  
  */
 - (BOOL)userLoggedIn;
 
 
 /*!
+ @brief Get the UID of the logged in user.
+ 
  @result Returns uid of user currently logged in.
  */
 - (NSString *)uid;
@@ -115,6 +122,8 @@ Available Delegate Methods
 
 
 /*!
+ @brief Logs in a user from a saved session.
+ 
   Attempts to load a stored infinte session for the application.  This method checks NSUserDefaults for a stored sessionKey and sessionSecret.  It uses a synchronous request to try to authenticate the stored session.  Note: The MKFacebook class only allows a persistent session to be loaded once per instance.  For example, if a persistent session is successfully loaded then the resetFacebookConnection method is called that instance of MKFacebook will return false for every call to loadPersistentSession for the remainder of its existence.  This behavior may change in the future.
  
  In order for a user to receive what appears to be an infinite session they must grant the application "offline_access" using -(void)grantExtendedPermisison:(NSString *)aString;.  Unfortunately the user will have to login one more time after this is called before -(void)loadPersistentSession; will work.
@@ -128,6 +137,8 @@ Available Delegate Methods
 
 
 /*!
+ @brief Attempts to log a user in using existing session.  If no session is available a login window is diplayed.
+ 
  Tries to load existing session.  If no session is available a login window will be displayed.
  @param permissions List of permisisons to offer the user.
  @param sheet If YES is passed in a NSWindow will be returned, otherwise a login window will appear and nil will be returned.
@@ -137,6 +148,8 @@ Available Delegate Methods
 
 
 /*!
+ @brief Destoys login session.
+ 
  Removes any saved sessions and invalidates any future requests until a user logs in again.
  @version 0.9.0
  */
@@ -160,6 +173,8 @@ Available Delegate Methods
 
 
 /*!
+ @brief Display a window and a Facebook page to extend permisisons.
+ 
  @param aString Name of extended permission to grant. See Facebook documentation for allowed extended permissions.
 
  This method will display a new window and load the Facebook URL  http://www.facebook.com/authorize.php?api_key=YOUR_API_KEY&v=1.0&ext_perm=PERMISSION_NAME
@@ -171,6 +186,8 @@ Available Delegate Methods
 
 
 /*!
+ @brief Display a window and a Facebook page to extend permisisons.
+ 
  @param aString Name of extended permission to grant. See Facebook documentation for allowed extended permissions.
  @result Returns NSWindow with WebView that loads the grant extended permissions request.
  @version 0.8.2 and later

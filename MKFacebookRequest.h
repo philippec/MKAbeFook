@@ -81,6 +81,8 @@ typedef int MKFacebookRequestType;
 
 #pragma mark init methods
 /*!
+ @brief Setup new MKFacebookRequest object.
+ 
  @param aDelegate The object that will receive the information returned by Facebook.  This should implement -(void)facebookResponseReceived:(id)response to handle data returned from Facebook.  Set a selector to have responses sent elsewhere.
  @version 0.9 and later
  */
@@ -90,6 +92,8 @@ typedef int MKFacebookRequestType;
 
 
 /*!
+ @brief Setup new MKFacebookRequest object.
+ 
  @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
  @param aDelegate The object that will receive the response returned by Facebook.
  @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument. 
@@ -104,6 +108,8 @@ typedef int MKFacebookRequestType;
 
 
 /*!
+ @brief Setup new MKFacebookRequest object.
+ 
  @param aDelegate The object that will receive the information returned by Facebook.
  @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument.
   This method returns a new MKFacebookRequest object that can be used to retrieve data from Facebook.
@@ -115,6 +121,8 @@ typedef int MKFacebookRequestType;
 
 
 /*!
+ Setup new MKFacebookRequest object.
+ 
  @param parameters NSDictionary containing parameters for requested method.  The dictionary must contain a the key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo". Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id" do not need to be included in this dictionary.
  @param aDelegate The object that will receive the information returned by Facebook.
  @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument.
