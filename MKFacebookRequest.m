@@ -376,30 +376,13 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 
 - (NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters
 {
-	NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithDictionary:parameters];
-	//these will be here for all requests.  we could make the user supply the method in the parameters but i like it as a string
-	[mutableDictionary setValue:aMethodName forKey:@"method"];
-	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
-	[mutableDictionary setValue:[_session apiKey] forKey:@"api_key"];
-	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
-	
-	//all other methods require call_id and session_key
-	if(![aMethodName isEqualToString:@"facebook.auth.getSession"] || ![aMethodName isEqualToString:@"facebook.auth.createToken"])
+	NSMutableDictionary *newParams = [NSMutableDictionary dictionaryWithDictionary:parameters];
+	if(aMethodName == nil)
 	{
-		[mutableDictionary setValue:[_session sessionKey] forKey:@"session_key"];
-		[mutableDictionary setValue:[self generateTimeStamp] forKey:@"call_id"];
+		aMethodName = @"";
 	}
-	
-	NSMutableString *urlString = [[NSMutableString alloc] initWithString:MKAPIServerURL];
-	[urlString appendFormat:@"?method=%@", aMethodName]; 	//we'll do one outside the loop because we need to start with a ? anyway.  method is a good one to start with
-	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
-	id key;
-	while ((key = [enumerator nextObject])) {
-		if([key isNotEqualTo:@"method"]) //remember we already did this one
-			[urlString appendFormat:@"&%@=%@", key, [mutableDictionary valueForKey:key]];
-	}			
-	[urlString appendFormat:@"&sig=%@", [self generateSigForParameters:mutableDictionary]];
-	return [NSURL URLWithString:[[urlString encodeURLLegally] autorelease]];
+	[newParams setValue:aMethodName forKey:@"method"];
+	return [self generateFacebookURL:newParams];
 }
 
 
@@ -418,7 +401,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		[mutableDictionary setValue:[self generateTimeStamp] forKey:@"call_id"];
 	}
 	
-	NSMutableString *urlString = [[NSMutableString alloc] initWithString:MKAPIServerURL];
+	NSMutableString *urlString = [[[NSMutableString alloc] initWithString:MKAPIServerURL] autorelease];
 	[urlString appendFormat:@"?method=%@", [mutableDictionary valueForKey:@"method"]]; 	//we'll do one outside the loop because we need to start with a ? anyway.  method is a good one to start with
 	NSEnumerator *enumerator = [mutableDictionary keyEnumerator];
 	id key;
