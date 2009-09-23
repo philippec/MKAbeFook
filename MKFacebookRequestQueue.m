@@ -108,6 +108,7 @@
 
 - (void)startRequestQueue
 {
+	 _cancelRequestQueue = NO;
 	[self startNextRequest];	
 }
 
@@ -134,6 +135,7 @@
 	NSLog(@"requst completed");
 	if([_delegate respondsToSelector:_lastRequestResponseSelector])
 		[_delegate performSelector:_lastRequestResponseSelector withObject:data];
+	
 	
 	if(_currentRequest < [_requestsArray count] && _cancelRequestQueue == NO && [_requestsArray count] != 0)
 	{
@@ -175,6 +177,7 @@
 	{
 		[[_requestsArray objectAtIndex:_currentRequest] cancelRequest];
 		_cancelRequestQueue = YES;
+		[_requestsArray removeAllObjects];
 	}
 }
 

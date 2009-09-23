@@ -20,6 +20,8 @@
 #import "MKFacebook.h"
 #import "MKFacebookSession.h"
 
+extern NSString *MKFacebookRequestActivityStarted;
+extern NSString *MKFacebookRequestActivityEnded;
 
 /*!
  @enum MKFacebookRequestType
