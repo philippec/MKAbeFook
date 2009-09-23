@@ -18,6 +18,12 @@
 
 #import "MKFacebookRequestQueue.h"
 
+@interface MKFacebookRequestQueue (Private)
+
+- (void)startNextRequest;
+
+@end
+
 
 @implementation MKFacebookRequestQueue
 
@@ -38,7 +44,7 @@
 {
 	self = [super init];
 	if (self != nil) {
-		_requestsArray = nil;
+		_requestsArray = [[NSMutableArray alloc] init];
 		_cancelRequestQueue = NO;
 		_currentRequest = 0;
 		_timeBetweenRequests = 1.0;
