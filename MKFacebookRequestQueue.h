@@ -153,7 +153,6 @@
  */
 - (void)cancelRequestQueue;
 
-- (void)startNextRequest;
 
 - (void)httpRequestFinished:(id)data;
 
