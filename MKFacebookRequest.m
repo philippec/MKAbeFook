@@ -146,11 +146,26 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	//if no user is logged in and they're trying to send a request OTHER than something required for logging in a user abort the request
 	if(!_session.validSession && (![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] && ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"]))
 	{
+		
+		if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
+		{
+			NSError *error = [NSError errorWithDomain:@"MKAbeFook" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No user is logged in.", @"Error", nil]];
+			[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
+		}
+		
+		if (_displayAPIErrorAlert == YES) {
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"Invalid Session" message:@"A request could not be completed because no user is logged in" details:[NSString stringWithFormat:@"Request Details: \n\n%@", [_parameters description]]];
+			[errorWindow display];
+		}
+
+		
 		NSException *exception = [NSException exceptionWithName:@"Invalid Facebook Connection"
 														 reason:@"MKFacebookRequest could not continue because no user is logged in.  Request has been aborted."
 													   userInfo:nil];
 		
 		[exception raise];
+		
+		
 		return;
 	}
 	
