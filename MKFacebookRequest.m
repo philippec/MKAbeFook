@@ -23,6 +23,9 @@
 #import "MKErrorWindow.h"
 #import "CocoaCryptoHashing.h"
 
+NSString *MKFacebookRequestActivityStarted = @"MKFacebookRequestActivityStarted";
+NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
+
 @implementation MKFacebookRequest
 
 @synthesize connectionTimeoutInterval;
