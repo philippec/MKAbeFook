@@ -35,7 +35,7 @@ typedef enum{
 } MKEventsFacebookMethod;
 
 
-/*!
+/*
  @brief Convenience class for event related requests.
  
  @class MKEventsRequest
@@ -50,13 +50,13 @@ typedef enum{
 }
 
 #pragma mark MKFacebookProtocol Requirements
-/*!
+/*
  
  @version 0.8 and later
  */
 +(id)requestUsingFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
 
-/*!
+/*
  
  @version 0.8 and later
  */
@@ -64,19 +64,19 @@ typedef enum{
 
 
 #pragma mark Supported Methods
-/*!
+/*
  
  @version 0.8 and later
  */
 -(void)eventsGet;
 
-/*!
+/*
  
  @version 0.8 and later
  */
 -(void)eventsGet:(NSString *)uid eids:(NSArray *)eids startTime:(NSDate *)startTime endTime:(NSDate *)endTime rsvp_status:(MKEventRSVPStatus)rsvp_status;
 
-/*!
+/*
  
  @version 0.8 and later
  */

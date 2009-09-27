@@ -29,6 +29,7 @@ extern NSString *MKFacebookSessionKey;
 	NSDictionary *session;
 	NSString *apiKey;
 	NSString *secretKey;
+	BOOL _validSession;
 
 }
 
@@ -42,8 +43,15 @@ extern NSString *MKFacebookSessionKey;
 - (void)saveSession:(NSDictionary *)aSession;
 
 
-// Loads any saved session from application defaults.  Returns false if no session could be loaded.
+/*
+Logs in a user from a saved session.
+ 
+Attempts to load a stored infinte session for the application.  This method checks NSUserDefaults for a stored sessionKey and sessionSecret.  It uses a synchronous request to try to authenticate the stored session.  Used internally when login or loginWithPermissions:forSheet: are called.
+ 
+Returns true if stored session information is valid and a user id is successfully returned from Facebook otherwise it returns false.
+*/
 - (BOOL)loadSession;
+
 
 
 // Destroys any saved session.

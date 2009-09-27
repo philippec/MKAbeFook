@@ -24,6 +24,7 @@
 
 extern NSString *MKAPIServerURL;
 extern NSString *MKLoginUrl;
+extern NSString *MKExtendPermissionsURL;
 extern NSString *MKFacebookAPIVersion;
 extern NSString *MKFacebookResponseFormat;
 /*!
@@ -31,12 +32,13 @@ extern NSString *MKFacebookResponseFormat;
  @class MKFacebook
  MKFacebook is the starting point for logging in and communicating with Facebook.  It handles displaying a login window for the user and notifying your application when a login has been successful.  
 
- To provide a user with a login window for you application do the following:
+ To provide a user with a login window for your application you must do the following:
  
  1. initialize a new MKFacebook object with your API key and a delegate object
  
  2. call login or loginWithPermissions:forSheet:
  
+ 3. receive confirmation of a successful login via the userLoginSuccessful delegate method
  
  Delegate Methods
  
@@ -65,10 +67,9 @@ extern NSString *MKFacebookResponseFormat;
  @brief Setup new MKFacebook object.
  
  @param anAPIKey Your API key issued by Facebook.
- @param aSecret Your secret key issued by Facebook.
  @param aDelegate A delegate object that will receive calls from the MKFacebook object.
   
- The delegate object must implement a userLoggedIn: method that is called after a user has logged in and closed the login window.  It may optionally implement a userLoginFaild method that will be called if the login fails.
+ The delegate object must implement a userLoginSuccessful method that will called after a user has successfully logged in.
  
  @result Returns allocated and initiated MKFacebook object ready to be used to log into the Facebook API.
 @version 0.7 and later
@@ -81,10 +82,9 @@ extern NSString *MKFacebookResponseFormat;
  @brief Setup new MKFacebook object.
  
  @param anAPIKey Your API key issued by Facebook.
- @param aSecret Your secret key issued by Facebook.
  @param aDelegate A delegate object that will receive calls from the MKFacebook object.
   
- The delegate object must implement a userLoggedIn: method that is called after a user has logged in and closed the login window.  It may optionally implement a userLoginFaild method that will be called if the login fails.
+ The delegate object must implement a userLoginSuccessful method that will called after a user has successfully logged in.
  
  @result Returns initiated MKFacebook object ready to be used to log into the Facebook API.
   @version 0.7 and later
@@ -106,6 +106,8 @@ extern NSString *MKFacebookResponseFormat;
 /*!
  @brief Load existing session if available or display a login window.
  
+ Tries to load existing session. If no session is available a login window will be displayed. If a user logs in successfully the session will automatically be saved to the application NSUserDefaults. 
+ 
  This is the same as calling loginWithPermisisons:nil forSheet:NO.
  */
 - (void)login;
@@ -113,7 +115,8 @@ extern NSString *MKFacebookResponseFormat;
 /*!
  @brief Attempts to log a user in using existing session.  If no session is available a login window is diplayed.
  
- Tries to load existing session.  If no session is available a login window will be displayed.
+  Tries to load existing session. If no session is available a login window will be displayed. If a user logs in successfully the session will automatically be saved to the application NSUserDefaults. 
+ 
  @param permissions List of permisisons to offer the user.
  @param sheet If YES is passed in a NSWindow will be returned, otherwise a login window will appear and nil will be returned.
  @return Either a NSWindow to be attached as a sheet or nil.
@@ -121,25 +124,14 @@ extern NSString *MKFacebookResponseFormat;
 - (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet;
 
 
-/*!
- @brief Logs in a user from a saved session.
- 
- Attempts to load a stored infinte session for the application.  This method checks NSUserDefaults for a stored sessionKey and sessionSecret.  It uses a synchronous request to try to authenticate the stored session.  Note: The MKFacebook class only allows a persistent session to be loaded once per instance.  For example, if a persistent session is successfully loaded then the resetFacebookConnection method is called that instance of MKFacebook will return false for every call to loadPersistentSession for the remainder of its existence.  This behavior may change in the future.
- 
- In order for a user to receive what appears to be an infinite session they must grant the application "offline_access" using -(void)grantExtendedPermisison:(NSString *)aString;.  Unfortunately the user will have to login one more time after this is called before -(void)loadPersistentSession; will work.
- 
- Trying to load a persistent session will use a synchronous request, your application might hang if the connectionTimeoutInterval is set to a high number of seconds.
- 
- @result Returns true if stored session information is valid and a user id is successfully returned from Facebook otherwise it returns false.
- */
-- (BOOL)loadPersistentSession;
 
 
 
 /*!
- @brief Returns TRUE if valid session exists.
+ @brief Checks for a valid session in NSUserDefaults.
+
  
- @result Checks to see if auth token, session key, session secret and uid are set.  Returns true if everything is set and it's safe to assume a user has logged in.  
+ @result Returns TRUE if valid session exists.
  */
 - (BOOL)userLoggedIn;
 
@@ -147,7 +139,7 @@ extern NSString *MKFacebookResponseFormat;
 /*!
  @brief Get the UID of the logged in user.
  
- @result Returns uid of user currently logged in.
+ @result Returns uid of user currently logged in, returns nil if no user is logged in.
  */
 - (NSString *)uid;
 
@@ -183,8 +175,7 @@ extern NSString *MKFacebookResponseFormat;
  
  @param aString Name of extended permission to grant. See Facebook documentation for allowed extended permissions.
 
- This method will display a new window and load the Facebook URL  http://www.facebook.com/authorize.php?api_key=YOUR_API_KEY&v=1.0&ext_perm=PERMISSION_NAME
- with authentication information is filled in automatically.  If no user is logged in an alert message will be displayed unless they have been turned off.  Unfortunately the user will have to login again to grant the permissions.
+ This method will display a new window and load the Facebook URL http://www.facebook.com/connect/prompt_permissions.php to extend permissions of the application.
  @version 0.7.4 and later
 */
 - (void)grantExtendedPermission:(NSString *)aString;
@@ -195,10 +186,14 @@ extern NSString *MKFacebookResponseFormat;
  @brief Display a window and a Facebook page to extend permisisons.
  
  @param aString Name of extended permission to grant. See Facebook documentation for allowed extended permissions.
- @result Returns NSWindow with WebView that loads the grant extended permissions request.
+ @param forSheet BOOL to request a NSWindow that can be attached as a sheet, pass in NO to simply display the window.
+
+ This method will display a new window and load the Facebook URL http://www.facebook.com/connect/prompt_permissions.php to extend permissions of the application.
+
+ @result Returns NSWindow or displays window.
  @version 0.8.2 and later
  */
-- (NSWindow *)grantExtendedPermissionForSheet:(NSString *)aString;
+- (NSWindow *)grantExtendedPermission:(NSString *)aString forSheet:(BOOL)forSheet;
 
 
 //@}	//ENDS Extend Permissions group
@@ -222,7 +217,7 @@ extern NSString *MKFacebookResponseFormat;
 
 
 /*!
- @result Returns YES if login alerts are enabled, maybe so (but actually NO) if they are not.
+ @result Returns YES if login alerts are enabled, NO if they are not.
  @version 0.8 and later
  */
 - (BOOL)displayLoginAlerts;
