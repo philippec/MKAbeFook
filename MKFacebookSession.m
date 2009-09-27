@@ -19,6 +19,9 @@
  */
 
 #import "MKFacebookSession.h"
+#import "MKFacebookRequest.h"
+#import "NSXMLDocumentAdditions.h"
+#import "NSXMLElementAdditions.h"
 
 NSString *MKFacebookSessionKey = @"MKFacebookSession";
 
@@ -47,26 +50,53 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[defaults setObject:aSession forKey:MKFacebookSessionKey];
 		self.session = aSession;
+		_validSession = YES;
 	}
 }
 
-- (BOOL)loadSession{
+
+- (BOOL)loadSession
+{
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	NSDictionary *savedSession = [defaults objectForKey:MKFacebookSessionKey];
-	//TODO: check for valid session before returning yes
+	//TODO: use asynchronous request instead of synchronous
 	if(savedSession != nil)
 	{
+
 		self.session = savedSession;
-		return YES;
-	}else {
-		self.session = nil;
-		return NO;
+		
+		MKFacebookRequest *request = [[MKFacebookRequest alloc] init];
+		
+		NSXMLDocument *user = [request fetchFacebookData:[request generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
+		[request release];
+		
+		if([user validFacebookResponse] == NO)
+		{
+			DLog(@"persistent login failed, here's why...");
+			DLog(@"%@", [user description]);
+			return NO;
+		}
+		
+		//check to see if the uid returned is the same as our existing session
+		if ([[[user rootElement] stringValue] isEqualToString:[self uid]] ) {
+			_validSession = YES;
+			return YES;
+		}else {
+			self.session = nil;
+			return NO;
+		}
 	}
+	return NO;
 }
 
+
+//TODO: verify session by sending a request to Facebook using session information
 - (BOOL)validSession{
 	if([[NSUserDefaults standardUserDefaults] objectForKey:MKFacebookSessionKey] != nil)
-		return YES;
+	{
+		return _validSession;
+	}
+		
 	return NO;
 }
 
@@ -74,6 +104,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 	DLog(@"session was destroyed");
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:MKFacebookSessionKey];
 	self.session = nil;
+	_validSession = NO;
 }
 
 - (NSString *)sessionKey{

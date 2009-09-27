@@ -27,6 +27,7 @@
 
 NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
+NSString *MKExtendPermissionsURL = @"http://www.facebook.com/connect/prompt_permissions.php";
 NSString *MKFacebookAPIVersion = @"1.0";
 NSString *MKFacebookResponseFormat = @"XML";
 
@@ -89,8 +90,12 @@ NSString *MKFacebookResponseFormat = @"XML";
 - (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet
 {
 	//try to use existing session
-	if ([self loadPersistentSession] == NO) {
-		
+	if ([[MKFacebookSession sharedMKFacebookSession] loadSession] == YES)
+	{
+		[self userLoginSuccessful];
+		return nil;
+	}else
+	{
 		//prepare loginwindow
 		loginWindow = [[MKLoginWindow alloc] init]; //will be released when closed			
 		[[loginWindow window] setTitle:@"Login"];
@@ -119,38 +124,6 @@ NSString *MKFacebookResponseFormat = @"XML";
 	}
 	return nil;
 }
-
-
-
-- (BOOL)loadPersistentSession
-{
-	//load any existing sessions
-	MKFacebookSession *session = [MKFacebookSession sharedMKFacebookSession];
-	if ([session loadSession]) {
-		
-		MKFacebookRequest *request = [[MKFacebookRequest alloc] init];
-		
-		NSXMLDocument *user = [request fetchFacebookData:[request generateFacebookURL:[NSDictionary dictionaryWithObjectsAndKeys:@"facebook.users.getLoggedInUser", @"method", nil]]];
-		[request release];
-		
-		if([user validFacebookResponse] == NO)
-		{
-			DLog(@"persistent login failed, here's why...");
-			DLog(@"%@", [user description]);
-			[self logout];
-			return NO;
-		}
-		
-		//check to see if the uid returned is the same as our existing session
-		if ([[[user rootElement] stringValue] isEqualToString:[session uid]] ) {
-			[self userLoginSuccessful];
-			return YES;
-		}
-		
-	}
-	return NO;
-}
-
 
 
 
@@ -186,28 +159,32 @@ NSString *MKFacebookResponseFormat = @"XML";
 
 - (void)grantExtendedPermission:(NSString *)aString
 {
-	if([self userLoggedIn] == NO)
-	{
-		if(_displayLoginAlerts == YES)
-		{
-			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"No user logged in!" message:@"Permissions cannot be extended if no one is logged in." details:nil];
-			[errorWindow display];
-		}
-		return;
-	}
+//	if([self userLoggedIn] == NO)
+//	{
+//		if(_displayLoginAlerts == YES)
+//		{
+//			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"No user logged in!" message:@"Permissions cannot be extended if no one is logged in." details:nil];
+//			[errorWindow display];
+//		}
+//		return;
+//	}
+//	
+//	loginWindow = [[MKLoginWindow alloc] init]; //will be released when closed			
+//	[[loginWindow window] setTitle:@"Extended Permissions"];
+//	[loginWindow showWindow:self];
+//	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
+//	
+//	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?api_key=%@&v=%@&ext_perm=%@&popup", MKExtendPermissionsURL, [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
+//	[loginWindow loadURL:url];
 	
-	loginWindow = [[MKLoginWindow alloc] init]; //will be released when closed			
-	[[loginWindow window] setTitle:@"Extended Permissions"];
-	[loginWindow showWindow:self];
-	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
 	
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
-	[loginWindow loadURL:url];
+	[self grantExtendedPermission:aString forSheet:NO];
+	
 	
 }
 
 
-- (NSWindow *)grantExtendedPermissionForSheet:(NSString *)aString
+- (NSWindow *)grantExtendedPermission:(NSString *)aString forSheet:(BOOL)forSheet
 {
 	if([self userLoggedIn] == NO)
 	{
@@ -220,14 +197,24 @@ NSString *MKFacebookResponseFormat = @"XML";
 	}
 	
 	loginWindow = [[MKLoginWindow alloc] init];
-	loginWindow._loginWindowIsSheet = YES;
-	//[loginWindow setWindowSize:NSMakeSize(GRANT_PERMISSIONS_WINDOW_WIDTH, GRANT_PERMISSIONS_WINDOW_HEIGHT)];
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://www.facebook.com/authorize.php?api_key=%@&v=%@&ext_perm=%@&popup", [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
 	[[loginWindow window] setTitle:@"Extended Permissions"];
+	loginWindow._loginWindowIsSheet = forSheet;
+	
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?api_key=%@&v=%@&ext_perm=%@&display=popup&fbconnect=true&http://www.facebook.com/connect/login_success.html?xxRESULTTOKENxx", MKExtendPermissionsURL, [[MKFacebookSession sharedMKFacebookSession] apiKey], MKFacebookAPIVersion, aString]];
+	
+
 	[loginWindow loadURL:url];
 	
-	return [loginWindow window];
-	
+	if (forSheet == YES) {
+		
+		return [loginWindow window];
+	}else {
+		[[loginWindow window] center];
+		[loginWindow showWindow:self];
+		return nil;
+	}
+
+	return nil;
 }
 
 

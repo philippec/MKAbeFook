@@ -28,7 +28,7 @@ typedef enum{
 } MKPhotosFacebookMethod;
 
 
-/*!
+/*
  @brief Convenience for photo related requests.
  
  @class MKPhotosRequest
@@ -44,13 +44,13 @@ typedef enum{
 }
 
 #pragma mark MKFacebookProtocol Requirements
-/*!
+/*
  
  @version 0.8 and later
  */
 +(id)requestUsingFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
 
-/*!
+/*
  
  @version 0.8 and later
  */
@@ -58,32 +58,32 @@ typedef enum{
 
 
 #pragma mark Supported Methods
-/*!
+/*
  
  @version 0.8 and later
  */
 -(void)photosGet:(NSArray *)pids aid:(NSString *)aid subjId:(NSString *)subj_id;
 
-/*!
+/*
  
  @version 0.8 and later
  */
 -(void)photosGet:(NSString *)aid;
 
-/*!
+/*
  
  @version 0.8 and later
  */
 -(void)photosGetTags:(NSArray *)pids;
 
 //UPLOADING METHODS
-/*!
+/*
  
  @version 0.8 and later
  */
 -(void)photosUpload:(NSImage *)photo aid:(NSString *)aid caption:(NSString *)caption;
 
-/*!
+/*
  
  @version 0.8 and later
  */
