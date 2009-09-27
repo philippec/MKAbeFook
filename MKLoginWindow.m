@@ -135,12 +135,12 @@
 	if([urlString hasPrefix:@"http://www.facebook.com/connect/login_success.html"])
 	{
 		//display a custom successful login message that doesn't require an external host
-		//TODO: let developers provide their own local success html file without modifying the framework default
+		//TODO: let others provide their own local success html file without modifying the framework default
 		NSString *fwp = [[NSBundle mainBundle] privateFrameworksPath];
-		NSString *next = [NSString stringWithFormat:@"%@/MKAbeFook.framework/Resources/login_success.html", fwp];
-		[self loadURL:[NSURL URLWithString:next]];
+		NSString *next = [NSString stringWithFormat:@"%@/MKAbeFook.framework/Resources/login_successful.html", fwp];
+		[self loadURL:[NSURL fileURLWithPath:[next stringByExpandingTildeInPath]]];
 		
-		DLog(@"user was successfully logged in");
+		DLog(@"user was successfully logged in, should now load %@", next);
 		//unfortunately we can't call parametersString on the url that facebook returns for us to load (not sure why...)
 		//instead we'll break up the string at the = and load everything after the = as the JSON object
 		NSArray *array = [urlString componentsSeparatedByString:@"="];
