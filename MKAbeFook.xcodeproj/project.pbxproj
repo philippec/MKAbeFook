@@ -46,13 +46,13 @@
 		277BC3CB0D14566F00B9EFFE /* MKFacebookRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		277BC3CE0D14577200B9EFFE /* NSXMLElementAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */; };
 		277BC3CF0D14577200B9EFFE /* NSXMLElementAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC3CD0D14577200B9EFFE /* NSXMLElementAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		277BC3FC0D14691600B9EFFE /* NSXMLDocumentAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC3FA0D14691600B9EFFE /* NSXMLDocumentAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		277BC3FD0D14691600B9EFFE /* NSXMLDocumentAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3FB0D14691600B9EFFE /* NSXMLDocumentAdditions.m */; };
 		277BC4CC0D14815E00B9EFFE /* MKFacebookRequestQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC4CA0D14815E00B9EFFE /* MKFacebookRequestQueue.m */; };
 		277BC4CD0D14815E00B9EFFE /* MKFacebookRequestQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC4CB0D14815E00B9EFFE /* MKFacebookRequestQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2784C16B0E34D7CB00AD28B1 /* MKErrorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2784C1690E34D7CB00AD28B1 /* MKErrorWindow.m */; };
 		2784C16D0E34D81E00AD28B1 /* ErrorWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */; };
+		27AB00E0109115650005063A /* NSDictionaryAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27AB00DE109115650005063A /* NSDictionaryAdditions.h */; };
+		27AB00E1109115650005063A /* NSDictionaryAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AB00DF109115650005063A /* NSDictionaryAdditions.m */; };
 		27D8B08D0AE6FF57007941CF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8B08C0AE6FF57007941CF /* WebKit.framework */; };
 		27D8B0A60AE6FFA7007941CF /* MKLoginWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D8B0A40AE6FFA7007941CF /* MKLoginWindow.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		27D8B0A70AE6FFA7007941CF /* MKLoginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D8B0A50AE6FFA7007941CF /* MKLoginWindow.m */; };
@@ -96,13 +96,13 @@
 		277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKFacebookRequest.h; sourceTree = "<group>"; };
 		277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLElementAdditions.m; sourceTree = "<group>"; };
 		277BC3CD0D14577200B9EFFE /* NSXMLElementAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSXMLElementAdditions.h; sourceTree = "<group>"; };
-		277BC3FA0D14691600B9EFFE /* NSXMLDocumentAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSXMLDocumentAdditions.h; sourceTree = "<group>"; };
-		277BC3FB0D14691600B9EFFE /* NSXMLDocumentAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLDocumentAdditions.m; sourceTree = "<group>"; };
 		277BC4CA0D14815E00B9EFFE /* MKFacebookRequestQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKFacebookRequestQueue.m; sourceTree = "<group>"; };
 		277BC4CB0D14815E00B9EFFE /* MKFacebookRequestQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKFacebookRequestQueue.h; sourceTree = "<group>"; };
 		2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKErrorWindow.h; sourceTree = "<group>"; };
 		2784C1690E34D7CB00AD28B1 /* MKErrorWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKErrorWindow.m; sourceTree = "<group>"; };
 		2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = ErrorWindow.nib; sourceTree = "<group>"; };
+		27AB00DE109115650005063A /* NSDictionaryAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSDictionaryAdditions.h; path = JSON/NSDictionaryAdditions.h; sourceTree = "<group>"; };
+		27AB00DF109115650005063A /* NSDictionaryAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSDictionaryAdditions.m; path = JSON/NSDictionaryAdditions.m; sourceTree = "<group>"; };
 		27CF35810EAADF4300399FF9 /* MKEventsRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKEventsRequest.h; sourceTree = "<group>"; };
 		27CF35820EAADF4300399FF9 /* MKEventsRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKEventsRequest.m; sourceTree = "<group>"; };
 		27D8B08C0AE6FF57007941CF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
@@ -232,8 +232,6 @@
 		27886E7C0B2248A1006F913E /* Categories */ = {
 			isa = PBXGroup;
 			children = (
-				277BC3FA0D14691600B9EFFE /* NSXMLDocumentAdditions.h */,
-				277BC3FB0D14691600B9EFFE /* NSXMLDocumentAdditions.m */,
 				277BC3CD0D14577200B9EFFE /* NSXMLElementAdditions.h */,
 				277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */,
 				274BC9DE0B36BF620080F786 /* CocoaCryptoHashing.h */,
@@ -247,6 +245,8 @@
 		2795444B1065943000E6E8DE /* JSON */ = {
 			isa = PBXGroup;
 			children = (
+				27AB00DE109115650005063A /* NSDictionaryAdditions.h */,
+				27AB00DF109115650005063A /* NSDictionaryAdditions.m */,
 				273E20721066B22400721317 /* JSON.h */,
 				273E20731066B22400721317 /* NSObject+SBJSON.h */,
 				273E20741066B22400721317 /* NSObject+SBJSON.m */,
@@ -296,7 +296,6 @@
 				274BC9E00B36BF620080F786 /* CocoaCryptoHashing.h in Headers */,
 				277BC3CB0D14566F00B9EFFE /* MKFacebookRequest.h in Headers */,
 				277BC3CF0D14577200B9EFFE /* NSXMLElementAdditions.h in Headers */,
-				277BC3FC0D14691600B9EFFE /* NSXMLDocumentAdditions.h in Headers */,
 				277BC4CD0D14815E00B9EFFE /* MKFacebookRequestQueue.h in Headers */,
 				2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */,
 				2721F03B1065A443003A8EDE /* SynthesizeSingleton.h in Headers */,
@@ -309,6 +308,7 @@
 				273E20861066B22400721317 /* SBJsonBase.h in Headers */,
 				273E20881066B22400721317 /* SBJsonParser.h in Headers */,
 				273E208A1066B22400721317 /* SBJsonWriter.h in Headers */,
+				27AB00E0109115650005063A /* NSDictionaryAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,7 +379,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#remove old docs\nrm -rf ../MKAbeFook_Documentation\nmkdir ../MKAbeFook_Documentation\n\n#generate xml documentation via Doxygen\n/Applications/Doxygen.app/Contents/Resources/doxygen Doxyfile\n\n#run doxygen xml through doxyclean to make it look nice\n/usr/bin/python doxyclean/doxyclean.py --input=../MKAbeFook_Documentation/xml --output=../MKAbeFook_Documentation/html --n=MKAbeFook\n\n\n#optionally, remove the xml generated by doxygen\nrm -rf ../MKAbeFook_Documentation/xml\n\ncd ../MKAbeFook_Documentation/html/html\n#move doxyclean documentation up to MKAbeFook_Documentation/\nmv * ../../\n\n#remove extra html folders\ncd ../../\nrm -rf html";
+			shellScript = "#remove old docs\nrm -rf ../MKAbeFook_Documentation\nmkdir ../MKAbeFook_Documentation\n\n#generate xml documentation via Doxygen\n/Applications/Doxygen.app/Contents/Resources/doxygen Doxyfile\n\n#run doxygen xml through doxyclean to make it look nice\n/usr/bin/python doxyclean/doxyclean.py --input=../MKAbeFook_Documentation/xml --output=../MKAbeFook_Documentation/html --n=MKAbeFook\n\n\n#optionally, remove the xml generated by doxygen\n#rm -rf ../MKAbeFook_Documentation/xml\n\n#cd ../MKAbeFook_Documentation/html/html\n#move doxyclean documentation up to MKAbeFook_Documentation/\n#mv * ../../\n\n#remove extra html folders\n#cd ../../\n#rm -rf html";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -393,7 +393,6 @@
 				274BC9E10B36BF620080F786 /* CocoaCryptoHashing.m in Sources */,
 				277BC3CA0D14566F00B9EFFE /* MKFacebookRequest.m in Sources */,
 				277BC3CE0D14577200B9EFFE /* NSXMLElementAdditions.m in Sources */,
-				277BC3FD0D14691600B9EFFE /* NSXMLDocumentAdditions.m in Sources */,
 				277BC4CC0D14815E00B9EFFE /* MKFacebookRequestQueue.m in Sources */,
 				2784C16B0E34D7CB00AD28B1 /* MKErrorWindow.m in Sources */,
 				2721F0421065A4B2003A8EDE /* MKFacebookSession.m in Sources */,
@@ -404,6 +403,7 @@
 				273E20871066B22400721317 /* SBJsonBase.m in Sources */,
 				273E20891066B22400721317 /* SBJsonParser.m in Sources */,
 				273E208B1066B22400721317 /* SBJsonWriter.m in Sources */,
+				27AB00E1109115650005063A /* NSDictionaryAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

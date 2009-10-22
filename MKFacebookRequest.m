@@ -22,6 +22,9 @@
 #import "NSXMLElementAdditions.h"
 #import "MKErrorWindow.h"
 #import "CocoaCryptoHashing.h"
+#import "JSON.h"
+#import "NSDictionaryAdditions.h"
+
 
 NSString *MKFacebookRequestActivityStarted = @"MKFacebookRequestActivityStarted";
 NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
@@ -55,7 +58,8 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		
 		_responseData = [[NSMutableData alloc] init];
 		_parameters = [[NSMutableDictionary alloc] init];
-		_urlRequestType = MKPostRequest;
+		_urlRequestType = MKFacebookRequestTypePOST;
+		_requestFormat = MKFacebookRequestFormatXML;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
 		_displayAPIErrorAlert = NO;
 		_numberOfRequestAttempts = 5;
@@ -125,7 +129,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 
 - (void)setParameters:(NSDictionary *)parameters
 {
-	[_parameters addEntriesFromDictionary:parameters]; //fixes memory leak 0.7.4 - mike
+	[_parameters addEntriesFromDictionary:parameters];
 }
 
 
@@ -139,6 +143,18 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 {
 	return _urlRequestType;
 }
+
+-(void)setRequestFormat:(MKFacebookRequestFormat)requestFormat
+{
+	_requestFormat = requestFormat;
+}
+
+
+- (MKFacebookRequestFormat)requestFormat
+{
+	return _requestFormat;
+}
+
 
 
 - (void)sendRequest
@@ -193,7 +209,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	
 	
 	_requestIsDone = NO;
-	if(_urlRequestType == MKPostRequest)
+	if(_urlRequestType == MKFacebookRequestTypePOST)
 	{
 		//NSLog([_facebookConnection description]);
 		NSMutableURLRequest *postRequest = [NSMutableURLRequest requestWithURL:_requestURL 
@@ -213,7 +229,19 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		//add items that are required by all requests to _parameters dictionary so they are added to the postRequest and we can easily make a sig from them
 		[_parameters setValue:MKFacebookAPIVersion forKey:@"v"];
 		[_parameters setValue:[_session apiKey] forKey:@"api_key"];
-		[_parameters setValue:MKFacebookResponseFormat forKey:@"format"];
+
+		switch ([self requestFormat]) {
+			case MKFacebookRequestFormatXML:
+				[_parameters setValue:@"XML" forKey:@"format"];
+				break;
+			case MKFacebookRequestFormatJSON:
+				[_parameters setValue:@"JSON" forKey:@"format"];
+				break;
+			default:
+				[_parameters setValue:@"XML" forKey:@"format"];
+				break;
+		}
+		
 		
 		
 		//all other methods require call_id and session_key.
@@ -243,7 +271,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 				[postBody appendData: imageData];
 				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
 				
-				//we need to remove this the image object from the dictionary so we can generate a correct sig from the other values, but we can't do it here or leopard will complain.  so we'll do it OUTSIDE the while loop.
+				//we need to remove this the image object from the dictionary so we can generate a correct sig from the other values, but we can't do it here or leopard will complain.  so we'll do it outside the loop.
 				//[_parameters removeObjectForKey:key];
 				imageKey = [NSString stringWithString:key];
 
@@ -265,10 +293,10 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
 		
 		[postRequest setHTTPBody:postBody];
-		dasConnection = [NSURLConnection connectionWithRequest:postRequest delegate:self];
+		theConnection = [NSURLConnection connectionWithRequest:postRequest delegate:self];
 	}
 	
-	if(_urlRequestType == MKGetRequest)
+	if(_urlRequestType == MKFacebookRequestTypeGET)
 	{
 		NSLog(@"using get request");
 		NSURL *theURL = [self generateFacebookURL:_parameters];
@@ -278,7 +306,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 															  timeoutInterval:[self connectionTimeoutInterval]];
 		[getRequest setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 		
-		dasConnection = [NSURLConnection connectionWithRequest:getRequest delegate:self];
+		theConnection = [NSURLConnection connectionWithRequest:getRequest delegate:self];
 	}
 
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityStarted" object:nil];
@@ -291,7 +319,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	if(_requestIsDone == NO)
 	{
 		//NSLog(@"cancelling request...");
-		[dasConnection cancel];
+		[theConnection cancel];
 		_requestIsDone = YES;
 	}
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
@@ -466,48 +494,122 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
 	
-	NSError *error;
-	NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData
-															options:0
-															  error:&error] autorelease];
-	if(error != nil)
-	{
-		MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"API Error" message:@"Facebook returned puke, the API might be down." details:[[error userInfo] description]];
-		[errorWindow display];
-	}else if([returnXML validFacebookResponse] == NO)
-	{
-		NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
-		//4 is a magic number that represents "The application has reached the maximum number of requests allowed. More requests are allowed once the time window has completed."
-		//luckily for us Facebook doesn't define "the time window".  fuckers.
-		//we will also try the request again if we see a 1 (unknown) or 2 (service unavailable) error
-		int errorInt = [[errorDictionary valueForKey:@"error_code"] intValue];
-		if((errorInt == 4 || errorInt == 1 || errorInt == 2 ) && _numberOfRequestAttempts <= _requestAttemptCount)
-		{
-			NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:2.0];
-			[NSThread sleepUntilDate:sleepUntilDate];
-			[_responseData setData:[NSData data]];
-			_requestAttemptCount++;
-			NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
-			[self sendRequest];
-			return;
-		}
-		NSLog(@"I GAVE UP!!! throw it away...");
-		//we've tried the request a few times, now we're giving up.
-		if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
-			[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnXML];
+	
+	/*
+	 Unfortunately there is a fair amount of redundancy here. Depending on the format coming back from Facebook we want o make sure it is valid before returning it to the delegate. 
+	 */
+
+	NSError *error = nil;
+	
+	
+	
+	if ([self requestFormat] == MKFacebookRequestFormatXML) {
 		
-		NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
-		if([self displayAPIErrorAlert])
+		NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData
+												options:0
+												  error:&error] autorelease];
+	
+		if(error != nil && [self displayAPIErrorAlert])
 		{
-			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:errorTitle message:[errorDictionary valueForKey:@"error_msg"] details:[errorDictionary description]];
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"API Error" 
+																	 message:@"Facebook failed to return anything useful. Are services down?" 
+																	 details:[[error userInfo] description]];
 			[errorWindow display];
-		}
-	}else
-	{
-		if([_delegate respondsToSelector:_selector])
-			[_delegate performSelector:_selector withObject:returnXML];		
+		}else if([returnXML validFacebookResponse] == NO)
+		{
+			NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
+			//4 is a magic number that represents "The application has reached the maximum number of requests allowed. More requests are allowed once the time window has completed."
+			//luckily for us Facebook doesn't define "the time window".
+			//we will also try the request again if we see a 1 (unknown) or 2 (service unavailable) error
+			int errorInt = [[errorDictionary valueForKey:@"error_code"] intValue];
+			if((errorInt == 4 || errorInt == 1 || errorInt == 2 ) && _numberOfRequestAttempts <= _requestAttemptCount)
+			{
+				NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:2.0];
+				[NSThread sleepUntilDate:sleepUntilDate];
+				[_responseData setData:[NSData data]];
+				_requestAttemptCount++;
+				NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
+				[self sendRequest];
+				return;
+			}
+			NSLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
+			//we've tried the request a few times, now we're giving up.
+			if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
+				[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnXML];
+			
+			
+			if([self displayAPIErrorAlert])
+			{
+				NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
+				MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:errorTitle message:[errorDictionary valueForKey:@"error_msg"] details:[errorDictionary description]];
+				[errorWindow display];
+			}
+		}else
+		{
+			if([_delegate respondsToSelector:_selector])
+				[_delegate performSelector:_selector withObject:returnXML];		
+		}	
+		
 	}
 	
+	
+
+	
+	
+	if ([self requestFormat] == MKFacebookRequestFormatJSON) {
+		NSString *jsonString = [[[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding] autorelease];
+		id returnJSON = [jsonString JSONValue];
+		
+		if (jsonString == nil || [jsonString length] == 0) {
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"API Error" 
+																	 message:@"Facebook failed to return anything useful. Are services down?" 
+																	 details:[[error userInfo] description]];
+			[errorWindow display];
+		}else if ([returnJSON isKindOfClass:[NSDictionary class]] || [returnJSON isKindOfClass:[NSArray class]]) {
+			
+			if ([returnJSON isKindOfClass:[NSDictionary class]])
+			{
+				if([returnJSON validFacebookResponse] == NO)
+				{
+					//exactly like the XML part
+					int errorInt = [[returnJSON valueForKey:@"error_code"] intValue];
+					if((errorInt == 4 || errorInt == 1 || errorInt == 2 ) && _numberOfRequestAttempts <= _requestAttemptCount)
+					{
+						NSDate *sleepUntilDate = [[NSDate date] addTimeInterval:2.0];
+						[NSThread sleepUntilDate:sleepUntilDate];
+						[_responseData setData:[NSData data]];
+						_requestAttemptCount++;
+						NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
+						[self sendRequest];
+						return;
+					}
+					NSLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
+					//we've tried the request a few times, now we're giving up.
+					if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
+						[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnJSON];
+					
+				}
+				
+				if([self displayAPIErrorAlert])
+				{
+					NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [returnJSON valueForKey:@"error_code"]];
+					MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:errorTitle message:[returnJSON valueForKey:@"error_msg"] details:[returnJSON description]];
+					[errorWindow display];
+				}
+				
+			}else {
+				if ([_delegate respondsToSelector:_selector]) {
+					[_delegate performSelector:_selector withObject:returnJSON];
+				}				
+			}
+			NSLog(@"raw JSON: %@", jsonString);
+			NSLog(@"parsed JSON: %@", [returnJSON description]);
+		}
+		
+		
+	}
+	
+		
 	
 	
 	[_responseData setData:[NSData data]];

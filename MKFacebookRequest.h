@@ -28,13 +28,21 @@ extern NSString *MKFacebookRequestActivityEnded;
  */
 enum MKFacebookRequestType
 {
-	MKPostRequest,
-	MKGetRequest
+	MKFacebookRequestTypePOST,
+	MKFacebookRequestTypeGET
 };
 typedef int MKFacebookRequestType;
 
 
-
+/*!
+ @enum MKFacebookRequestFormat
+ */
+enum MKFacebookRequestFormat
+{
+	MKFacebookRequestFormatXML,
+	MKFacebookRequestFormatJSON
+};
+typedef int MKFacebookRequestFormat;
 
 
 
@@ -68,13 +76,14 @@ typedef int MKFacebookRequestType;
   @version 0.7 and later
  */
 @interface MKFacebookRequest : NSObject {
-	NSURLConnection *dasConnection; //internal connection used if object is used multiple times.  blame the beer.
+	NSURLConnection *theConnection; //internal connection used if object is used multiple times.
 	NSTimeInterval connectionTimeoutInterval;
 	id _delegate;
 	SEL _selector;
 	NSMutableData *_responseData;
 	BOOL _requestIsDone; //dirty stupid way of trying to prevent crashing when trying to cancel the request when it's not active.  isn't there a better way to do this?
 	MKFacebookRequestType _urlRequestType;
+	MKFacebookRequestFormat _requestFormat;
 	NSMutableDictionary *_parameters;
 	NSURL *_requestURL;
 	BOOL _displayAPIErrorAlert;
@@ -174,7 +183,7 @@ typedef int MKFacebookRequestType;
 /*!
  @brief Set the type of request (POST or GET).  POST is default.
  
- @param urlRequestType Accepts MKPostRequest or MKGetRequest to specify request type.  If no request type is set MKPostRequest will be used.
+ @param urlRequestType Accepts MKFacebookRequestTypePOST or MKFacebookRequestTypeGET to specify request type.  If no request type is set MKFacebookRequestTypePOST will be used.
  @version 0.7 and later
  */
 - (void)setURLRequestType:(MKFacebookRequestType)urlRequestType;
@@ -182,6 +191,19 @@ typedef int MKFacebookRequestType;
 //returns type of request that will be made
 - (MKFacebookRequestType)urlRequestType;
 
+
+/*!
+ @brief Set the response format type, XML or JSON.  XML is default.
+ 
+ @param requestFormat Accepts MKFacebookRequestFormatXML or MKFacebookRequestFormatJSON to specify type.
+ 
+ When the response format is JSON the JSON result from Facebook will be parsed and returned to the delegate as either a NSDictionary or NSArray object. Direct access to the JSON returned by Facebook will be made available in a future update.
+ @version 0.9 and later
+ */
+-(void)setRequestFormat:(MKFacebookRequestFormat)requestFormat;
+
+//returns request format
+- (MKFacebookRequestFormat)requestFormat;
 
 
 /*!
@@ -331,22 +353,16 @@ typedef int MKFacebookRequestType;
 
 
 
-
-/*!
- @version 0.8 and later
- */
 @protocol MKFacebookRequestDelegate
-
 
 /*! @name Receive Valid Response
  *
  */
 //@{
 
-
 /*!
- Called when Facebook returns a valid response.  Passes XML returned by Facebook.  If you do not assign a selector use this method to handle reponses from Facebook.  If you want the responses sent elsewhere assign the request a selector.
-
+ Called when Facebook returns a valid response.  Passes response returned by Facebook.  response will be NSXMLDocument if the request type is XML or a NSDictionary or NSArray if the request type is JSON. If you want the responses sent elsewhere assign the request a selector.
+ 
  @version 0.8 and later
  */
 - (void)facebookResponseReceived:(id)response;
@@ -361,7 +377,7 @@ typedef int MKFacebookRequestType;
 
 
 /*!
-Called when an error is returned by Facebook.  Passes XML returned by Facebook.
+Called when an error is returned by Facebook.  Passes response returned by Facebook.
  
  @version 0.8 and later
  */
@@ -379,5 +395,3 @@ Called when an error is returned by Facebook.  Passes XML returned by Facebook.
 
 
 @end
-
-
