@@ -9,7 +9,7 @@
 			<meta charset="UTF-8" />
 			<title><xsl:apply-templates select="object" mode="title"/></title>
 			<meta id="Generator" name="Generator" content="Doxyclean"/>
-			<meta id="GeneratorVersion" name="GeneratorVersion" content="v2.0"/>
+			<meta id="GeneratorVersion" name="GeneratorVersion" content="2.2"/>
 	
 			<link rel="stylesheet" type="text/css" href="../css/common.css"/>
 			<link rel="stylesheet" type="text/css" media="screen" href="../css/screen.css"/>
@@ -50,8 +50,11 @@
 			</script>
 		</head>
 		<body>
-			<header>
-				<h1><xsl:apply-templates select="object" mode="title"/></h1>
+			<header id="projectHeader">
+				<h1><a href="../index.html">##PROJECT## Reference Library</a></h1>
+			</header>
+			<header id="fileHeader">
+				<h1><a href="#classTitle"><xsl:apply-templates select="object" mode="title"/></a></h1>
 			</header>
 			<nav id="buttons">
 				<ul>
@@ -84,7 +87,59 @@
 				
 				<!-- Info Table -->
 				<table id="metadata">
-					<tr class="alt">
+					
+					<xsl:variable name="hasInheritance">
+						<xsl:choose>
+							<xsl:when test="object/superclass[child::text()[normalize-space(.)] | child::*]">
+								<xsl:value-of select="true()"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="false()"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:variable>
+					
+					<xsl:variable name="hasProtocolConformance">
+						<xsl:choose>
+							<xsl:when test="object/conformsTo/protocol or object/superclass/conformsTo/protocol">
+								<xsl:value-of select="true()"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="false()"/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:variable>
+					
+					<xsl:if test="$hasInheritance='true'">
+						<tr class="alt">
+							<th>Inherits from</th>
+							<td>
+								<ul class="inheritance">
+									<xsl:apply-templates select="object/superclass[child::text()[normalize-space(.)] | child::*]"/>
+								</ul>
+							</td>
+						</tr>
+					</xsl:if>
+					
+					<xsl:if test="$hasProtocolConformance='true'">
+						<tr>
+							<xsl:if test="not($hasInheritance='true')">
+								<xsl:attribute name="class">alt</xsl:attribute>
+							</xsl:if>
+							<th>Conforms to</th>
+							<td>
+								<ul>
+									<xsl:apply-templates select="object/conformsTo/protocol"/>
+									<xsl:apply-templates select="object/superclass[child::text()[normalize-space(.)] | child::*]" mode="protocols"/>
+								</ul>
+							</td>
+						</tr>
+					</xsl:if>
+					
+					<tr>
+						<xsl:if test="($hasInheritance='true' and $hasProtocolConformance='true') or ($hasInheritance='false' and $hasProtocolConformance='false')">
+							<xsl:attribute name="class">alt</xsl:attribute>
+						</xsl:if>
 						<th>Declared in</th>
 						<td><xsl:apply-templates select="object/file"/></td>
 					</tr>
@@ -241,6 +296,30 @@
 		<xsl:text> Reference</xsl:text>
 	</xsl:template>
 	
+	<!-- Inheritance Tree -->
+	<xsl:template match="superclass">
+		<li><xsl:apply-templates select="name"/></li>
+	</xsl:template>
+	
+	<!-- Protocol Conformance -->
+	<xsl:template match="conformsTo/protocol">
+		<xsl:param name="class"/>
+		<li>
+			<xsl:apply-templates select="name"/>
+			<xsl:if test="$class">
+				<xsl:text> (</xsl:text><xsl:value-of select="$class"/><xsl:text>)</xsl:text>
+			</xsl:if>
+		</li>
+	</xsl:template>
+	
+	<xsl:template match="superclass" mode="protocols">
+		<xsl:apply-templates select="conformsTo/protocol">
+			<xsl:with-param name="class" select="name"/>
+		</xsl:apply-templates>
+		
+		<xsl:apply-templates select="superclass" mode="protocols"/>
+	</xsl:template>
+	
 	<!-- Overview -->
 	<xsl:template match="object/description">
 		<xsl:if test="brief or details">
@@ -291,6 +370,9 @@
 				<xsl:choose>
 					<xsl:when test="@kind='property'">
 						<xsl:text> </xsl:text><span class="specialType">property</span>
+					</xsl:when>
+					<xsl:when test="@optional='no'">
+						<xsl:text> </xsl:text><span class="specialType">required</span>
 					</xsl:when>
 				</xsl:choose>
 				
@@ -443,7 +525,7 @@
 	<xsl:template match="ref">
 		<code>
 			<xsl:choose>
-				<xsl:when test="/object/name != @id">
+				<xsl:when test="/object/name != child::node()[1]">
 					<a>
 						<xsl:attribute name="href"><xsl:value-of select="@id"/>.html</xsl:attribute>
 						<xsl:apply-templates/>
