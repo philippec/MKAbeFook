@@ -39,6 +39,13 @@ NSString *MKFacebookResponseFormat = @"XML";
 
 
 @implementation MKFacebook
+
+#pragma mark Properties
+
+@synthesize useModalLogin;
+
+#pragma mark -
+
 #pragma mark init methods
 + (MKFacebook *)facebookWithAPIKey:(NSString *)anAPIKey delegate:(id)aDelegate
 {
@@ -62,10 +69,10 @@ NSString *MKFacebookResponseFormat = @"XML";
 	if(self != nil)
 	{
 		[[MKFacebookSession sharedMKFacebookSession] setApiKey:anAPIKey];
-	
 
 		_delegate = aDelegate;
 		_displayLoginAlerts = YES;
+		self.useModalLogin = NO;
 
 	}
 	return self;
@@ -86,6 +93,10 @@ NSString *MKFacebookResponseFormat = @"XML";
 	[self loginWithPermissions:nil forSheet:NO];
 }
 
+- (void)loginUsingModalWindow{
+	self.useModalLogin = YES;
+	[self loginWithPermissions:nil forSheet:NO];
+}
 
 - (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet
 {
@@ -112,7 +123,27 @@ NSString *MKFacebookResponseFormat = @"XML";
 		if(sheet == NO)
 		{
 			[[loginWindow window] center];
-			[loginWindow showWindow:self];
+			if (self.useModalLogin == YES) {
+				NSLog(@"running modally...");
+				loginWindow.runModally = YES;
+				//borrowed from - http://www.dejal.com/blog/2007/01/cocoa-topics-case-modal-webview
+				//and - http://www.mail-archive.com/cocoa-dev@lists.apple.com/msg05398.html
+				//and - NSApp runModalSession: documentation
+				NSModalSession session = [NSApp beginModalSessionForWindow:[loginWindow window]];
+				for(;;)
+				{
+					// Run the window modally until there are no events to process:
+					if ([NSApp runModalSession:session] != NSRunContinuesResponse)
+						break;
+
+					// Give the main loop some time:
+					[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate: [NSDate distantFuture]];
+				}
+				[NSApp endModalSession:session];
+				DLog(@"modal session should be done now!");
+			}else {
+				[loginWindow showWindow:nil];
+			}
 			return nil;
 		}
 		

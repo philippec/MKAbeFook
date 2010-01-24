@@ -32,10 +32,12 @@
 	
 	id _delegate; //the place where userLoginSuccessfull will be called
 	
+	BOOL runModally;
 }
 
 @property BOOL _loginWindowIsSheet;
 @property (nonatomic, retain) id _delegate;
+@property BOOL runModally;
 
 -(id)init;
 

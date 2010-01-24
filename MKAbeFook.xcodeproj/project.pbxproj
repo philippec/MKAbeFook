@@ -25,6 +25,8 @@
 		2721F0411065A4B2003A8EDE /* MKFacebookSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 2721F03F1065A4B2003A8EDE /* MKFacebookSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2721F0421065A4B2003A8EDE /* MKFacebookSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 2721F0401065A4B2003A8EDE /* MKFacebookSession.m */; };
 		273646D8106F3B720044AEB3 /* login_successful.html in Resources */ = {isa = PBXBuildFile; fileRef = 273646D7106F3B720044AEB3 /* login_successful.html */; };
+		273A398F110BE363003BD236 /* NSXMLDocumentAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 273A398D110BE363003BD236 /* NSXMLDocumentAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		273A3990110BE363003BD236 /* NSXMLDocumentAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 273A398E110BE363003BD236 /* NSXMLDocumentAdditions.m */; };
 		273E1F6010667D4700721317 /* NSStringExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E1F5E10667D4700721317 /* NSStringExtras.h */; };
 		273E1F6110667D4700721317 /* NSStringExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E1F5F10667D4700721317 /* NSStringExtras.m */; };
 		273E207F1066B22400721317 /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E20721066B22400721317 /* JSON.h */; };
@@ -73,6 +75,8 @@
 		2721F03F1065A4B2003A8EDE /* MKFacebookSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKFacebookSession.h; sourceTree = "<group>"; };
 		2721F0401065A4B2003A8EDE /* MKFacebookSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKFacebookSession.m; sourceTree = "<group>"; };
 		273646D7106F3B720044AEB3 /* login_successful.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = login_successful.html; sourceTree = "<group>"; };
+		273A398D110BE363003BD236 /* NSXMLDocumentAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSXMLDocumentAdditions.h; sourceTree = "<group>"; };
+		273A398E110BE363003BD236 /* NSXMLDocumentAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLDocumentAdditions.m; sourceTree = "<group>"; };
 		273E1F5E10667D4700721317 /* NSStringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringExtras.h; sourceTree = "<group>"; };
 		273E1F5F10667D4700721317 /* NSStringExtras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringExtras.m; sourceTree = "<group>"; };
 		273E20721066B22400721317 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSON.h; path = JSON/JSON.h; sourceTree = "<group>"; };
@@ -232,6 +236,8 @@
 		27886E7C0B2248A1006F913E /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				273A398D110BE363003BD236 /* NSXMLDocumentAdditions.h */,
+				273A398E110BE363003BD236 /* NSXMLDocumentAdditions.m */,
 				277BC3CD0D14577200B9EFFE /* NSXMLElementAdditions.h */,
 				277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */,
 				274BC9DE0B36BF620080F786 /* CocoaCryptoHashing.h */,
@@ -309,6 +315,7 @@
 				273E20881066B22400721317 /* SBJsonParser.h in Headers */,
 				273E208A1066B22400721317 /* SBJsonWriter.h in Headers */,
 				27AB00E0109115650005063A /* NSDictionaryAdditions.h in Headers */,
+				273A398F110BE363003BD236 /* NSXMLDocumentAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,6 +411,7 @@
 				273E20891066B22400721317 /* SBJsonParser.m in Sources */,
 				273E208B1066B22400721317 /* SBJsonWriter.m in Sources */,
 				27AB00E1109115650005063A /* NSDictionaryAdditions.m in Sources */,
+				273A3990110BE363003BD236 /* NSXMLDocumentAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,7 +507,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
 			name = Debug;
 		};
@@ -510,7 +518,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				VERSIONING_SYSTEM = "";
 			};
 			name = Release;

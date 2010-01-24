@@ -54,7 +54,15 @@ extern NSString *MKFacebookResponseFormat;
 	BOOL _alertMessagesEnabled;
 	BOOL _displayLoginAlerts;
 
+	@private BOOL useModalLogin;
 }
+
+#pragma mark Properties
+
+@property (readwrite) BOOL useModalLogin;
+
+#pragma mark -
+
 
 #pragma mark Instantiate
 /*! @name Creating and Initializing
@@ -106,11 +114,21 @@ extern NSString *MKFacebookResponseFormat;
 /*!
  @brief Load existing session if available or display a login window.
  
- Tries to load existing session. If no session is available a login window will be displayed. If a user logs in successfully the session will automatically be saved to the application NSUserDefaults. 
+ Tries to load existing session. If no session is available a login window will be displayed. If a user logs in successfully the session will automatically be saved to the application NSUserDefaults. If you need to display a login window while a modal window active use loginUsingModalWindow.
  
- This is the same as calling loginWithPermisisons:nil forSheet:NO.
  */
 - (void)login;
+
+
+/*!
+ @brief Loads an existing session if available or displays a modal login window.
+ 
+ Tries to load an existing session. If no session is available a modal login window will be displayed. Use this method if you need to display a modal login window while another modal window is already visible.
+ 
+ If a user logs in successfully the session will automatically be saaved to the application NSUSerDefaults.
+ */
+- (void)loginUsingModalWindow;
+
 
 /*!
  @brief Attempts to log a user in using existing session.  If no session is available a login window is diplayed.
@@ -125,8 +143,6 @@ extern NSString *MKFacebookResponseFormat;
 
 
 
-
-
 /*!
  @brief Checks for a valid session in NSUserDefaults.
 
@@ -134,6 +150,7 @@ extern NSString *MKFacebookResponseFormat;
  @result Returns TRUE if valid session exists.
  */
 - (BOOL)userLoggedIn;
+
 
 
 /*!

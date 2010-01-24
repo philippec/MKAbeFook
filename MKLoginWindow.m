@@ -27,12 +27,14 @@
 @implementation MKLoginWindow
 @synthesize _loginWindowIsSheet;
 @synthesize _delegate;
+@synthesize runModally;
 
 -(id)init
 {
 	self = [super init];
 	self._loginWindowIsSheet = NO;
 	self._delegate = nil;
+	self.runModally = NO;
 	path = [[NSBundle bundleForClass:[self class]] pathForResource:@"LoginWindow" ofType:@"nib"];
 	[super initWithWindowNibPath:path owner:self];
 	return self;
@@ -105,11 +107,17 @@
 {
 	DLog(@"windowWillClose: was called");
 
+	if (self.runModally == YES) {
+		[NSApp stopModal];
+	}
+
+	//this is not the proper way to do this, someone please fix it.
 	[self autorelease];
 }
 
 -(void)dealloc
 {
+	DLog(@"releasing login window");
 	[_delegate release];
 	[loginWebView stopLoading:nil];
 	[loadingWebViewProgressIndicator unbind:@"value"];
