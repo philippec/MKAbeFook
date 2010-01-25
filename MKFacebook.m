@@ -124,7 +124,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 		{
 			[[loginWindow window] center];
 			if (self.useModalLogin == YES) {
-				NSLog(@"running modally...");
+				DLog(@"display modal login");
 				loginWindow.runModally = YES;
 				//borrowed from - http://www.dejal.com/blog/2007/01/cocoa-topics-case-modal-webview
 				//and - http://www.mail-archive.com/cocoa-dev@lists.apple.com/msg05398.html

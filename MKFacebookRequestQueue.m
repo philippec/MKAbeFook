@@ -124,7 +124,7 @@
 		[[_requestsArray objectAtIndex:_currentRequest] setDelegate:self];
 		[[_requestsArray objectAtIndex:_currentRequest] setSelector:@selector(httpRequestFinished:)];
 		[[_requestsArray objectAtIndex:_currentRequest] sendRequest];
-		NSLog(@"request started");
+		DLog(@"request started");
 	}
 	_currentRequest++;
 }
@@ -132,7 +132,7 @@
 
 - (void)httpRequestFinished:(id)data
 {
-	NSLog(@"requst completed");
+	DLog(@"requst completed");
 	if([_delegate respondsToSelector:_lastRequestResponseSelector])
 		[_delegate performSelector:_lastRequestResponseSelector withObject:data];
 	

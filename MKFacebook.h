@@ -43,6 +43,7 @@ extern NSString *MKFacebookResponseFormat;
  Delegate Methods
  
  -(void)userLoginSuccessful; (required) Called when a session has been successfully retrieved from Facebook.  Your MKFacebook delegate must implement this method, an exception will be raised if it doesn't.
+
   
  */
 @interface MKFacebook : NSObject {
@@ -116,6 +117,10 @@ extern NSString *MKFacebookResponseFormat;
  
  Tries to load existing session. If no session is available a login window will be displayed. If a user logs in successfully the session will automatically be saved to the application NSUserDefaults. If you need to display a login window while a modal window active use loginUsingModalWindow.
  
+ @see loginUsingModalWindow 
+ @see loginWithPermissions:forSheet:
+ 
+ @version 0.9 and later
  */
 - (void)login;
 
@@ -126,6 +131,11 @@ extern NSString *MKFacebookResponseFormat;
  Tries to load an existing session. If no session is available a modal login window will be displayed. Use this method if you need to display a modal login window while another modal window is already visible.
  
  If a user logs in successfully the session will automatically be saaved to the application NSUSerDefaults.
+
+ @see login 
+ @see loginWithPermissions:forSheet:
+
+ @version 0.9 and later
  */
 - (void)loginUsingModalWindow;
 
@@ -138,6 +148,11 @@ extern NSString *MKFacebookResponseFormat;
  @param permissions List of permisisons to offer the user.
  @param sheet If YES is passed in a NSWindow will be returned, otherwise a login window will appear and nil will be returned.
  @return Either a NSWindow to be attached as a sheet or nil.
+ 
+ @see login
+ @see loginUsingModalWindow
+
+ @version 0.9 and later
  */
 - (NSWindow *)loginWithPermissions:(NSArray *)permissions forSheet:(BOOL)sheet;
 
@@ -148,6 +163,8 @@ extern NSString *MKFacebookResponseFormat;
 
  
  @result Returns TRUE if valid session exists.
+ 
+ @see uid
  */
 - (BOOL)userLoggedIn;
 
@@ -157,6 +174,8 @@ extern NSString *MKFacebookResponseFormat;
  @brief Get the UID of the logged in user.
  
  @result Returns uid of user currently logged in, returns nil if no user is logged in.
+ 
+ @see userLoggedIn
  */
 - (NSString *)uid;
 
@@ -193,6 +212,9 @@ extern NSString *MKFacebookResponseFormat;
  @param aString Name of extended permission to grant. See Facebook documentation for allowed extended permissions.
 
  This method will display a new window and load the Facebook URL http://www.facebook.com/connect/prompt_permissions.php to extend permissions of the application.
+ 
+ @see grantExtendedPermission:forSheet:
+ 
  @version 0.7.4 and later
 */
 - (void)grantExtendedPermission:(NSString *)aString;
@@ -206,6 +228,8 @@ extern NSString *MKFacebookResponseFormat;
  @param forSheet BOOL to request a NSWindow that can be attached as a sheet, pass in NO to simply display the window.
 
  This method will display a new window and load the Facebook URL http://www.facebook.com/connect/prompt_permissions.php to extend permissions of the application.
+ 
+ @see grantExtendedPermission:
 
  @result Returns NSWindow or displays window.
  @version 0.8.2 and later
@@ -225,8 +249,14 @@ extern NSString *MKFacebookResponseFormat;
 
 
 /*!
+ @brief Display alert window with details of error encountered. 
+ 
  Set whether or not alert windows should be displayed if Facebook returns an error during the login process.  Default is YES.
+ 
  @param aBool Should we display the error or should we not?
+ 
+ @see displayLoginAlerts
+ 
  @version 0.8 and later
  */
 - (void)setDisplayLoginAlerts:(BOOL)aBool;
@@ -234,7 +264,12 @@ extern NSString *MKFacebookResponseFormat;
 
 
 /*!
+ @brief Returns YES if login alerts are enabled, NO if they are not.
+ 
  @result Returns YES if login alerts are enabled, NO if they are not.
+ 
+ @see setDisplayLoginAlerts:
+ 
  @version 0.8 and later
  */
 - (BOOL)displayLoginAlerts;
@@ -264,8 +299,11 @@ extern NSString *MKFacebookResponseFormat;
 
 /*!
  Called when a session has been successfully retrieved from Facebook.  You may now start sending requests using MKFacebookRequest.
+ 
+ @see MKFacebookRequest
  @version 0.8 and later
  */
+@required
 -(void)userLoginSuccessful;
 
 

@@ -128,7 +128,7 @@
 				selectorToPerform = @selector(eventsRequest:events:);
 			}else
 			{
-				NSLog(@"MKEventsRequest delegate does not respond to -(void)eventsRequest:(MKEventsRequest *)eventsRequest events:(id)events");
+				DLog(@"MKEventsRequest delegate does not respond to -(void)eventsRequest:(MKEventsRequest *)eventsRequest events:(id)events");
 			}
 			break;
 		case MKEventsFacebookMethodEventsGetMembers:
@@ -137,11 +137,11 @@
 				selectorToPerform = @selector(eventsRequest:eventMembers:);
 			}else
 			{
-				NSLog(@"MKEventsRequest delegate does not respond to -(void)eventsRequest:(MKEventsRequest *)eventsRequest eventMembers:(id)eventMembers");
+				DLog(@"MKEventsRequest delegate does not respond to -(void)eventsRequest:(MKEventsRequest *)eventsRequest eventMembers:(id)eventMembers");
 			}			
 			break;
 		default:
-			NSLog(@"There should be no way in hell you are seeing this message, WTF DID YOU DO!?!?!!");
+			DLog(@"There should be no way in hell you are seeing this message, WTF DID YOU DO!?!?!!");
 			break;
 	}
 	

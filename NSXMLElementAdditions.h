@@ -20,19 +20,33 @@
 
 #import <Cocoa/Cocoa.h>
 
-/*!
- @category NSXMLElementAdditions(NSXMLElement)
- @brief Adds arrayFromXMLElement and dictionaryFromXMLElement to NSXMLElement class.
- 
- The -(NSArray *)arrayFromXMLElement method recursively traverses the hierarchy rooted at XMLElement, aggregating the top-level results into a list (array). If conflicting top-level elements are found, the top-level elements are packaged into a structure (dictionary), and returned as the only object of the array. Each element in the array is either another array, a dictionary, or a string.
- 
- The -(NSDictionary *)dictionaryFromXMLElement method Recursively traverses the hierarchy rooted at XMLElement, aggregating the top-level results into a structure (dictionary). Each element in the dictionary is either an array, a dictionary, or a string.
 
- @version 0.7
- */
 @interface NSXMLElement (NSXMLElementAdditions)
 
+/*! @name Parsing
+ *	Parses XML from Facebook
+ */
+//@{
+
+
+/*!
+ @brief Parses XML response into NSArray of NSDictionary items.
+ 
+ Recursively traverses the hierarchy rooted at XMLElement, aggregating the top-level results into a list (array). If conflicting top-level elements are found, the top-level elements are packaged into a structure (dictionary), and returned as the only object of the array. Each element in the array is either another array, a dictionary, or a string.
+
+ @return NSArray
+ */
 -(NSArray *)arrayFromXMLElement;
+
+
+/*!
+ @brief Parses XML response into NSDictionary
+ 
+ Recursively traverses the hierarchy rooted at XMLElement, aggregating the top-level results into a structure (dictionary). Each element in the dictionary is either an array, a dictionary, or a string.
+ 
+ @return NSDictionary
+ */
 -(NSDictionary *)dictionaryFromXMLElement;
 
+//@}	//ENDS Parsing group
 @end

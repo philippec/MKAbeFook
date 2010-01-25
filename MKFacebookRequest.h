@@ -113,7 +113,6 @@ typedef int MKFacebookRequestFormat;
 /*!
  @brief Setup new MKFacebookRequest object.
  
- @param aFacebookConnection A MKFacebook object that has been used to log a user in.  This object must have a valid sessionKey.
  @param aDelegate The object that will receive the response returned by Facebook.
  @param aSelector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument. 
  @version 0.9 and later
@@ -164,7 +163,28 @@ typedef int MKFacebookRequestFormat;
 /*!
  @brief Pass in a NSDictionary of parameters for your request.
  
- @param parameters NSDictionary containing parameters for requested method.  The dictionary must contain a the key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo".  Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id" do not need to be included in this dictionary.
+ @param parameters NSDictionary containing parameters for requested method.  
+ 
+ The parameters dictionary must contain a the key "method" with a value of the full Facebook method being requested, i.e. "facebook.users.getInfo".  Values that are required by all Facebook methods, "v", "api_key", "format", "session_key", "sig", and "call_id" do not need to be included in this dictionary.
+ 
+ 
+ @verbatim
+ NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
+ 
+ //set up parameters for request
+ [parameters setValue:@"facebook.photos.getAlbums" forKey:@"method"];
+ [parameters setValue:[fbConnection uid] forKey:@"uid"];
+ 
+ //add parameters to request
+ [request setParameters:parameters];
+ 
+ //send the request
+ [request sendRequest];
+ 
+ [parameters release];
+ @endverbatim
+ 
+ 
  @version 0.7 and later
  */
 - (void)setParameters:(NSDictionary *)parameters;
@@ -198,6 +218,7 @@ typedef int MKFacebookRequestFormat;
  @param requestFormat Accepts MKFacebookRequestFormatXML or MKFacebookRequestFormatJSON to specify type.
  
  When the response format is JSON the JSON result from Facebook will be parsed and returned to the delegate as either a NSDictionary or NSArray object. Direct access to the JSON returned by Facebook will be made available in a future update.
+ 
  @version 0.9 and later
  */
 -(void)setRequestFormat:(MKFacebookRequestFormat)requestFormat;
@@ -210,7 +231,10 @@ typedef int MKFacebookRequestFormat;
  @brief Generates the appropriate URL and signature based on parameters for request.  Sends request to Facebook.
  
  Sends request to Facebook.  The result will be passed to the delegate / selector that were assigned to this object.
+ 
  @version 0.7 and later
+ 
+ @see MKFacebookRequestDelegate
  */
 - (void)sendRequest;
 
@@ -234,6 +258,10 @@ typedef int MKFacebookRequestFormat;
  This method will automatically include all parameters required by every Facebook method.  Parameters you do not need to include are "v", "api_key", "format", "session_key", and "call_id".  See official Facebook documentation for all other parameters available depending on the method you are calling.  As of 0.7 this method is considered deprecated, use generateFacebookURL: instead.
  
  @result Returns complete NSURL ready to be sent to the Facebook API.
+ 
+ @see generateFacebookURL:
+ @see fetchFacebookData:
+ 
  */
 - (NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters;
 
@@ -246,7 +274,12 @@ typedef int MKFacebookRequestFormat;
  @param parameters NSDictionary containing parameters and values for a desired method.  The dictionary must include a key "method" that has the value of the desired method to be called, i.e. "facebook.users.getInfo".  They keys are the parameter names and the values are the arguments.
  
  This method will automatically include all parameters required by every Facebook method.  Parameters you do not need to include are "v", "api_key", "format", "session_key", "sig", and "call_id".  See official Facebook documentation for all other parameters available depending on the method you are calling.
+ 
  @result Returns complete NSURL ready to be sent to the Facebook API.
+ 
+ @see generateFacebookURL:parameters:
+ @see fetchFacebookData:
+ 
  */
 - (NSURL *)generateFacebookURL:(NSDictionary *)parameters;
 //@}
@@ -291,6 +324,9 @@ typedef int MKFacebookRequestFormat;
  @brief Set the delegate to recieve request results.
  
  @param delegate The object that will receive the inforamtion returned by Facebook.
+ 
+ @see MKFacebookRequestDelegate
+ 
  @version 0.7 and later
  */
 - (void)setDelegate:(id)delegate;
@@ -303,6 +339,8 @@ typedef int MKFacebookRequestFormat;
  @brief Set the selector to receive the request results.
  
  @param selector Method in delegate object to be called and passed the response from Facebook.  This method should accept an (id) as an argument.
+ 
+ 
  @version 0.7 and later
  */
 - (void)setSelector:(SEL)selector;
@@ -317,6 +355,8 @@ typedef int MKFacebookRequestFormat;
  
  Sets whether or not instance should automatically display error windows when network connection or xml parsing errors are encountered.  Default is yes.
  
+ @see displayAPIErrorAlert
+ 
  @version 0.8 and later
  */
 - (void)setDisplayAPIErrorAlert:(BOOL)aBool;
@@ -327,6 +367,9 @@ typedef int MKFacebookRequestFormat;
  @brief Returns TRUE if error windows will be displayed.
  
  @result Returns boolean indicating whether or not instance will automatically display error windows or not.
+ 
+ @see setDisplayAPIErrorAlert:
+ 
  @version 0.8 and later
  */
 - (BOOL)displayAPIErrorAlert;
@@ -355,16 +398,20 @@ typedef int MKFacebookRequestFormat;
 
 @protocol MKFacebookRequestDelegate
 
+
 /*! @name Receive Valid Response
  *
  */
 //@{
 
 /*!
- Called when Facebook returns a valid response.  Passes response returned by Facebook.  response will be NSXMLDocument if the request type is XML or a NSDictionary or NSArray if the request type is JSON. If you want the responses sent elsewhere assign the request a selector.
+ Called when Facebook returns a valid response and passes the response returned by Facebook.  The response will be a NSXMLDocument if the request type is XML or a NSDictionary or NSArray if the request type is JSON. If you want the responses sent elsewhere assign the request a selector.
+ 
+ @see MKFacebookRequest
  
  @version 0.8 and later
  */
+@optional
 - (void)facebookResponseReceived:(id)response;
 //@}
 
@@ -381,6 +428,7 @@ Called when an error is returned by Facebook.  Passes response returned by Faceb
  
  @version 0.8 and later
  */
+@optional
 - (void)facebookErrorResponseReceived:(id)errorResponse;
 
 
@@ -390,6 +438,7 @@ Called when an error is returned by Facebook.  Passes response returned by Faceb
  
  @version 0.8 and later
  */
+@optional
 - (void)facebookRequestFailed:(id)error;
 //@}
 

@@ -57,7 +57,7 @@ a:hover {
 	font-size: 1.1em;
 	font-weight: bold;
 	margin-top: 1.0em;
-	margin-bottom: 0.5em;
+	margin-bottom: 0.3em;
 	}
 
 /* -------------------------------------*/
@@ -120,6 +120,21 @@ table#metadata ul.inheritance li:last-of-type:after {
 	line-height: 1.5em;
 	margin: 0.4em 0 1.0em 0;
 }
+
+deprecated{
+	font-family: "Lucida Grande", Helvetica, sans-serif;
+	font-size: 1.1em;
+	font-style: italic;
+	color: red;
+}
+
+
+.codeblock{
+    background-color: #F2F5F9 ;
+    border: 1px solid #CBD1D6;
+    padding: 5px;
+}
+
 
 code {
 	font-family: Monaco, 'Courier New', Courier, monospace;

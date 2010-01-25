@@ -49,7 +49,7 @@
 				}
 			</script>
 		</head>
-		<body>
+		<body onload="toggleTOC()">
 			<header id="projectHeader">
 				<h1><a href="../index.html">##PROJECT## Reference Library</a></h1>
 			</header>
@@ -414,7 +414,7 @@
 		<section class="definition">
 			<xsl:attribute name="id"><xsl:value-of select="name"/></xsl:attribute>
 			<h3><xsl:value-of select="name"/></h3>
-			
+			<xsl:apply-templates select="deprecated"/>
 			<xsl:apply-templates select="description/brief"/>
 			
 			<code class="methodDeclaration">
@@ -426,7 +426,9 @@
 			<xsl:apply-templates select="description/details"/>
 			<xsl:apply-templates select="warning"/>
 			<xsl:apply-templates select="bug"/>
+			<xsl:apply-templates select="verbatim"/>
 			<xsl:apply-templates select="seeAlso"/>
+			<xsl:apply-templates select="version"/>
 			<xsl:apply-templates select="file"/>
 			
 		</section>
@@ -472,7 +474,7 @@
 	
 	<xsl:template match="member/warning">
 		<h5>Warning</h5>
-		<xsl:apply-templates/>
+        <xsl:apply-templates/>
 	</xsl:template>
 	
 	<xsl:template match="member/bug">
@@ -502,6 +504,23 @@
 		<h5>Declared In</h5>
 		<code><xsl:apply-templates/></code>
 	</xsl:template>
+
+	<xsl:template match="version">
+		<h5>Availability</h5>
+		<xsl:apply-templates/>
+	</xsl:template>
+
+	<xsl:template match="deprecated">
+		<deprecated><xsl:apply-templates/></deprecated>
+	</xsl:template>
+
+    <!-- using 'verbatim' to display code examples -->
+	<xsl:template match="verbatim">
+		<h5>Example</h5>
+            <pre><p class="codeblock"><code><xsl:apply-templates/></code></p></pre>
+	</xsl:template>
+
+
 	
 	<!-- General Tags -->
 	

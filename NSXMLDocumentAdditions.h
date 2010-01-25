@@ -20,15 +20,23 @@
 
 #import <Cocoa/Cocoa.h>
 
-/*!
-@category NSXMLDocumentAdditions (NSXMLDocument)
- @brief Adds validFacebookResponse method to NSXMLDocument class.
- 
- This category adds the -(BOOL)validFacebookResponse method to the NSXMLDocument class.  If the XML returned by Facebook.com contains an error validFacebookResponse returns NO.
-  @version 0.7 and later
-*/
 
 @interface NSXMLDocument (NSXMLDocumentAdditions)
 
+/*! @name Validating
+ *	Validates XML from Facebook.
+ */
+//@{
+
+/*!
+ @brief Checks to see if NSXMLDocument is a valid response from Facebook.
+ 
+ Returns FALSE if document contains an error.
+ 
+ @return BOOL
+ */
 -(BOOL)validFacebookResponse;
+
+//@}	//ENDS Validating group
+
 @end

@@ -298,7 +298,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	
 	if(_urlRequestType == MKFacebookRequestTypeGET)
 	{
-		NSLog(@"using get request");
+		DLog(@"using get request");
 		NSURL *theURL = [self generateFacebookURL:_parameters];
 		
 		NSMutableURLRequest *getRequest = [NSMutableURLRequest requestWithURL:theURL 
@@ -528,11 +528,11 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 				[NSThread sleepUntilDate:sleepUntilDate];
 				[_responseData setData:[NSData data]];
 				_requestAttemptCount++;
-				NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
+				DLog(@"Too many requests, waiting just a moment....%@", [self description]);
 				[self sendRequest];
 				return;
 			}
-			NSLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
+			DLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
 			//we've tried the request a few times, now we're giving up.
 			if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
 				[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnXML];
@@ -579,11 +579,11 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 						[NSThread sleepUntilDate:sleepUntilDate];
 						[_responseData setData:[NSData data]];
 						_requestAttemptCount++;
-						NSLog(@"Too many requests, waiting just a moment....%@", [self description]);
+						DLog(@"Too many requests, waiting just a moment....%@", [self description]);
 						[self sendRequest];
 						return;
 					}
-					NSLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
+					DLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
 					//we've tried the request a few times, now we're giving up.
 					if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
 						[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnJSON];
@@ -602,8 +602,8 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 					[_delegate performSelector:_selector withObject:returnJSON];
 				}				
 			}
-			NSLog(@"raw JSON: %@", jsonString);
-			NSLog(@"parsed JSON: %@", [returnJSON description]);
+			DLog(@"raw JSON: %@", jsonString);
+			DLog(@"parsed JSON: %@", [returnJSON description]);
 		}
 		
 		

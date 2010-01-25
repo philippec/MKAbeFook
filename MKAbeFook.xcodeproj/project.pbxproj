@@ -27,6 +27,8 @@
 		273646D8106F3B720044AEB3 /* login_successful.html in Resources */ = {isa = PBXBuildFile; fileRef = 273646D7106F3B720044AEB3 /* login_successful.html */; };
 		273A398F110BE363003BD236 /* NSXMLDocumentAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 273A398D110BE363003BD236 /* NSXMLDocumentAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		273A3990110BE363003BD236 /* NSXMLDocumentAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 273A398E110BE363003BD236 /* NSXMLDocumentAdditions.m */; };
+		273A3C21110D2F0B003BD236 /* NSDictionaryAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 273A3C1F110D2F0B003BD236 /* NSDictionaryAdditions.h */; };
+		273A3C22110D2F0B003BD236 /* NSDictionaryAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 273A3C20110D2F0B003BD236 /* NSDictionaryAdditions.m */; };
 		273E1F6010667D4700721317 /* NSStringExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E1F5E10667D4700721317 /* NSStringExtras.h */; };
 		273E1F6110667D4700721317 /* NSStringExtras.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E1F5F10667D4700721317 /* NSStringExtras.m */; };
 		273E207F1066B22400721317 /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E20721066B22400721317 /* JSON.h */; };
@@ -53,8 +55,6 @@
 		2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2784C16B0E34D7CB00AD28B1 /* MKErrorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2784C1690E34D7CB00AD28B1 /* MKErrorWindow.m */; };
 		2784C16D0E34D81E00AD28B1 /* ErrorWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */; };
-		27AB00E0109115650005063A /* NSDictionaryAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 27AB00DE109115650005063A /* NSDictionaryAdditions.h */; };
-		27AB00E1109115650005063A /* NSDictionaryAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27AB00DF109115650005063A /* NSDictionaryAdditions.m */; };
 		27D8B08D0AE6FF57007941CF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8B08C0AE6FF57007941CF /* WebKit.framework */; };
 		27D8B0A60AE6FFA7007941CF /* MKLoginWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D8B0A40AE6FFA7007941CF /* MKLoginWindow.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		27D8B0A70AE6FFA7007941CF /* MKLoginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D8B0A50AE6FFA7007941CF /* MKLoginWindow.m */; };
@@ -77,6 +77,8 @@
 		273646D7106F3B720044AEB3 /* login_successful.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = login_successful.html; sourceTree = "<group>"; };
 		273A398D110BE363003BD236 /* NSXMLDocumentAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSXMLDocumentAdditions.h; sourceTree = "<group>"; };
 		273A398E110BE363003BD236 /* NSXMLDocumentAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSXMLDocumentAdditions.m; sourceTree = "<group>"; };
+		273A3C1F110D2F0B003BD236 /* NSDictionaryAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDictionaryAdditions.h; sourceTree = "<group>"; };
+		273A3C20110D2F0B003BD236 /* NSDictionaryAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSDictionaryAdditions.m; sourceTree = "<group>"; };
 		273E1F5E10667D4700721317 /* NSStringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSStringExtras.h; sourceTree = "<group>"; };
 		273E1F5F10667D4700721317 /* NSStringExtras.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringExtras.m; sourceTree = "<group>"; };
 		273E20721066B22400721317 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSON.h; path = JSON/JSON.h; sourceTree = "<group>"; };
@@ -105,8 +107,6 @@
 		2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKErrorWindow.h; sourceTree = "<group>"; };
 		2784C1690E34D7CB00AD28B1 /* MKErrorWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKErrorWindow.m; sourceTree = "<group>"; };
 		2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = ErrorWindow.nib; sourceTree = "<group>"; };
-		27AB00DE109115650005063A /* NSDictionaryAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSDictionaryAdditions.h; path = JSON/NSDictionaryAdditions.h; sourceTree = "<group>"; };
-		27AB00DF109115650005063A /* NSDictionaryAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSDictionaryAdditions.m; path = JSON/NSDictionaryAdditions.m; sourceTree = "<group>"; };
 		27CF35810EAADF4300399FF9 /* MKEventsRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKEventsRequest.h; sourceTree = "<group>"; };
 		27CF35820EAADF4300399FF9 /* MKEventsRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKEventsRequest.m; sourceTree = "<group>"; };
 		27D8B08C0AE6FF57007941CF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
@@ -236,6 +236,8 @@
 		27886E7C0B2248A1006F913E /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				273A3C1F110D2F0B003BD236 /* NSDictionaryAdditions.h */,
+				273A3C20110D2F0B003BD236 /* NSDictionaryAdditions.m */,
 				273A398D110BE363003BD236 /* NSXMLDocumentAdditions.h */,
 				273A398E110BE363003BD236 /* NSXMLDocumentAdditions.m */,
 				277BC3CD0D14577200B9EFFE /* NSXMLElementAdditions.h */,
@@ -251,8 +253,6 @@
 		2795444B1065943000E6E8DE /* JSON */ = {
 			isa = PBXGroup;
 			children = (
-				27AB00DE109115650005063A /* NSDictionaryAdditions.h */,
-				27AB00DF109115650005063A /* NSDictionaryAdditions.m */,
 				273E20721066B22400721317 /* JSON.h */,
 				273E20731066B22400721317 /* NSObject+SBJSON.h */,
 				273E20741066B22400721317 /* NSObject+SBJSON.m */,
@@ -314,8 +314,8 @@
 				273E20861066B22400721317 /* SBJsonBase.h in Headers */,
 				273E20881066B22400721317 /* SBJsonParser.h in Headers */,
 				273E208A1066B22400721317 /* SBJsonWriter.h in Headers */,
-				27AB00E0109115650005063A /* NSDictionaryAdditions.h in Headers */,
 				273A398F110BE363003BD236 /* NSXMLDocumentAdditions.h in Headers */,
+				273A3C21110D2F0B003BD236 /* NSDictionaryAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,8 +410,8 @@
 				273E20871066B22400721317 /* SBJsonBase.m in Sources */,
 				273E20891066B22400721317 /* SBJsonParser.m in Sources */,
 				273E208B1066B22400721317 /* SBJsonWriter.m in Sources */,
-				27AB00E1109115650005063A /* NSDictionaryAdditions.m in Sources */,
 				273A3990110BE363003BD236 /* NSXMLDocumentAdditions.m in Sources */,
+				273A3C22110D2F0B003BD236 /* NSDictionaryAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,11 +450,7 @@
 				GCC_PREFIX_HEADER = MKAbeFook_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_DEVELOPER_DIR)/SDKs/MacOSX10.4u.sdk/usr/lib\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = MKAbeFook;
@@ -485,13 +481,8 @@
 				GCC_PREFIX_HEADER = MKAbeFook_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_DEVELOPER_DIR)/SDKs/MacOSX10.4u.sdk/usr/lib\"";
 				MACH_O_TYPE = mh_dylib;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_LDFLAGS = "-lcrypto";
 				PREBINDING = NO;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;

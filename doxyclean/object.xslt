@@ -192,13 +192,15 @@
 	<xsl:template match="detaileddescription">
 		<details><xsl:apply-templates/></details>
 	</xsl:template>
+	<xsl:template match="detaileddescription/para/verbatim">
+	</xsl:template>
 	<xsl:template match="detaileddescription/para/simplesect">
 	</xsl:template>
 	<xsl:template match="detaileddescription/para/parameterlist">
 	</xsl:template>
 	<xsl:template match="detaileddescription/para/xrefsect">
 	</xsl:template>
-	
+
 	<xsl:template match="simplesect[@kind='author']/para">
 		<author><xsl:apply-templates/></author>
 	</xsl:template>
@@ -260,10 +262,14 @@
 				<xsl:apply-templates select="detaileddescription"/>
 			</description>
 			<xsl:apply-templates select="detaileddescription/para/simplesect[@kind='warning']" mode="warning"/>
+			<!-- this will be our deprecated area -->
 			<xsl:apply-templates select="detaileddescription/para/xrefsect" mode="bug"/>
+            <xsl:apply-templates select="detaileddescription/para/verbatim" mode="verbatim"/>
 			<xsl:apply-templates select="detaileddescription/para/parameterlist" mode="parameters"/>
 			<xsl:apply-templates select="detaileddescription/para" mode="return"/>
 			<xsl:apply-templates select="detaileddescription/para" mode="seeAlso"/>
+			<xsl:apply-templates select="detaileddescription/para" mode="version"/>
+			<xsl:apply-templates select="detaileddescription/para" mode="deprecated"/>
 		</member>
 	</xsl:template>
 	
@@ -293,6 +299,19 @@
 	<xsl:template match="simplesect[@kind='see']/para">
 		<item><xsl:apply-templates/></item>
 	</xsl:template>
+
+	<xsl:template match="detaileddescription/para/verbatim" mode="verbatim">
+		<verbatim>
+			<xsl:apply-templates/>
+		</verbatim>
+	</xsl:template>
+
+	<xsl:template match="detaileddescription/para/simplesect[@kind='version']" mode="version">
+		<version>
+			<xsl:apply-templates/>
+		</version>
+	</xsl:template>
+
 	
 	<xsl:template match="detaileddescription/para" mode="return">
 		<xsl:if test="simplesect[@kind='return']">
@@ -308,15 +327,16 @@
 		</warning>
 	</xsl:template>
 	
+	<!-- using 'bug' to diplay Deprecated instead -->
 	<xsl:template match="detaileddescription/para/xrefsect" mode="bug">
-		<bug>
+		<deprecated>
 			<xsl:apply-templates select="xrefdescription"/>
-		</bug>
+		</deprecated>
 	</xsl:template>
 	<xsl:template match="xrefdescription">
 		<xsl:apply-templates/>
 	</xsl:template>
-	
+
 	<xsl:template match="inheritancegraph/node" mode="superclass">
 		<name><xsl:apply-templates select="label"/></name>
 		

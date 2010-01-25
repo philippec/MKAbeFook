@@ -117,7 +117,7 @@
 				selectorToPerform = @selector(photosRequest:photosGet:);
 			}else
 			{
-				NSLog(@"MKPhotosRequest delegate does not respond to -(void)photosRequest:(MKPhotosRequest *)photoRequest photosGet:(id)response");
+				DLog(@"MKPhotosRequest delegate does not respond to -(void)photosRequest:(MKPhotosRequest *)photoRequest photosGet:(id)response");
 			}
 			break;
 			
@@ -127,7 +127,7 @@
 				selectorToPerform = @selector(photosRequest:photosGetTags:);
 			}else
 			{
-				NSLog(@"MKPhotosRequest delegate does not respond to -(void)photosRequest:(MKPhotosRequest *)photoRequest photosGetTags:(id)response");
+				DLog(@"MKPhotosRequest delegate does not respond to -(void)photosRequest:(MKPhotosRequest *)photoRequest photosGetTags:(id)response");
 			}
 			 
 			break;
@@ -138,11 +138,11 @@
 				selectorToPerform = @selector(photosRequest:photosUpload:);
 			}else
 			{
-				NSLog(@"MKPhotosRequest delegate does not respond to -(void)photosRequest:(MKPhotosRequest *)photoRequest photosUpload:(id)response");
+				DLog(@"MKPhotosRequest delegate does not respond to -(void)photosRequest:(MKPhotosRequest *)photoRequest photosUpload:(id)response");
 			}			break;
 			
 		default:
-			NSLog(@"Sweet zombie jesus how did you get here.... WTF DID YOU DO!?!?!!");
+			DLog(@"Sweet zombie jesus how did you get here.... WTF DID YOU DO!?!?!!");
 			break;
 	}
 	

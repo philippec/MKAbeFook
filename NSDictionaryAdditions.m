@@ -3,7 +3,7 @@
 //  MKAbeFook
 //
 //  Created by Mike Kinney on 10/22/09.
-//  Copyright 2009 UNDRF. All rights reserved.
+//  Copyright 2009 All rights reserved.
 //
 
 #import "NSDictionaryAdditions.h"
