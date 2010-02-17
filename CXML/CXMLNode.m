@@ -211,7 +211,7 @@ return str;
 
 - (NSString *)XMLStringWithOptions:(NSUInteger)options
 {
-return [self _XMLStringWithOptions:options appendingToString:@""];
+	return [self _XMLStringWithOptions:options appendingToString:[NSMutableString stringWithString:@""]];
 }
 //- (NSString *)canonicalXMLStringPreservingComments:(BOOL)comments;
 
