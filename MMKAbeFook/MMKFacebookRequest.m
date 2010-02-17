@@ -361,7 +361,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MMKFacebookRequestActivityEnded" object:nil];
 	
 	NSString *temp = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-	NSLog(temp);
+	NSLog(@"%@", temp);
 	NSError *error = nil;
 	CXMLDocument *returnXML = [[[CXMLDocument alloc] initWithXMLString:temp options:0 error:&error] autorelease];
 	[temp release];
