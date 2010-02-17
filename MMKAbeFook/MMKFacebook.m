@@ -785,7 +785,7 @@ It basicaly re-encodes the string, but ignores escape characters + and %, and al
 	CC_MD5([tempData bytes],[tempData length],digest);
 	for(i=0;i<16;i++) sprintf(finaldigest+i*2,"%02x",digest[i]);
 	
-	return [NSString stringWithCString:finaldigest length:32];
+	return [NSString stringWithCString:finaldigest encoding:NSUnicodeStringEncoding];
 }
 
 @end
