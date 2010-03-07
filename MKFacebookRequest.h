@@ -19,9 +19,11 @@
 #import <Cocoa/Cocoa.h>
 #import "MKFacebook.h"
 #import "MKFacebookSession.h"
+#import "MKFacebookResponseError.h"
 
 extern NSString *MKFacebookRequestActivityStarted;
 extern NSString *MKFacebookRequestActivityEnded;
+
 
 /*!
  @enum MKFacebookRequestType
@@ -35,14 +37,14 @@ typedef int MKFacebookRequestType;
 
 
 /*!
- @enum MKFacebookRequestFormat
+ @enum MKFacebookRequestResponseFormat
  */
-enum MKFacebookRequestFormat
+enum MKFacebookRequestResponseFormat
 {
-	MKFacebookRequestFormatXML,
-	MKFacebookRequestFormatJSON
+	MKFacebookRequestResponseFormatXML,
+	MKFacebookRequestResponseFormatJSON
 };
-typedef int MKFacebookRequestFormat;
+typedef int MKFacebookRequestResponseFormat;
 
 
 
@@ -83,15 +85,64 @@ typedef int MKFacebookRequestFormat;
 	NSMutableData *_responseData;
 	BOOL _requestIsDone; //dirty stupid way of trying to prevent crashing when trying to cancel the request when it's not active.  isn't there a better way to do this?
 	MKFacebookRequestType _urlRequestType;
-	MKFacebookRequestFormat _requestFormat;
+	MKFacebookRequestResponseFormat responseFormat;
 	NSMutableDictionary *_parameters;
 	NSURL *_requestURL;
 	BOOL _displayAPIErrorAlert;
 	int _numberOfRequestAttempts;
 	int _requestAttemptCount;
 	MKFacebookSession *_session;
+
+	//exposed via properties
+	NSString *method;
+	NSString *rawResponse;
+	
+	//default selectors
+	SEL defaultResponseSelector;
+	SEL defaultErrorSelector;
+	SEL defaultFailedSelector;
+	
+	//deprecated selectors
+	SEL deprecatedResponseSelector;
+	SEL deprecatedErrorSelector;
+	SEL deprecatedFailedSelector;
 }
 @property NSTimeInterval connectionTimeoutInterval;
+
+/*! @name Properties */
+//@{
+/*!
+ @brief Facebook method to call.
+ 
+ This property may be set instead of including a 'method' key in the NSDictionary passed in as parameters. You can retrieve the method used in a request through this property even if you use a dictionary containing a 'method' key.
+ */
+@property (retain, nonatomic) NSString *method;
+
+/*!
+ @brief Set the response format type, XML or JSON.  XML is default.
+ 
+ Accepts MKFacebookRequestResponseFormatXML or MKFacebookRequestResponseFormatJSON to specify type.
+ 
+ When the response format is JSON the JSON result from Facebook will be parsed and returned to the delegate as either a NSDictionary or NSArray object. Direct access to the JSON returned by Facebook will be made available in a future update.
+ 
+ @version 0.9 and later
+ 
+ */
+@property (nonatomic, assign) MKFacebookRequestResponseFormat responseFormat;
+
+/*!
+ @brief Response from Facebook.
+ 
+ Contains unparsed XML or JSON result from Facebook. Use responseFormat property to specify which type of response you want returned from Facebook. Only available when using asynchronous requests.
+ 
+ @see responseFormat
+ 
+ @version 0.9 and later
+
+ */
+@property (readonly) NSString *rawResponse;
+
+//@}
 
 #pragma mark init methods
 /*! @name Creating and Initializing
@@ -155,7 +206,7 @@ typedef int MKFacebookRequestFormat;
 
 #pragma mark Instance Methods
 
-/*! @name Preparing and Sending Requests
+/*! @name Preparing and Sending Asynchronous Requests
  *
  */
 //@{
@@ -215,29 +266,71 @@ typedef int MKFacebookRequestFormat;
 /*!
  @brief Set the response format type, XML or JSON.  XML is default.
  
- @param requestFormat Accepts MKFacebookRequestFormatXML or MKFacebookRequestFormatJSON to specify type.
+ @param requestFormat Accepts MKFacebookRequestResponseFormatXML or MKFacebookRequestResponseFormatJSON to specify type.
  
  When the response format is JSON the JSON result from Facebook will be parsed and returned to the delegate as either a NSDictionary or NSArray object. Direct access to the JSON returned by Facebook will be made available in a future update.
  
  @version 0.9 and later
+ 
+ @deprecated Version 0.9
+ 
+ @see responseFormat
  */
--(void)setRequestFormat:(MKFacebookRequestFormat)requestFormat;
+-(void)setRequestFormat:(MKFacebookRequestResponseFormat)requestFormat;
 
-//returns request format
-- (MKFacebookRequestFormat)requestFormat;
 
 
 /*!
  @brief Generates the appropriate URL and signature based on parameters for request.  Sends request to Facebook.
  
- Sends request to Facebook.  The result will be passed to the delegate / selector that were assigned to this object.
+ MKFacebookRequest will automatically attempt the request again if any of the following errors are encountered:
+ - max number of requests allowed reached
+ - unknown error
+ - service unavailable
  
- @version 0.7 and later
+ The result will be passed to the delegate / selector that were assigned to this object. Make sure you have either set the method property or have set the parameters value with a NSDictionary containing a 'method' key before calling sendRequest.
  
+ @warning Raises NSException if the method property has not been set or parameters has not been set with NSDictionary containing a 'method' key.
+ 
+ @see method
+ @see setParameters:
+ @see sendRequestWithParameters:
+ @see sendRequest:withParameters:
  @see MKFacebookRequestDelegate
+
+ @version 0.7 and later
  */
 - (void)sendRequest;
 
+/*!
+  @brief Sets the parameters before sending the request.
+
+ Sets parameters before sending the request.
+ 
+ See sendRequest for details about what happens when a request is sent to Facebook.
+ 
+ @see sendRequest
+  
+ @version 0.9 and later
+ */
+- (void)sendRequestWithParameters:(NSDictionary *)parameters;
+
+/*!
+  @brief Sets method and parametrs before sending the request.
+ 
+ @param aMethod Facebook method to call.
+ 
+ @param parameters NSDictionary of parameters to pass to method.
+ 
+ Sets the method and parameters before sending the request.
+ 
+ See sendRequest for details about what happens when a request is sent to Facebook.
+ 
+ @see sendRequest
+
+ @version 0.9 and later
+*/
+- (void)sendRequest:(NSString *)aMethod withParameters:(NSDictionary *)parameters;
 
 
 //creates a signature string based on the parameters for the request
@@ -248,6 +341,14 @@ typedef int MKFacebookRequestFormat;
 - (NSString *)generateTimeStamp;
 
 
+//@}
+
+
+
+/*! @name Synchronous Requests
+ *
+ */
+//@{
 
 /*!
  @brief Generates a full URL including a signature for the method name and parameters passed in.  
@@ -266,8 +367,6 @@ typedef int MKFacebookRequestFormat;
 - (NSURL *)generateFacebookURL:(NSString *)aMethodName parameters:(NSDictionary *)parameters;
 
 
-
-
 /*!
  @brief Generates a full URL including a signature for the parameters passed in.   
  
@@ -282,23 +381,19 @@ typedef int MKFacebookRequestFormat;
  
  */
 - (NSURL *)generateFacebookURL:(NSDictionary *)parameters;
-//@}
-
-
-
-/*! @name Synchronous Requests
- *
- */
-//@{
 
 /*!
  @brief Performs a synchronous request using URL generated by generateFacebookURL:parameters: or generateFacebookURL:
  
- @param theURL URL generated by generateFacebokURL:parameters: or generateFacebookURL:
+ @param theURL URL generated by generateFacebookURL:parameters: or generateFacebookURL:
  
  Initiates a synchronous request to Facebook.
  
  @result Returns NSXMLDocument that was returned from Facebook.  Returns nil if a network error was encountered.
+ 
+ @see generateFacebookURL:parameters:
+ @see generateFacebookURL:
+ 
  @version 0.7 and later
  */
 - (id)fetchFacebookData:(NSURL *)theURL;
@@ -395,7 +490,16 @@ typedef int MKFacebookRequestFormat;
 @end
 
 
-
+/*!
+ @protocol MKFacebookRequestDelegate
+ MKFacebookRequestDelegate is responsible for handling the XML or JSON that Facebook returns. Your delegate should implement either the default response methods or specify your own if you assigned a custom selector to your MKFacebookRequest.
+ 
+ If you do not assign your MKFacebookRequest instance a custom selector, use the facebookRequest:responseReceived: method to catch responses.
+ 
+ If you assigned your own selector it must accept a single (id) argument.
+ 
+ Use facebookRequest:errorReceived: and facebookRequest:failed: to handle errors.
+ */
 @protocol MKFacebookRequestDelegate
 
 
@@ -405,14 +509,44 @@ typedef int MKFacebookRequestFormat;
 //@{
 
 /*!
+  @brief Facebook returned a valid response.
+ 
  Called when Facebook returns a valid response and passes the response returned by Facebook.  The response will be a NSXMLDocument if the request type is XML or a NSDictionary or NSArray if the request type is JSON. If you want the responses sent elsewhere assign the request a selector.
  
- @see MKFacebookRequest
+ @param response The parsed response from Facebook (either a NSDictionary or NSArray).
+ 
+ @see facebookRequest:responseReceived:
  
  @version 0.8 and later
+ 
+ @deprecated Version 0.9
  */
 @optional
 - (void)facebookResponseReceived:(id)response;
+
+
+/*!
+ @brief Facebook returned a valid response.
+ 
+ Called when Facebook returns a well formed JSON or XML response that does not contain errors from the Facebook API. If your request was missing required parameters you will not receive the response in this method because it will contain errors from the Facebook API; instead the error response will be sent to facebookRequest:errorReceived:
+
+ If your request specified a JSON responseFormat the response passed to this method will be either a NSDictionary or NSArray. 
+ 
+ If your request specified a XML responseFormat you will receive an unparsed NSXMLDocument object. See NSXMLElementAdditions category for additional XML parsing methods.
+ 
+ @param request The request that returned an error from Facebook.
+ 
+ @param response The response from Facebook. The response could be either a NSDictionary, NSArray, or NSXMLDocument depending on the responseFormat set in the request. 
+ 
+
+ @see MKFacebookRequest
+ @see responseFormat
+ @see facebookRequest:errorReceived:
+ 
+ @version 0.9 and later
+ */
+@optional
+- (void)facebookRequest:(MKFacebookRequest *)request responseReceived:(id)response;
 //@}
 
 
@@ -424,22 +558,98 @@ typedef int MKFacebookRequestFormat;
 
 
 /*!
-Called when an error is returned by Facebook.  Passes response returned by Facebook.
+ @brief Facebook returned a response containing an error.
+ 
+ Called when an error is returned by Facebook.  Passes response returned by Facebook.
+ 
+ @param error The error response from Facebook.
+ 
+ @see facebookRequest:errorReceived:
  
  @version 0.8 and later
+ 
+ @deprecated Version 0.9
  */
 @optional
 - (void)facebookErrorResponseReceived:(id)errorResponse;
 
 
+/*!
+ @brief Facebook returned a response containing an error.
+ 
+ Called when an error is returned by Facebook.  Passes the request that caused the error along with details of the error.
+
+ @param request The request that returned an error from Facebook.
+ 
+ @param error The error Facebook returned.
+ 
+  
+ @version 0.9 and later
+ */
+
+@optional
+- (void)facebookRequest:(MKFacebookRequest *)request errorReceived:(MKFacebookResponseError *)error;
+//@}
+
+/*! @name Request Failed */
+//@{
 
 /*!
+ @brief Request has failed.
+ 
  Called when the request could not be made.  Passes NSError containing information about why it failed (usually due to NSURLConnection problem).
  
+ @param Error explaining the failure.
+ 
+ @see facebookRequest:failed:
+ 
  @version 0.8 and later
+ 
+ @deprecated Version 0.9
  */
 @optional
 - (void)facebookRequestFailed:(id)error;
+
+
+/*!
+ @brief Request has failed.
+ 
+ Called when the request could not be made.  Passes NSError containing information about why it failed (usually due to NSURLConnection problem).
+ 
+ @param request The request that failed.
+ 
+ @param error Error explaining the failure.
+ 
+ @version 0.9 and later
+ */
+@optional
+- (void)facebookRequest:(MKFacebookRequest *)request failed:(NSError *)error;
+//@}
+
+
+/*! @name Request Progress
+ *
+ */
+//@{
+/*!
+ @brief Receive progress of an a request.
+ 
+ Called as the body of a POST request is transmitted. Direct wrapper for the internal NSURLConnection delegate method - connection:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite.
+ 
+ @param request The request sending the message.
+ 
+ @param bytesWritten The number of bytes written in the latest write.
+ 
+ @param totalBytesWritten The total number of bytes written in the latest write.
+ 
+ @param totalBytesExpectedToWrite The number of bytes the request expects to write.
+ 
+ @version 0.9 and later (Mac OS X v10.6 required)
+ */
+@optional
+- (void)facebookRequest:(MKFacebookRequest *)request bytesWritten:(NSUInteger)bytesWritten 
+												totalBytesWritten:(NSUInteger)totalBytesWritten 
+										totalBytesExpectedToWrite:(NSUInteger)totalBytesExpectedToWrite;
 //@}
 
 

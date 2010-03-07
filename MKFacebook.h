@@ -26,7 +26,7 @@ extern NSString *MKAPIServerURL;
 extern NSString *MKLoginUrl;
 extern NSString *MKExtendPermissionsURL;
 extern NSString *MKFacebookAPIVersion;
-extern NSString *MKFacebookResponseFormat;
+extern NSString *MKFacebookDefaultResponseFormat;
 /*!
  
  @class MKFacebook
@@ -177,7 +177,7 @@ extern NSString *MKFacebookResponseFormat;
  
  @see userLoggedIn
  */
-- (NSString *)uid;
+- (NSNumber *)uid;
 
 
 

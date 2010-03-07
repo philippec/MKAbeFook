@@ -46,6 +46,10 @@
 		273E208B1066B22400721317 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E207E1066B22400721317 /* SBJsonWriter.m */; };
 		274BC9E00B36BF620080F786 /* CocoaCryptoHashing.h in Headers */ = {isa = PBXBuildFile; fileRef = 274BC9DE0B36BF620080F786 /* CocoaCryptoHashing.h */; };
 		274BC9E10B36BF620080F786 /* CocoaCryptoHashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 274BC9DF0B36BF620080F786 /* CocoaCryptoHashing.m */; };
+		275A34FE1142054D003F9575 /* MKPhotosRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		275A34FF1142054E003F9575 /* MKPhotosRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */; };
+		275A35FC11421677003F9575 /* MKVideoUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = 275A35FA11421677003F9575 /* MKVideoUpload.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		275A35FD11421677003F9575 /* MKVideoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = 275A35FB11421677003F9575 /* MKVideoUpload.m */; };
 		277BC3CA0D14566F00B9EFFE /* MKFacebookRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */; };
 		277BC3CB0D14566F00B9EFFE /* MKFacebookRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		277BC3CE0D14577200B9EFFE /* NSXMLElementAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */; };
@@ -55,6 +59,8 @@
 		2784C16A0E34D7CB00AD28B1 /* MKErrorWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2784C16B0E34D7CB00AD28B1 /* MKErrorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2784C1690E34D7CB00AD28B1 /* MKErrorWindow.m */; };
 		2784C16D0E34D81E00AD28B1 /* ErrorWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */; };
+		27C2B95E11424569002B1FB7 /* MKFacebookResponseError.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C2B95C11424569002B1FB7 /* MKFacebookResponseError.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		27C2B95F11424569002B1FB7 /* MKFacebookResponseError.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C2B95D11424569002B1FB7 /* MKFacebookResponseError.m */; };
 		27D8B08D0AE6FF57007941CF /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D8B08C0AE6FF57007941CF /* WebKit.framework */; };
 		27D8B0A60AE6FFA7007941CF /* MKLoginWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 27D8B0A40AE6FFA7007941CF /* MKLoginWindow.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		27D8B0A70AE6FFA7007941CF /* MKLoginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 27D8B0A50AE6FFA7007941CF /* MKLoginWindow.m */; };
@@ -96,6 +102,8 @@
 		273E207E1066B22400721317 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJsonWriter.m; path = JSON/SBJsonWriter.m; sourceTree = "<group>"; };
 		274BC9DE0B36BF620080F786 /* CocoaCryptoHashing.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CocoaCryptoHashing.h; sourceTree = "<group>"; };
 		274BC9DF0B36BF620080F786 /* CocoaCryptoHashing.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = CocoaCryptoHashing.m; sourceTree = "<group>"; };
+		275A35FA11421677003F9575 /* MKVideoUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKVideoUpload.h; sourceTree = "<group>"; };
+		275A35FB11421677003F9575 /* MKVideoUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKVideoUpload.m; sourceTree = "<group>"; };
 		2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKPhotosRequest.h; sourceTree = "<group>"; };
 		2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKPhotosRequest.m; sourceTree = "<group>"; };
 		277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKFacebookRequest.m; sourceTree = "<group>"; };
@@ -107,8 +115,8 @@
 		2784C1680E34D7CB00AD28B1 /* MKErrorWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKErrorWindow.h; sourceTree = "<group>"; };
 		2784C1690E34D7CB00AD28B1 /* MKErrorWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKErrorWindow.m; sourceTree = "<group>"; };
 		2784C16C0E34D81E00AD28B1 /* ErrorWindow.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = ErrorWindow.nib; sourceTree = "<group>"; };
-		27CF35810EAADF4300399FF9 /* MKEventsRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKEventsRequest.h; sourceTree = "<group>"; };
-		27CF35820EAADF4300399FF9 /* MKEventsRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKEventsRequest.m; sourceTree = "<group>"; };
+		27C2B95C11424569002B1FB7 /* MKFacebookResponseError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKFacebookResponseError.h; sourceTree = "<group>"; };
+		27C2B95D11424569002B1FB7 /* MKFacebookResponseError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKFacebookResponseError.m; sourceTree = "<group>"; };
 		27D8B08C0AE6FF57007941CF /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		27D8B0A40AE6FFA7007941CF /* MKLoginWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MKLoginWindow.h; sourceTree = "<group>"; };
 		27D8B0A50AE6FFA7007941CF /* MKLoginWindow.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = MKLoginWindow.m; sourceTree = "<group>"; };
@@ -185,6 +193,8 @@
 				27D8B0A90AE6FFB2007941CF /* MKFacebook.m */,
 				277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */,
 				277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */,
+				27C2B95C11424569002B1FB7 /* MKFacebookResponseError.h */,
+				27C2B95D11424569002B1FB7 /* MKFacebookResponseError.m */,
 				2761C0130EC0006900EE443D /* Request Subclasses */,
 				277BC4CB0D14815E00B9EFFE /* MKFacebookRequestQueue.h */,
 				277BC4CA0D14815E00B9EFFE /* MKFacebookRequestQueue.m */,
@@ -215,10 +225,10 @@
 		2761C0130EC0006900EE443D /* Request Subclasses */ = {
 			isa = PBXGroup;
 			children = (
-				27CF35810EAADF4300399FF9 /* MKEventsRequest.h */,
-				27CF35820EAADF4300399FF9 /* MKEventsRequest.m */,
 				2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */,
 				2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */,
+				275A35FA11421677003F9575 /* MKVideoUpload.h */,
+				275A35FB11421677003F9575 /* MKVideoUpload.m */,
 			);
 			name = "Request Subclasses";
 			sourceTree = "<group>";
@@ -316,6 +326,9 @@
 				273E208A1066B22400721317 /* SBJsonWriter.h in Headers */,
 				273A398F110BE363003BD236 /* NSXMLDocumentAdditions.h in Headers */,
 				273A3C21110D2F0B003BD236 /* NSDictionaryAdditions.h in Headers */,
+				275A34FE1142054D003F9575 /* MKPhotosRequest.h in Headers */,
+				275A35FC11421677003F9575 /* MKVideoUpload.h in Headers */,
+				27C2B95E11424569002B1FB7 /* MKFacebookResponseError.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,6 +425,9 @@
 				273E208B1066B22400721317 /* SBJsonWriter.m in Sources */,
 				273A3990110BE363003BD236 /* NSXMLDocumentAdditions.m in Sources */,
 				273A3C22110D2F0B003BD236 /* NSDictionaryAdditions.m in Sources */,
+				275A34FF1142054E003F9575 /* MKPhotosRequest.m in Sources */,
+				275A35FD11421677003F9575 /* MKVideoUpload.m in Sources */,
+				27C2B95F11424569002B1FB7 /* MKFacebookResponseError.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

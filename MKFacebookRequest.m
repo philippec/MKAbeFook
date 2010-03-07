@@ -29,9 +29,13 @@
 NSString *MKFacebookRequestActivityStarted = @"MKFacebookRequestActivityStarted";
 NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 
+
 @implementation MKFacebookRequest
 
 @synthesize connectionTimeoutInterval;
+@synthesize method;
+@synthesize responseFormat;
+@synthesize rawResponse;
 
 #pragma mark init methods
 + (id)requestWithDelegate:(id)aDelegate
@@ -59,12 +63,22 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		_responseData = [[NSMutableData alloc] init];
 		_parameters = [[NSMutableDictionary alloc] init];
 		_urlRequestType = MKFacebookRequestTypePOST;
-		_requestFormat = MKFacebookRequestFormatXML;
+		responseFormat = MKFacebookRequestResponseFormatXML;
 		_requestURL = [[NSURL URLWithString:MKAPIServerURL] retain];
 		_displayAPIErrorAlert = NO;
 		_numberOfRequestAttempts = 5;
 		_session = [MKFacebookSession sharedMKFacebookSession];
 		self.connectionTimeoutInterval = 5;
+		self.method = nil;
+		rawResponse = nil;
+		
+		defaultResponseSelector = @selector(facebookRequest:responseReceived:);
+		defaultErrorSelector = @selector(facebookRequest:errorReceived:);
+		defaultFailedSelector = @selector(facebookRequest:failed:);
+		
+		deprecatedResponseSelector = @selector(facebookResponseReceived:);
+		deprecatedErrorSelector = @selector(facebookErrorResponseReceived:);
+		deprecatedFailedSelector = @selector(facebookRequestFailed:);
 		
 	}
 	return self;
@@ -78,10 +92,8 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	if(self != nil)
 	{
 		[self setDelegate:aDelegate];
-		if(aSelector == nil)
-			[self setSelector:@selector(facebookResponseReceived:)];
-		else
-			[self setSelector:aSelector];
+		if(aSelector != nil)
+			[self setSelector:aSelector];			
 	}
 	return self;
 }
@@ -103,6 +115,8 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	[_requestURL release];
 	[_parameters release];
 	[_responseData release];
+	[method release];
+	[rawResponse release];
 	[super dealloc];
 }
 #pragma mark -
@@ -144,29 +158,59 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	return _urlRequestType;
 }
 
--(void)setRequestFormat:(MKFacebookRequestFormat)requestFormat
+
+-(void)setRequestFormat:(MKFacebookRequestResponseFormat)requestFormat
 {
-	_requestFormat = requestFormat;
+	responseFormat = requestFormat;
 }
 
 
-- (MKFacebookRequestFormat)requestFormat
-{
-	return _requestFormat;
+- (void)sendRequest:(NSString *)aMethod withParameters:(NSDictionary *)parameters{
+	self.method = aMethod;
+	[self setParameters:parameters];
+	[self sendRequest];
 }
 
-
+- (void)sendRequestWithParameters:(NSDictionary *)parameters{
+	[self setParameters:parameters];
+	[self sendRequest];
+}
 
 - (void)sendRequest
-{
+{	
+	//all requests require a method of some sort
+	if (self.method == nil && [_parameters valueForKey:@"method"] == nil) {
+		NSException *exception = [NSException exceptionWithName:@"Missing Method" reason:@"No method was found. Set the property or include a 'method' key in the parameters dictionary." userInfo:nil];
+		[exception raise];
+		return;
+	}
+
+	//prefer to use the property if possible
+	if (self.method != nil) {
+		[_parameters setValue:self.method forKey:@"method"];
+	}
+	
+	//set the method property so it can easily be retrieved by delegates
+	if (self.method == nil) {
+		self.method = [_parameters valueForKey:@"method"];
+	}
+
+	
 	//if no user is logged in and they're trying to send a request OTHER than something required for logging in a user abort the request
 	if(!_session.validSession && (![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] && ![[_parameters valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"]))
 	{
 		
-		if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
+		NSError *error = [NSError errorWithDomain:@"MKAbeFook" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No user is logged in.", @"Error", nil]];
+		if([_delegate respondsToSelector:defaultFailedSelector])
 		{
-			NSError *error = [NSError errorWithDomain:@"MKAbeFook" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No user is logged in.", @"Error", nil]];
-			[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
+			NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:defaultFailedSelector]];
+			[invocation setTarget:_delegate];
+			[invocation setSelector:defaultFailedSelector];
+			[invocation setArgument:&self atIndex:2];
+			[invocation setArgument:&error atIndex:3];
+			[invocation invoke];
+		}else if ([_delegate respondsToSelector:deprecatedFailedSelector]) {
+			[_delegate performSelector:deprecatedFailedSelector withObject:error];
 		}
 		
 		if (_displayAPIErrorAlert == YES) {
@@ -185,20 +229,6 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		return;
 	}
 	
-	
-	//NSLog(@"sending request to: %@", [_requestURL description]);
-	
-	if([_parameters count] == 0)
-	{
-		if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
-		{
-			NSError *error = [NSError errorWithDomain:@"MKAbeFook" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No Parameters Specified", @"Error", nil]];
-			[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
-		}
-		
-		return;
-	}
-		
 	NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
 	NSString *applicationVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
 	NSString *userAgent;
@@ -220,7 +250,8 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		
 		NSMutableData *postBody = [NSMutableData data];
 		NSString *stringBoundary = [NSString stringWithString:@"xXxiFyOuTyPeThIsThEwOrLdWiLlExPlOdExXx"];
-		NSString *endLine = [NSString stringWithFormat:@"\r\n--%@\r\n", stringBoundary]; //make this here so we only have to do it once and not during every loop
+//		NSString *endLine = [NSString stringWithFormat:@"\r\n--%@\r\n", stringBoundary];
+		NSData *endLineData = [[NSString stringWithFormat:@"\r\n--%@\r\n", stringBoundary] dataUsingEncoding:NSUTF8StringEncoding];
 		NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", stringBoundary];
 		[postRequest setHTTPMethod:@"POST"];
 		[postRequest addValue:contentType forHTTPHeaderField:@"Content-Type"];
@@ -230,11 +261,11 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		[_parameters setValue:MKFacebookAPIVersion forKey:@"v"];
 		[_parameters setValue:[_session apiKey] forKey:@"api_key"];
 
-		switch ([self requestFormat]) {
-			case MKFacebookRequestFormatXML:
+		switch (self.responseFormat) {
+			case MKFacebookRequestResponseFormatXML:
 				[_parameters setValue:@"XML" forKey:@"format"];
 				break;
-			case MKFacebookRequestFormatJSON:
+			case MKFacebookRequestResponseFormatJSON:
 				[_parameters setValue:@"JSON" forKey:@"format"];
 				break;
 			default:
@@ -266,21 +297,31 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 				NSDictionary *imageProperties = [NSDictionary dictionaryWithObject:[NSNumber numberWithFloat: 1.0] forKey:NSImageCompressionFactor];
 				NSData *imageData = [resizedImageRep representationUsingType: NSJPEGFileType properties: imageProperties];
 				
-				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; filename=\"something\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; filename=\"image\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:[[NSString stringWithString:@"Content-Type: image/jpeg\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];	
 				[postBody appendData: imageData];
-				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
+//				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
+				[postBody appendData:endLineData];
 				
 				//we need to remove this the image object from the dictionary so we can generate a correct sig from the other values, but we can't do it here or leopard will complain.  so we'll do it outside the loop.
 				//[_parameters removeObjectForKey:key];
 				imageKey = [NSString stringWithString:key];
 
-			}else
+			}
+			else if( [[_parameters objectForKey:key] isKindOfClass:[NSData class]] ){
+				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; filename=\"data\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+				[postBody appendData:[[NSString stringWithString:@"Content-Type: content/unknown\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];	
+				[postBody appendData:(NSData *)[_parameters objectForKey:key]];
+//				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
+				[postBody appendData:endLineData];
+			}
+			else
 			{
 			 
 				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:[[_parameters valueForKey:key] dataUsingEncoding:NSUTF8StringEncoding]];
-				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];				
+//				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
+				[postBody appendData:endLineData];
 			}
 			 
 		}
@@ -290,7 +331,8 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		
 		[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"sig\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
 		[postBody appendData:[[self generateSigForParameters:_parameters] dataUsingEncoding:NSUTF8StringEncoding]];
-		[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
+//		[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
+		[postBody appendData:endLineData];
 		
 		[postRequest setHTTPBody:postBody];
 		theConnection = [NSURLConnection connectionWithRequest:postRequest delegate:self];
@@ -420,7 +462,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	//these will be here for all requests. 
 	[mutableDictionary setValue:MKFacebookAPIVersion forKey:@"v"];
 	[mutableDictionary setValue:[_session apiKey] forKey:@"api_key"];
-	[mutableDictionary setValue:MKFacebookResponseFormat forKey:@"format"];
+	[mutableDictionary setValue:MKFacebookDefaultResponseFormat forKey:@"format"];
 	
 	//all other methods require call_id and session_key
 	if(![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.getSession"] || ![[mutableDictionary valueForKey:@"method"] isEqualToString:@"facebook.auth.createToken"])
@@ -495,27 +537,35 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:nil];
 	
 	
-	/*
-	 Unfortunately there is a fair amount of redundancy here. Depending on the format coming back from Facebook we want o make sure it is valid before returning it to the delegate. 
-	 */
-
 	NSError *error = nil;
+	//assume the response is not valid until we can verify it is good
+	BOOL validResponse = NO;
+
 	
+	//turn the response into a string so we can parse it if it's JSON or turn it into NSXML if we're expecting XML
+	NSString *responseString = [[[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding] autorelease];
+
 	
+	if (responseString != nil && [responseString length] > 0) {
+		validResponse = YES;
+		rawResponse = [responseString copy];
+	}else {
+		rawResponse = nil;
+	}
+
+
 	
-	if ([self requestFormat] == MKFacebookRequestFormatXML) {
+	if (self.responseFormat == MKFacebookRequestResponseFormatXML && validResponse == YES) {
 		
-		NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithData:_responseData
-												options:0
-												  error:&error] autorelease];
-	
-		if(error != nil && [self displayAPIErrorAlert])
-		{
-			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"API Error" 
-																	 message:@"Facebook failed to return anything useful. Are services down?" 
-																	 details:[[error userInfo] description]];
-			[errorWindow display];
-		}else if([returnXML validFacebookResponse] == NO)
+		NSXMLDocument *returnXML = [[[NSXMLDocument alloc] initWithXMLString:responseString options:0 error:&error] autorelease];
+		
+		if (error != nil) {
+			validResponse = NO;
+		}
+		
+		
+		//facebook has returned an error of some kind. evaluate the error and try resending the request if possible
+		if([returnXML validFacebookResponse] == NO)
 		{
 			NSDictionary *errorDictionary = [[returnXML rootElement] dictionaryFromXMLElement];
 			//4 is a magic number that represents "The application has reached the maximum number of requests allowed. More requests are allowed once the time window has completed."
@@ -532,22 +582,24 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 				[self sendRequest];
 				return;
 			}
-			DLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
+			//DLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
 			//we've tried the request a few times, now we're giving up.
-			if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
-				[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnXML];
-			
-			
-			if([self displayAPIErrorAlert])
-			{
-				NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [errorDictionary valueForKey:@"error_code"]];
-				MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:errorTitle message:[errorDictionary valueForKey:@"error_msg"] details:[errorDictionary description]];
-				[errorWindow display];
-			}
+			validResponse = NO;
 		}else
 		{
-			if([_delegate respondsToSelector:_selector])
-				[_delegate performSelector:_selector withObject:returnXML];		
+			//the response we have received from facebook is valid, pass it back to the delegate.
+			if([_delegate respondsToSelector:_selector]){
+				[_delegate performSelector:_selector withObject:returnXML];
+			}else if ([_delegate respondsToSelector:defaultResponseSelector]) {
+				NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:defaultResponseSelector]];
+				[invocation setTarget:_delegate];
+				[invocation setSelector:defaultResponseSelector];
+				[invocation setArgument:&self atIndex:2];
+				[invocation setArgument:&returnXML atIndex:3];
+				[invocation invoke];
+			}else if ([_delegate respondsToSelector:deprecatedResponseSelector]) {
+				[_delegate performSelector:deprecatedResponseSelector withObject:returnXML];
+			}
 		}	
 		
 	}
@@ -556,22 +608,21 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 
 	
 	
-	if ([self requestFormat] == MKFacebookRequestFormatJSON) {
-		NSString *jsonString = [[[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding] autorelease];
-		id returnJSON = [jsonString JSONValue];
-		
-		if (jsonString == nil || [jsonString length] == 0) {
-			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"API Error" 
-																	 message:@"Facebook failed to return anything useful. Are services down?" 
-																	 details:[[error userInfo] description]];
-			[errorWindow display];
-		}else if ([returnJSON isKindOfClass:[NSDictionary class]] || [returnJSON isKindOfClass:[NSArray class]]) {
-			
+	if (self.responseFormat == MKFacebookRequestResponseFormatJSON && validResponse == YES) {
+		id returnJSON = [responseString JSONValue];
+
+		if ([returnJSON isKindOfClass:[NSDictionary class]] || [returnJSON isKindOfClass:[NSArray class]]) {
+
+			//JSON returning a NSDictionary can be good or bad because errors are turned into dictionaries.
 			if ([returnJSON isKindOfClass:[NSDictionary class]])
 			{
-				if([returnJSON validFacebookResponse] == NO)
-				{
-					//exactly like the XML part
+				//DLog(@"JSON response parsed to dictionary");
+				if ([returnJSON validFacebookResponse] == YES) {
+					validResponse = YES;
+				}else{
+					//DLog(@"invalid facebook response received");
+					validResponse = NO;
+					//exactly like the XML part, check for error 4, 1, or 2 (defined above in the XML handling part)
 					int errorInt = [[returnJSON valueForKey:@"error_code"] intValue];
 					if((errorInt == 4 || errorInt == 1 || errorInt == 2 ) && _numberOfRequestAttempts <= _requestAttemptCount)
 					{
@@ -583,32 +634,73 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 						[self sendRequest];
 						return;
 					}
-					DLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
-					//we've tried the request a few times, now we're giving up.
-					if([_delegate respondsToSelector:@selector(facebookErrorResponseReceived:)])
-						[_delegate performSelector:@selector(facebookErrorResponseReceived:) withObject:returnJSON];
-					
-				}
+					//DLog(@"I give up, the request has been attempted %i times but it just won't work. Here is the failed request: %@", _requestAttemptCount, [_parameters description]);
+
+				} //end checking / handling a NSDictionary for a valid or failed response
 				
-				if([self displayAPIErrorAlert])
-				{
-					NSString *errorTitle = [NSString stringWithFormat:@"Error: %@", [returnJSON valueForKey:@"error_code"]];
-					MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:errorTitle message:[returnJSON valueForKey:@"error_msg"] details:[returnJSON description]];
-					[errorWindow display];
-				}
-				
-			}else {
+			}else if ([returnJSON isKindOfClass:[NSArray class]]) {
+				//if the JSON parses out to an array i think it can only mean it's valid...
+				validResponse = YES;
+			}
+			
+			//response appears to be valid, return it to the delegate either via a specified selector or the default selector
+			if (validResponse == YES) {
+				//DLog(@"JSON looks good, trying to pass back to the delegate");
 				if ([_delegate respondsToSelector:_selector]) {
 					[_delegate performSelector:_selector withObject:returnJSON];
-				}				
+				}else if ([_delegate respondsToSelector:defaultResponseSelector]) {
+					NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:defaultResponseSelector]];
+					[invocation setTarget:_delegate];
+					[invocation setSelector:defaultResponseSelector];
+					[invocation setArgument:&self atIndex:2];
+					[invocation setArgument:&returnJSON atIndex:3];
+					[invocation invoke];
+				}else if ([_delegate respondsToSelector:deprecatedResponseSelector]) {
+					[_delegate performSelector:deprecatedResponseSelector withObject:returnJSON];
+				}		
 			}
-			DLog(@"raw JSON: %@", jsonString);
-			DLog(@"parsed JSON: %@", [returnJSON description]);
+			
+			//DLog(@"returnJSON class: %@", [returnJSON className]);
+			//DLog(@"parsed JSON: %@", [returnJSON description]);
 		}
-		
-		
 	}
 	
+	
+
+	
+	if (validResponse == NO) {
+		
+		if ([self displayAPIErrorAlert] == YES) {
+			NSString *errorString = @"Unknown Error";
+			
+			if (self.rawResponse == nil) {
+				errorString = [NSString stringWithString:@"Facebook did not return any data that could be interpreted as JSON or XML. Services may be unavailable."];				
+			}else {
+				errorString = [NSString stringWithString:@"Facebook returned an error."];
+			}
+
+			MKErrorWindow *errorWindow = [MKErrorWindow errorWindowWithTitle:@"API Error" 
+																	 message:errorString 
+																	 details:rawResponse];
+			[errorWindow display];
+		}
+
+		
+		//pass the error back to the delegate
+		if([_delegate respondsToSelector:defaultErrorSelector])
+		{
+			MKFacebookResponseError *responseError = [MKFacebookResponseError errorFromRequest:self];
+			
+			NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:defaultErrorSelector]];
+			[invocation setTarget:_delegate];
+			[invocation setSelector:defaultErrorSelector];
+			[invocation setArgument:&self atIndex:2];
+			[invocation setArgument:&responseError atIndex:3];
+			[invocation invoke];
+		}else if ([_delegate respondsToSelector:deprecatedErrorSelector]) {
+			[_delegate performSelector:deprecatedErrorSelector withObject:rawResponse];
+		}
+	}
 		
 	
 	
@@ -627,11 +719,40 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		[errorWindow display];
 	}
 	
-	if([_delegate respondsToSelector:@selector(facebookRequestFailed:)])
-		[_delegate performSelector:@selector(facebookRequestFailed:) withObject:error];
+	if([_delegate respondsToSelector:defaultFailedSelector])
+	{
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:defaultFailedSelector]];
+		[invocation setTarget:_delegate];
+		[invocation setSelector:defaultFailedSelector];
+		[invocation setArgument:&self atIndex:2];
+		[invocation setArgument:&error atIndex:3];
+		[invocation invoke];
+	}else if ([_delegate respondsToSelector:deprecatedFailedSelector]) {
+		[_delegate performSelector:deprecatedFailedSelector withObject:error];
+	}
+		
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"MKFacebookRequestActivityEnded" object:self];
 }
+
+
+//only works in 10.6
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten 
+											   totalBytesWritten:(NSInteger)totalBytesWritten 
+									   totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
+	SEL forwardSelector = @selector(facebookRequest:bytesWritten:totalBytesWritten:totalBytesExpectedToWrite:);
+	if ([_delegate respondsToSelector:forwardSelector]) {
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:forwardSelector]];
+		[invocation setTarget:_delegate];
+		[invocation setSelector:forwardSelector];
+		[invocation setArgument:&self atIndex:2];
+		[invocation setArgument:&bytesWritten atIndex:3];
+		[invocation setArgument:&totalBytesWritten atIndex:4];
+		[invocation setArgument:&totalBytesExpectedToWrite atIndex:5];
+		[invocation invoke];
+	}
+}
+
 #pragma mark -
 
 

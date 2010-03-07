@@ -29,7 +29,7 @@ NSString *MKAPIServerURL = @"http://api.facebook.com/restserver.php";
 NSString *MKLoginUrl = @"http://www.facebook.com/login.php";
 NSString *MKExtendPermissionsURL = @"http://www.facebook.com/connect/prompt_permissions.php";
 NSString *MKFacebookAPIVersion = @"1.0";
-NSString *MKFacebookResponseFormat = @"XML";
+NSString *MKFacebookDefaultResponseFormat = @"XML";
 
 
 @interface MKFacebook (Private)
@@ -165,7 +165,7 @@ NSString *MKFacebookResponseFormat = @"XML";
 }
 
 
-- (NSString *)uid
+- (NSNumber *)uid
 {
 	return [[MKFacebookSession sharedMKFacebookSession] uid];
 }

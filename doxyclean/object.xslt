@@ -269,7 +269,6 @@
 			<xsl:apply-templates select="detaileddescription/para" mode="return"/>
 			<xsl:apply-templates select="detaileddescription/para" mode="seeAlso"/>
 			<xsl:apply-templates select="detaileddescription/para" mode="version"/>
-			<xsl:apply-templates select="detaileddescription/para" mode="deprecated"/>
 		</member>
 	</xsl:template>
 	
@@ -330,10 +329,10 @@
 	<!-- using 'bug' to diplay Deprecated instead -->
 	<xsl:template match="detaileddescription/para/xrefsect" mode="bug">
 		<deprecated>
-			<xsl:apply-templates select="xrefdescription"/>
+			<xsl:apply-templates select="xrefdescription/para"/>
 		</deprecated>
 	</xsl:template>
-	<xsl:template match="xrefdescription">
+	<xsl:template match="xrefdescription/para">
 		<xsl:apply-templates/>
 	</xsl:template>
 

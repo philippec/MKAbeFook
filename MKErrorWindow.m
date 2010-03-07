@@ -18,12 +18,19 @@
  
 #import "MKErrorWindow.h"
 
-
 @implementation MKErrorWindow
 
 +(MKErrorWindow *)errorWindowWithTitle:(NSString *)title message:(NSString *)message details:(NSString *)details
 {
 	return [[MKErrorWindow alloc] initWithTitle:title message:message details:details]; 
+}
+
++(MKErrorWindow *)errorWindowWithErrorResponse:(MKFacebookResponseError *)errorResponse{
+	NSString *errorTitle = @"Facebook Error";
+	NSString *errorMessage = [NSString stringWithFormat:@"Error Code: %i", errorResponse.errorCode];
+	NSString *errorDetails = [NSString stringWithFormat:@"Error Message: %@\n\nArguments: %@", errorResponse.errorMessage, [errorResponse.requestArgs description]];
+	return [[MKErrorWindow alloc] initWithTitle:errorTitle message:errorMessage details:errorDetails];
+
 }
 
 -(MKErrorWindow *)initWithTitle:(NSString *)title message:(NSString *)message details:(NSString *)details

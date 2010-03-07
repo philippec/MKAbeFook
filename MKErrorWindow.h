@@ -17,6 +17,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "MKFacebookResponseError.h"
 
 /*!
  
@@ -61,7 +62,20 @@
  */
 +(MKErrorWindow *)errorWindowWithTitle:(NSString *)title message:(NSString *)message details:(NSString *)details;
 
+/*!
+ @brief Creates a new MKErrorWindow from a MKFacebookResponseError
+ 
+ @param errorResponse Valid MKFacebookResponseError from a failed request.
+ 
+ Sets title, message, and details from information in MKFacebookResponseError.
+ 
+ @result Returns allocated and initiated MKErrorWindow that will automatically be released when closed (user clicks OK).
+ 
+ @version 0.9 and later
+ */
++(MKErrorWindow *)errorWindowWithErrorResponse:(MKFacebookResponseError *)errorResponse;
 //@}
+
 
 
 /*used internally*/

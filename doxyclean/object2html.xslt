@@ -511,7 +511,7 @@
 	</xsl:template>
 
 	<xsl:template match="deprecated">
-		<deprecated><xsl:apply-templates/></deprecated>
+	   <p><deprecated>Deprecated - <xsl:apply-templates/></deprecated></p>
 	</xsl:template>
 
     <!-- using 'verbatim' to display code examples -->

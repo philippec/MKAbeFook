@@ -21,83 +21,131 @@
 #import "MKFacebookRequest.h"
 
 
-typedef enum{
-	MKPhotosFacebookMethodPhotosGet,
-	MKPhotosFacebookMethodPhotosGetTags,
-	MKPhotosFacebookMethodPhotosUpload
-} MKPhotosFacebookMethod;
-
-
-/*
- @brief Convenience for photo related requests.
+/*!
  
  @class MKPhotosRequest
- This class is untested.  It will be tested, updated, fixed, maintained, and documented in the future.
  
- @version 0.8
+ Provides wrappers for some photos methods.
+ 
+ @version 0.9
  */
-@interface MKPhotosRequest : MKFacebookRequest <MKFacebookRequestProtocol> {
+@interface MKPhotosRequest : MKFacebookRequest {
 
-	id __delegate;
-	MKPhotosFacebookMethod _methodRequest;
-	BOOL _returnXML;
 }
 
-#pragma mark MKFacebookProtocol Requirements
-/*
- 
- @version 0.8 and later
- */
-+(id)requestUsingFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
+/*! @name Init Methods */
+//@{
 
-/*
+/*!
+ @brief Create a new MKPhotosRequest.
  
- @version 0.8 and later
- */
--(id)initWithFacebookConnection:(MKFacebook *)facebookConnection delegate:(id)delegate;
+ @version 0.9 and later
+*/
++ (id)requestWithDelegate:(id)aDelegate;
+//@}
 
 
-#pragma mark Supported Methods
-/*
+/*! @name Get Methods */
+//@{
+/*!
  
- @version 0.8 and later
+ @brief Wrapper for photos.get.
+ 
+ @param pids Array of photo pids to filter by.
+ 
+ @param aid Filter by this album id.
+ 
+ @param subj_id Filter by photos tagged with this user id.
+ 
+ See Facebook photos.get documentation at http://wiki.developers.facebook.com/index.php/Photos.get.
+ 
+ @see photosGet:
+ 
+ @version 0.9 and later
  */
 -(void)photosGet:(NSArray *)pids aid:(NSString *)aid subjId:(NSString *)subj_id;
 
-/*
+/*!
+
+ @brief Wrapper for photos.get.
  
- @version 0.8 and later
+ @param aid Filter by this album id.
+
+ See Facebook photos.get documentation at http://wiki.developers.facebook.com/index.php/Photos.get.
+ 
+ @see photosGet:aid:subjId:
+ 
+ @version 0.9 and later
  */
 -(void)photosGet:(NSString *)aid;
 
-/*
+/*!
  
- @version 0.8 and later
+ @brief Wrapper for photos.getTags.
+ 
+ @param pids List of photo ids to extract tags from.
+ 
+ See Facebook photos.getTags documentation at http://wiki.developers.facebook.com/index.php/Photos.getTags
+ 
+ @version 0.9 and later
  */
 -(void)photosGetTags:(NSArray *)pids;
 
-//UPLOADING METHODS
-/*
+
+/*!
+ @brief Wrapper for photos.getAlbums
  
- @version 0.8 and later
+ @param aids Return albums with aids in this list. Array of aid strings.
+ 
+ See Facebook photos.getAlbums documentation http://wiki.developers.facebook.com/index.php/Photos.getAlbums
+ 
+ @version 0.9 and later
+ */
+- (void)photosGetAlbums:(NSArray *)aids;
+//@}
+
+
+/*! @name Upload Methods */
+//@{
+
+/*!
+ 
+ @brief Wrapper for photos.upload.
+
+ @param photo The photo to upload.
+ 
+ @param aid Album id to add photo to.
+ 
+ @param caption A caption for the photo.
+ 
+ See Facebook photos.upload documentation at http://wiki.developers.facebook.com/index.php/Photos.upload
+ 
+ See MKFacebookRequestDelegate method facebookRequest:bytesWritten:totalBytesWritten:totalBytesExpectedToWrite: for a way to check upload progress.
+ 
+ @see photoUploads:
+ 
+ @version 0.9 and later
  */
 -(void)photosUpload:(NSImage *)photo aid:(NSString *)aid caption:(NSString *)caption;
 
-/*
+/*!
  
- @version 0.8 and later
+ @brief Wrapper for photos.upload.
+
+ @param photo The photo to upload.
+ 
+ Photo will be added to application album because no album id is specified.
+ 
+ See Facebook photos.upload documentation at http://wiki.developers.facebook.com/index.php/Photos.upload
+
+ See MKFacebookRequestDelegate method facebookRequest:bytesWritten:totalBytesWritten:totalBytesExpectedToWrite: for a way to check upload progress.
+ 
+ @see photosUpload:aid:caption:
+ 
+ @version 0.9 and later
  */
 -(void)photosUpload:(NSImage *)photo;
-
-
-#pragma mark Should be private
-//response handling
--(void)setReturnXML:(BOOL)aBool;
--(void)receivedFacebookResponse:(NSXMLDocument *)xmlResponse;
-
+//@}
 
 @end
 
-@protocol MKPhotosRequestDelegate
-
-@end
