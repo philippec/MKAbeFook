@@ -78,14 +78,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 		}
 		
 		//check to see if the uid returned is the same as our existing session
-		if ([[[user rootElement] stringValue] intValue] == [[self uid] intValue] && [[self uid] intValue] != 0 ) {
+		if ([[[user rootElement] stringValue] isEqualToString:[self uid]] && [self uid] != nil ) {
 			_validSession = YES;
 			return YES;
 		}else {
 			self.session = nil;
 			_validSession = NO;
 			DLog(@"facebook response does not match stored UID. Here are the raw values of the response: %@", [user description]);
-			DLog(@"compared %i to %i", [[[user rootElement] stringValue] intValue], [[self uid] intValue]);
+			DLog(@"compared %@ to %@", [[user rootElement] stringValue], [self uid]);
 			return NO;
 		}
 	}else {
