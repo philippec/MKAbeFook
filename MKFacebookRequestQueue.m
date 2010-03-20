@@ -91,7 +91,7 @@
 
 - (void)startNextRequest
 {
-	if(_currentRequest <= [_requestsArray count] && _cancelRequestQueue == NO && [_requestsArray count] != 0 )
+	if(_currentRequest < [_requestsArray count] && _cancelRequestQueue == NO && [_requestsArray count] != 0 )
 	{
 		if ([_delegate respondsToSelector:@selector(requestQueue:activeRequest:ofRequests:)]) {
 			NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:@selector(requestQueue:activeRequest:ofRequests:)]];
