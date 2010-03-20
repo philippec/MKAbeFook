@@ -143,11 +143,17 @@ extern NSString *MKFacebookDefaultResponseFormat;
 /*!
  @brief Attempts to log a user in using existing session.  If no session is available a login window is diplayed.
  
-  Tries to load existing session. If no session is available a login window will be displayed. If a user logs in successfully the session will automatically be saved to the application NSUserDefaults. 
+  Tries to load existing session. If no session is available a login window will be displayed. If a user logs in successfully the session will automatically be saved to the application NSUserDefaults. See http://wiki.developers.facebook.com/index.php/Extended_permissions for a list of available permissions.
  
  @param permissions List of permisisons to offer the user.
  @param sheet If YES is passed in a NSWindow will be returned, otherwise a login window will appear and nil will be returned.
  @return Either a NSWindow to be attached as a sheet or nil.
+ 
+ @verbatim
+ NSWindow *loginWindow = [fbConnection loginWithPermissions:[NSArray arrayWithObjects:@"offline_access",@"photo_upload",nil] forSheet:YES];
+ @endverbatim
+ 
+ @warning If additional permissions are requested the user must allow them or the login may not be successful.
  
  @see login
  @see loginUsingModalWindow

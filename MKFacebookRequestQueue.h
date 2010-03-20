@@ -25,23 +25,16 @@
  @class MKFacebookRequestQueue
   This class is used to send a series of requests to the Facebook API.  Requests are sent sequentially and do not begin until the previous request has been completed.  This class is useful for sending multiple photo uploads or when you need to ensure you have information from one request before processing another.
  
- Optional selectors can be specified to receive information regarding the progress of the uploads in the queue.  The currentlySendingSelector will pass a NSDictionary object containing a "current" key and a "total" key indicating the current index of the request being sent out of the total number of requests.  The lastRequestResponseSelector passes the last NSXMLDocument response from Facebook.  Finally the allRequestsFinishedSelector is called when all the requests in the queue have been sent and their responses have been received.
  
- Note: All MKFacebookRequests added to the queue will have their delegate and selector set to the MKFaceBookRequestQueue and pass the responses they receive back to the MKFacebookRequestQueue which will then pass the response accordingly via the lastRequestResponseSelector.
+ Note: The queue will override all delegate / selector settings on the individual requests. The queue pass all request responses back to the delegate accordingly via the MKFacebookRequestDelegate protocol.
  
- Available Delegate Methods
- 
- -(void)queueRequestFailed:(id)error;<br/>
- &nbsp;&nbsp; Called when a request in the queue could not be made.  Passes the NSURLConnection error from the failed request attempt.
+ Use the MKFacebookRequestQueueDelegate protocol to receive queue progress information.
  
   @version 0.7 and later
  */
-@interface MKFacebookRequestQueue : NSObject {
+@interface MKFacebookRequestQueue : NSObject <MKFacebookRequestDelegate> {
 	NSMutableArray *_requestsArray;
 	id _delegate;
-	SEL _currentlySendingSelector;
-	SEL _lastRequestResponseSelector;
-	SEL _allRequestsFinishedSelector;
 	int _currentRequest;
 	BOOL _cancelRequestQueue;
 	float _timeBetweenRequests;
@@ -54,19 +47,15 @@
  */
 //@{
 
-/*!
- Creates a new queue that will be automatically released when it's done.
- */
-+ (MKFacebookRequestQueue *)newQueue;
-
-
-/*!
- Creates a new queue with requests.
- */
-+ (MKFacebookRequestQueue *)newQueueWithRequests:(NSArray *)requests;
 
 - (id)init;
-
+/*!
+ @brief New MKFacebookRequestQueue instance.
+ 
+ @param requests NSArray of prepared MKFacebookRequest objects.
+ 
+ @version 0.7 and later
+ */
 - (id)initWithRequests:(NSArray *)requests;
 //@}
 
@@ -78,35 +67,6 @@
  */
 - (void)setDelegate:(id)delegate;
 
-/*
- Sets the array of MKFacebookRequests to send to Facebook.
- */
-- (void)setRequests:(NSArray *)requests;
-
-/*! @name Set Selectors
- *
- */
-//@{
-
-/*!
- @param selector Method to be called and passed information about request currently being sent. 
-  @version 0.7 and later
- */
-- (void)setCurrentlySendingSelector:(SEL)selector;
-
-/*!
- @param selector Method to be called and passed last response received. Should accept (NSDictionary *) as argument.  NSDictionary will contain two keys, "current" and "total".
-  @version 0.7 and later
- */
-- (void)setLastRequestResponseSelector:(SEL)selector;
-
-/*!
- @param selector Method to be called when all requests have been completed.
-  @version 0.7 and later
- */
-- (void)setAllRequestsFinishedSelector:(SEL)selector;
-//@}
-
 
 /*! @name Manage the queue
  *
@@ -114,13 +74,39 @@
 //@{
 
 /*!
+ @brief Sets the array of MKFacebookRequests to send to Facebook.
+ 
+ @see addRequest:
+
+ @warning Requests added to the queue will not send delegate messages back to custom selectors set on MKFacebookRequest objects. Use the MKFacebookRequestDelegate protocol to receive responses.
+ 
+ @version 0.7 and later
+ */
+- (void)setRequests:(NSArray *)requests;
+
+
+/*!
+ @brief Add a request to the queue.
+ 
  @param request MKFacebookRequest object that is ready to be sent.
-  @version 0.7 and later
+ 
+ @warning Requests added to the queue will not send delegate messages back to custom selectors set on MKFacebookRequest objects. Use the MKFacebookRequestDelegate protocol to receive responses.
+ 
+ @see setRequests:
+ 
+ @version 0.7 and later
  */
 - (void)addRequest:(MKFacebookRequest *)request;
 
 /*!
-  Starts processing the request queue.
+  @brief Starts processing the request queue.
+
+  Requests in the queue will be sent to Facebook in the same order they were added. You can receive response information from each request by implementing the MKFacebookRequestDelegate methods in your queue delegate.
+ 
+  See the MKFacebookRequestQueueDelegate documentation for receiving information about the progress of the queue.
+ 
+  @see MKFacebookRequestQueueDelegate
+ 
   @version 0.7 and later
  */
 - (void)startRequestQueue;
@@ -153,7 +139,49 @@
  */
 - (void)cancelRequestQueue;
 
+@end
 
-- (void)httpRequestFinished:(id)data;
+
+
+@protocol MKFacebookRequestQueueDelegate
+/*!
+ @protocol MKFacebookRequestQueueDelegate
+ 
+ Receives information regarding progress of MKFacebookRequestQueue.
+ 
+ */
+
+/*! @name Progress */
+//@{
+
+/*!
+ @Brief Index of active request in queue.
+ 
+ Sent immediately before the new request number (index) is started.
+ 
+ @param queue The request queue.
+ 
+ @param index Number of the request being send. First index is zero.
+ 
+ @param total Total number of requests in queue.
+ 
+ @version 0.9 and later
+ */
+@optional
+- (void)requestQueue:(MKFacebookRequestQueue *)queue activeRequest:(NSUInteger)index ofRequests:(NSUInteger)total;
+
+/*!
+ @brief Sent when all requests have finished.
+ 
+ Sent when the queue has finished sending all requests and all responses have been received.
+ 
+ @param queue The queue.
+ 
+ @version 0.9 and later
+ */
+@optional
+- (void)requestQueueDidFinish:(MKFacebookRequestQueue *)queue;
+//@}
 
 @end
+
