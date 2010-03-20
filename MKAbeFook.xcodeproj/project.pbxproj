@@ -48,8 +48,8 @@
 		274BC9E10B36BF620080F786 /* CocoaCryptoHashing.m in Sources */ = {isa = PBXBuildFile; fileRef = 274BC9DF0B36BF620080F786 /* CocoaCryptoHashing.m */; };
 		275A34FE1142054D003F9575 /* MKPhotosRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275A34FF1142054E003F9575 /* MKPhotosRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */; };
-		275A35FC11421677003F9575 /* MKVideoUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = 275A35FA11421677003F9575 /* MKVideoUpload.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		275A35FD11421677003F9575 /* MKVideoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = 275A35FB11421677003F9575 /* MKVideoUpload.m */; };
+		275A35FC11421677003F9575 /* MKVideoRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 275A35FA11421677003F9575 /* MKVideoRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		275A35FD11421677003F9575 /* MKVideoRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 275A35FB11421677003F9575 /* MKVideoRequest.m */; };
 		277BC3CA0D14566F00B9EFFE /* MKFacebookRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */; };
 		277BC3CB0D14566F00B9EFFE /* MKFacebookRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = 277BC3C90D14566F00B9EFFE /* MKFacebookRequest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		277BC3CE0D14577200B9EFFE /* NSXMLElementAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 277BC3CC0D14577200B9EFFE /* NSXMLElementAdditions.m */; };
@@ -102,8 +102,8 @@
 		273E207E1066B22400721317 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SBJsonWriter.m; path = JSON/SBJsonWriter.m; sourceTree = "<group>"; };
 		274BC9DE0B36BF620080F786 /* CocoaCryptoHashing.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CocoaCryptoHashing.h; sourceTree = "<group>"; };
 		274BC9DF0B36BF620080F786 /* CocoaCryptoHashing.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = CocoaCryptoHashing.m; sourceTree = "<group>"; };
-		275A35FA11421677003F9575 /* MKVideoUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKVideoUpload.h; sourceTree = "<group>"; };
-		275A35FB11421677003F9575 /* MKVideoUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKVideoUpload.m; sourceTree = "<group>"; };
+		275A35FA11421677003F9575 /* MKVideoRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKVideoRequest.h; sourceTree = "<group>"; };
+		275A35FB11421677003F9575 /* MKVideoRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKVideoRequest.m; sourceTree = "<group>"; };
 		2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKPhotosRequest.h; sourceTree = "<group>"; };
 		2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKPhotosRequest.m; sourceTree = "<group>"; };
 		277BC3C80D14566F00B9EFFE /* MKFacebookRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKFacebookRequest.m; sourceTree = "<group>"; };
@@ -227,8 +227,8 @@
 			children = (
 				2761C0060EBFEB0800EE443D /* MKPhotosRequest.h */,
 				2761C0070EBFEB0800EE443D /* MKPhotosRequest.m */,
-				275A35FA11421677003F9575 /* MKVideoUpload.h */,
-				275A35FB11421677003F9575 /* MKVideoUpload.m */,
+				275A35FA11421677003F9575 /* MKVideoRequest.h */,
+				275A35FB11421677003F9575 /* MKVideoRequest.m */,
 			);
 			name = "Request Subclasses";
 			sourceTree = "<group>";
@@ -327,7 +327,7 @@
 				273A398F110BE363003BD236 /* NSXMLDocumentAdditions.h in Headers */,
 				273A3C21110D2F0B003BD236 /* NSDictionaryAdditions.h in Headers */,
 				275A34FE1142054D003F9575 /* MKPhotosRequest.h in Headers */,
-				275A35FC11421677003F9575 /* MKVideoUpload.h in Headers */,
+				275A35FC11421677003F9575 /* MKVideoRequest.h in Headers */,
 				27C2B95E11424569002B1FB7 /* MKFacebookResponseError.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -426,7 +426,7 @@
 				273A3990110BE363003BD236 /* NSXMLDocumentAdditions.m in Sources */,
 				273A3C22110D2F0B003BD236 /* NSDictionaryAdditions.m in Sources */,
 				275A34FF1142054E003F9575 /* MKPhotosRequest.m in Sources */,
-				275A35FD11421677003F9575 /* MKVideoUpload.m in Sources */,
+				275A35FD11421677003F9575 /* MKVideoRequest.m in Sources */,
 				27C2B95F11424569002B1FB7 /* MKFacebookResponseError.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

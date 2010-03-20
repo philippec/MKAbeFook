@@ -9,7 +9,7 @@
 #import "MKFacebook.h"
 #import "MKFacebookRequest.h"
 #import "MKPhotosRequest.h"
-#import "MKVideoUpload.h"
+#import "MKVideoRequest.h"
 #import "MKFacebookResponseError.h"
 #import "MKFaceBookRequestQueue.h"
 #import "NSXMLDocumentAdditions.h"
