@@ -13,7 +13,7 @@
  
  @class MKVideoUpload
  
- Provides wrappers for some video methods.
+ Provides wrappers for some video methods. Untested as of 3.19.2010.
  
  @version 0.9 and later
  */
@@ -26,7 +26,7 @@
 /*!
  @brief New MKVideoUpload.
  
- Returns a new autorleased instance of MKVideoUpload.
+ Returns a new autoreleased instance of MKVideoUpload.
  
  @version 0.9 and later
  */

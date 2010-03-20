@@ -123,10 +123,14 @@
 		
 		[[_requestsArray objectAtIndex:_currentRequest] setDelegate:self];
 		[[_requestsArray objectAtIndex:_currentRequest] setSelector:@selector(httpRequestFinished:)];
+		/*
+		 TODO: If no parameters are set for the request, sendRequest will throw an exception and prevent the counter from correctly being incremented. Infinite loopy.
+		 */
 		[[_requestsArray objectAtIndex:_currentRequest] sendRequest];
 		DLog(@"request started");
 	}
 	_currentRequest++;
+	
 }
 
 

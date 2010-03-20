@@ -173,11 +173,11 @@ extern NSString *MKFacebookDefaultResponseFormat;
 /*!
  @brief Get the UID of the logged in user.
  
- @result Returns uid of user currently logged in, returns nil if no user is logged in.
+ @result Returns uid as NSString of user currently logged in, returns nil if no user is logged in.
  
  @see userLoggedIn
  */
-- (NSNumber *)uid;
+- (NSString *)uid;
 
 
 

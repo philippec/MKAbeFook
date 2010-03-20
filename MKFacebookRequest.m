@@ -68,7 +68,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		_displayAPIErrorAlert = NO;
 		_numberOfRequestAttempts = 5;
 		_session = [MKFacebookSession sharedMKFacebookSession];
-		self.connectionTimeoutInterval = 5;
+		self.connectionTimeoutInterval = 30;
 		self.method = nil;
 		rawResponse = nil;
 		
@@ -250,7 +250,6 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		
 		NSMutableData *postBody = [NSMutableData data];
 		NSString *stringBoundary = [NSString stringWithString:@"xXxiFyOuTyPeThIsThEwOrLdWiLlExPlOdExXx"];
-//		NSString *endLine = [NSString stringWithFormat:@"\r\n--%@\r\n", stringBoundary];
 		NSData *endLineData = [[NSString stringWithFormat:@"\r\n--%@\r\n", stringBoundary] dataUsingEncoding:NSUTF8StringEncoding];
 		NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", stringBoundary];
 		[postRequest setHTTPMethod:@"POST"];
@@ -284,10 +283,14 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 
 		
 		
-		NSEnumerator *e = [_parameters keyEnumerator];
-		id key;
-		NSString *imageKey = nil; //apparently G4s don't like it when you don't at least set this to = nil.  0.7.3 fix.
-		while(key = [e nextObject])
+		//if parameters contains a NSImage or NSData object we need store the key so it can be removed from the _parameters dictionary before a signature is generated for the request
+		NSString *imageKey = nil;
+		NSString *dataKey = nil;
+
+		//in order to allow NSArrays containing strings instead of @"one,two,three" string lists - we will grab the original _parameters key and put they key=>newly generated string from the array in the arrayKeysAndValues dictionary so we can create a valid signature later
+		NSMutableDictionary *arrayKeysAndValues = [[[NSMutableDictionary alloc] init] autorelease];
+		
+		for(id key in [_parameters allKeys])
 		{
 			
 			if([[_parameters objectForKey:key] isKindOfClass:[NSImage class]])
@@ -300,7 +303,6 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; filename=\"image\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:[[NSString stringWithString:@"Content-Type: image/jpeg\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];	
 				[postBody appendData: imageData];
-//				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:endLineData];
 				
 				//we need to remove this the image object from the dictionary so we can generate a correct sig from the other values, but we can't do it here or leopard will complain.  so we'll do it outside the loop.
@@ -312,7 +314,21 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; filename=\"data\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:[[NSString stringWithString:@"Content-Type: content/unknown\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];	
 				[postBody appendData:(NSData *)[_parameters objectForKey:key]];
-//				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
+				[postBody appendData:endLineData];
+				dataKey = [NSString stringWithString:key];
+				
+			}
+			else if ([[_parameters objectForKey:key] isKindOfClass:[NSArray class]])
+			{
+				NSString *stringFromArray = [[_parameters objectForKey:key] componentsJoinedByString:@","];
+				//items we find in the array must go back into the _parameters dictionary so a valid signature can be generated. we'll put it in a temporary dictionary for now and swap them when we're done looping through _parameters
+				if(stringFromArray != nil)
+				{
+					DLog(@"setting %@ for key: %@", stringFromArray, key);
+					[arrayKeysAndValues setObject:stringFromArray forKey:key];
+				}
+				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+				[postBody appendData:[stringFromArray dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:endLineData];
 			}
 			else
@@ -320,7 +336,6 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 			 
 				[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:[[_parameters valueForKey:key] dataUsingEncoding:NSUTF8StringEncoding]];
-//				[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
 				[postBody appendData:endLineData];
 			}
 			 
@@ -329,9 +344,22 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		if(imageKey != nil)
 			[_parameters removeObjectForKey:imageKey];
 		
+		if (dataKey != nil)
+			[_parameters removeObjectForKey:dataKey];
+		
+		//if a NSArray was passed in instead of a @"one,two,three" list we need to swap the value in _parameters with the componentsSeparatedByString value we created in the while loop above so a valid signature can be generated
+		if([arrayKeysAndValues count] > 0)
+		{
+			for(id arrayKey in [arrayKeysAndValues allKeys])
+			{
+				DLog(@"resetting %@ for key %@", [arrayKeysAndValues valueForKey:arrayKey], arrayKey);
+				[_parameters setObject:[arrayKeysAndValues valueForKey:arrayKey] forKey:arrayKey];
+			}
+		}
+			
+		
 		[postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"sig\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
 		[postBody appendData:[[self generateSigForParameters:_parameters] dataUsingEncoding:NSUTF8StringEncoding]];
-//		[postBody appendData:[endLine dataUsingEncoding:NSUTF8StringEncoding]];
 		[postBody appendData:endLineData];
 		
 		[postRequest setHTTPBody:postBody];
@@ -389,6 +417,7 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 //sorts parameters keys, creates a string of values, returns md5 hash (cleaned up by Patrick Jayet 0.8.2)
 - (NSString *)generateSigForParameters:(NSDictionary *)parameters
 {
+	DLog(@"generating sig for parameters: %@", [parameters description]);
 	// pat: fixed signature issue
 	// 1. get a sorted array with the keys
 	NSArray* sortedKeyArray = [[parameters allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
@@ -670,6 +699,11 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 	
 	if (validResponse == NO) {
 		
+		MKFacebookResponseError *responseError = [MKFacebookResponseError errorFromRequest:self];
+		DLog(@"Facebook Error Code: %i", responseError.errorCode);
+		DLog(@"Facebook Error Message: %@", responseError.errorMessage);
+		DLog(@"Facebook Error Arguments: %@", [responseError.requestArgs description]);
+		
 		if ([self displayAPIErrorAlert] == YES) {
 			NSString *errorString = @"Unknown Error";
 			
@@ -689,7 +723,6 @@ NSString *MKFacebookRequestActivityEnded = @"MKFacebookRequestActivityEnded";
 		//pass the error back to the delegate
 		if([_delegate respondsToSelector:defaultErrorSelector])
 		{
-			MKFacebookResponseError *responseError = [MKFacebookResponseError errorFromRequest:self];
 			
 			NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:defaultErrorSelector]];
 			[invocation setTarget:_delegate];

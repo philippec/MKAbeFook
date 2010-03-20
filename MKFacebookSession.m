@@ -125,8 +125,24 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(MKFacebookSession);
 	return [self.session valueForKey:@"expires"];
 }
 
-- (NSNumber *)uid{
-	return [self.session valueForKey:@"uid"];
+- (NSString *)uid
+{
+	id uid = [self.session objectForKey:@"uid"];
+	
+	if ([uid isKindOfClass:[NSDecimalNumber class]])
+	{
+		double doubleValue = [uid doubleValue];
+		long long longValue = llround(doubleValue);
+		uid = [NSString stringWithFormat:@"%lld", longValue];
+	}
+	else if ([uid isKindOfClass:[NSNumber class]])
+	{
+		double doubleValue = [uid doubleValue];
+		long long longValue = llround(doubleValue);
+		uid = [NSString stringWithFormat:@"%lld", longValue];
+	}
+	
+	return uid;
 }
 
 - (NSString *)sig{

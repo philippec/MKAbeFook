@@ -66,7 +66,7 @@ Returns true if stored session information is valid and a user id is successfull
 - (NSString *)sessionKey;
 - (NSString *)sessionSecret;
 - (NSString *)expirationDate;
-- (NSNumber *)uid;
+- (NSString *)uid;
 - (NSString *)sig;
 
 @end

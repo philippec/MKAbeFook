@@ -165,7 +165,7 @@ NSString *MKFacebookDefaultResponseFormat = @"XML";
 }
 
 
-- (NSNumber *)uid
+- (NSString *)uid
 {
 	return [[MKFacebookSession sharedMKFacebookSession] uid];
 }

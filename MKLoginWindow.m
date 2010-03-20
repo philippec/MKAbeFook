@@ -151,7 +151,8 @@
 		DLog(@"user was successfully logged in, should now load %@", next);
 		//unfortunately we can't call parametersString on the url that facebook returns for us to load (not sure why...)
 		//instead we'll break up the string at the = and load everything after the = as the JSON object
-		NSArray *array = [urlString componentsSeparatedByString:@"="];
+		//NSArray *array = [urlString componentsSeparatedByString:@"="];
+		NSArray *array = [urlString componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"=&"]];
 		if([array objectAtIndex:1] != nil)
 		{
 			NSString *decodedParameters = [[array objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
