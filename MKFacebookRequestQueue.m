@@ -98,7 +98,8 @@
 			[invocation setTarget:_delegate];
 			[invocation setSelector:@selector(requestQueue:activeRequest:ofRequests:)];
 			[invocation setArgument:&self atIndex:2];
-			[invocation setArgument:&_currentRequest atIndex:3];
+			NSUInteger activeRequest = _currentRequest + 1;
+			[invocation setArgument:&activeRequest atIndex:3];
 			NSUInteger count = [_requestsArray count];
 			[invocation setArgument:&count atIndex:4];
 			[invocation invoke];
@@ -171,13 +172,14 @@
  The queue needs to know when a requests finishes. It may be successful, contain an error, or fail completely. No matter what it does we'll forward the response back to the delegate and continue the queue.
  */
 - (void)facebookRequest:(MKFacebookRequest *)request responseReceived:(id)response{
-	
-	if ([_delegate respondsToSelector:@selector(facebookRequest:responseReceived:)]) {
-		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:@selector(facebookRequest:responseReceived:)]];
+	SEL responseReceivedSelector = @selector(requestQueue:lastRequest:responseReceived:);
+	if ([_delegate respondsToSelector:responseReceivedSelector]) {
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:responseReceivedSelector]];
 		[invocation setTarget:_delegate];
-		[invocation setSelector:@selector(facebookRequest:responseReceived:)];
-		[invocation setArgument:&request atIndex:2];
-		[invocation setArgument:&response atIndex:3];
+		[invocation setSelector:responseReceivedSelector];
+		[invocation setArgument:&self atIndex:2];
+		[invocation setArgument:&request atIndex:3];
+		[invocation setArgument:&response atIndex:4];
 		[invocation invoke];
 	}
 	
@@ -185,24 +187,28 @@
 }
 
 - (void)facebookRequest:(MKFacebookRequest *)request errorReceived:(MKFacebookResponseError *)error{
-	if ([_delegate respondsToSelector:@selector(facebookRequest:errorReceived:)]) {
-		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:@selector(facebookRequest:errorReceived:)]];
+	SEL errorReceivedSelector = @selector(requestQueue:lastRequest:errorReceived:);
+	if ([_delegate respondsToSelector:errorReceivedSelector]) {
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:errorReceivedSelector]];
 		[invocation setTarget:_delegate];
-		[invocation setSelector:@selector(facebookRequest:errorReceived:)];
-		[invocation setArgument:&request atIndex:2];
-		[invocation setArgument:&error atIndex:3];
+		[invocation setSelector:errorReceivedSelector];
+		[invocation setArgument:&self atIndex:2];
+		[invocation setArgument:&request atIndex:3];
+		[invocation setArgument:&error atIndex:4];
 		[invocation invoke];
 	}
 	[self continueQueue];
 }
 
 - (void)facebookRequest:(MKFacebookRequest *)request failed:(NSError *)error{
-	if ([_delegate respondsToSelector:@selector(facebookRequest:failed:)]) {
-		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:@selector(facebookRequest:failed:)]];
+	SEL failedSelector = @selector(requestQueue:lastRequest:failed:);
+	if ([_delegate respondsToSelector:failedSelector]) {
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[_delegate methodSignatureForSelector:failedSelector]];
 		[invocation setTarget:_delegate];
-		[invocation setSelector:@selector(facebookRequest:failed:)];
-		[invocation setArgument:&request atIndex:2];
-		[invocation setArgument:&error atIndex:3];
+		[invocation setSelector:failedSelector];
+		[invocation setArgument:&self atIndex:2];
+		[invocation setArgument:&request atIndex:3];
+		[invocation setArgument:&error atIndex:4];
 		[invocation invoke];
 	}
 	[self continueQueue];

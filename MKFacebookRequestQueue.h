@@ -161,7 +161,7 @@
  
  @param queue The request queue.
  
- @param index Number of the request being send. First index is zero.
+ @param index Number of the request being send. First index is 1.
  
  @param total Total number of requests in queue.
  
@@ -181,6 +181,48 @@
  */
 @optional
 - (void)requestQueueDidFinish:(MKFacebookRequestQueue *)queue;
+
+
+/*
+ @brief Sent if the last request completed was completed successfully.
+ 
+ @param queue The queue the request was in.
+ 
+ @param request The request that was completed.
+ 
+ @param response The response from Facebook.
+ */
+@optional
+- (void)requestQueue:(MKFacebookRequestQueue *)queue lastRequest:(MKFacebookRequest *)request responseReceived:(id)response;
+
+
+
+
+/*
+ @brief Sent if the last request completed contains an error.
+ 
+ @param queue The queue the request was in.
+ 
+ @param request The request that was completed.
+ 
+ @param errorResponse The error returned by Facebook. 
+ */
+@optional
+- (void)requestQueue:(MKFacebookRequestQueue *)queue lastRequest:(MKFacebookRequest *)request errorReceived:(MKFacebookResponseError *)errorResponse;
+
+
+/*
+ @brief Called if the request could not be sent.
+ 
+ @param queue The queue the request was in.
+ 
+ @param request The request that was completed.
+ 
+ @param error The error that occurred.
+ */
+@optional
+- (void)requestQueue:(MKFacebookRequestQueue *)queue lastRequest:(MKFacebookRequest *)request failed:(NSError *)error;
+
 //@}
 
 @end
